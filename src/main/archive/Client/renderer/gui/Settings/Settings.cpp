@@ -1,0 +1,46 @@
+int RENDER_DISTANCE = 16;
+int CHUNK_GENERATOR_DISTANCE = 33;
+int RENDER_HEIGHT = 8;
+int CHUNK_GENREATOR_HEIGHT = 11;
+
+float CAMERA_SPEED = 100.0f;
+float FOV = 70.0f;
+
+int getRENDER_DISTANCE() {
+	return RENDER_DISTANCE;
+}
+int getCHUNK_GENERATOR_DISTANCE() {
+	return CHUNK_GENERATOR_DISTANCE;
+}
+int getRENDER_HEIGHT() {
+	return RENDER_HEIGHT;
+}
+int getCHUNK_GENREATOR_HEIGHT() {
+	return CHUNK_GENREATOR_HEIGHT;
+}
+
+void P_ChangeRenderDistance() {
+	
+	RENDER_DISTANCE++;
+	CHUNK_GENERATOR_DISTANCE++;
+}
+
+void N_ChangeRenderDistance() {
+	if (RENDER_DISTANCE - 1 < 0 ) {
+		RENDER_DISTANCE = 0;
+		CHUNK_GENERATOR_DISTANCE = 0;
+	}
+	else {
+		RENDER_DISTANCE--;
+		CHUNK_GENERATOR_DISTANCE--;
+	}
+	
+}
+
+float getCAMERA_SPEED() {
+	return CAMERA_SPEED;
+}
+
+float getFOV() {
+	return FOV;
+}
