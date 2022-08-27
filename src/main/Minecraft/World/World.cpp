@@ -23,7 +23,9 @@ void World::WorldLoop() {
 	getLogger()->LogInfo("World","Started World Loop");
 	while (!stop) {
 		auto time0 = std::chrono::high_resolution_clock::now();
+		
 		DoQueuedTasks();
+
 		double time1 = ((std::chrono::high_resolution_clock::now() - time0).count() / 1000000000.0);
 		if (time1 < (1.0 / (double)TPS))
 			timerSleep((1.0 / (double)TPS) - time1);

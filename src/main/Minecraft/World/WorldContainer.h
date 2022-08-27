@@ -49,11 +49,15 @@ protected:
     void SaveWorld(); //dump loaded data to store map
 
     void AddEntity(Entity* Entity);
+    void UpdatePlayerPosition(int Player_ID, int x, int y, int z);
+    int JoinWorld(std::string name);
 
     std::deque<glm::ivec3> ChunkLoadQueue;
 
     std::unordered_map<long long int, std::string> PlayerList;
     std::unordered_map<long long int, Entity*> EntityList; 
+
+    std::unordered_map<long long int, Chunk> ClientChunkToUpdate;
 private:
     void WorldGenerator();
 

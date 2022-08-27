@@ -1,6 +1,7 @@
 #include "WorldContainer.h"
-
+#include "Entity/Entities/Player.h"
 #include "../../Utils/Clock.h"
+#include "../../Utils/NumGen.h"
 
 void WorldContainer::LoadChunk(int x, int y, int z) {
 	CHUNK_ID ChunkID = getChunkID(x, y, z);
@@ -151,4 +152,25 @@ Chunk WorldContainer::ReadChunkMapStore(int x, int y, int z) {
 	ChunkStorageMutex.unlock();
 	return chunk;
 
+}
+
+void WorldContainer::UpdatePlayerPosition(int Player_ID, int x, int y, int z) {
+	EntityList[Player_ID]->PosX = x;
+	EntityList[Player_ID]->PosX = y;
+	EntityList[Player_ID]->PosX = z;
+}
+
+int WorldContainer::JoinWorld(std::string name) {
+	Entity* PLAYER = new Player;
+	PLAYER->PosX = 0;
+	PLAYER->PosY = 100;
+	PLAYER->PosZ = 0;
+	PLAYER->EntityID = getID();
+	PlayerList[PLAYER->EntityID] = name;
+	AddEntity(PLAYER);
+	return PLAYER->EntityID;
+}
+
+void WorldContainer::AddEntity(Entity* Entity) {
+	EntityList[Entity->EntityID] = Entity
 }

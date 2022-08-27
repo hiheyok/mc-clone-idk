@@ -18,6 +18,6 @@ public:
 	bool stop = false;
 
 private:
-	const int SpawnChunksSize = 40;
+	const int SpawnChunksSize = 10;
 	std::thread WorldMainThread;
 };

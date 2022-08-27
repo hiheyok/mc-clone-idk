@@ -4,8 +4,7 @@
 
 #include "../../RenderEngine/Window.h"
 #include "../../RenderEngine/GUI/GUI.h"
-
-#include "../Core.h"
+#include "../World/World.h"
 #include <unordered_map>
 class Client : Window {
 public:
@@ -17,6 +16,7 @@ public:
 	
 private:
 	
+	void UpdateKeyboardInputs();
 	void ClientLoop();
 	//Stats
 	int FPS = 0;
@@ -28,5 +28,4 @@ private:
 	bool FirstPersonMode = false;
 
 	IGUI GUI;
-	MinePlusPLus mineplusplus;
 };

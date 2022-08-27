@@ -14,8 +14,6 @@ public:
 	double PosX, PosY, PosZ = 0.0;
 	double RotX, RotY, RotZ = 0.0;
 
-private:
-
 	long long int EntityID = 0;
 };
 

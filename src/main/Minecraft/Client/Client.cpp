@@ -13,9 +13,9 @@ void Client::Initialize() {
 	GUI.init(getWindow(), &ClientEvents);
     GUI.update();
 
-    mineplusplus.Init();
-
 	ClientLoop();
+
+    
 }
 
 void Client::ClientLoop() {
@@ -63,10 +63,8 @@ void Client::Update() {
 
     GUI.prepareRenderer();
 
-    int R_SHIFT = false;
+    UpdateKeyboardInputs();
 
-    if (TestForKeyInputs(GLFW_KEY_RIGHT_SHIFT))
-        R_SHIFT = true;
 }
 
 void Client::Render() {
@@ -75,4 +73,225 @@ void Client::Render() {
 
 void Client::Stop() {
 
+}
+
+void Client::UpdateKeyboardInputs() {
+    int R_SHIFT = false;
+
+    KeysPressed.clear();
+
+    if (TestForKeyInputs(GLFW_KEY_RIGHT_SHIFT))
+        R_SHIFT = true;
+
+    if (TestForKeyInputs(GLFW_KEY_Q)) {
+        if (R_SHIFT) {
+            KeysPressed['q'] = true;
+        }
+        else {
+            KeysPressed['Q'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_W)) {
+        if (R_SHIFT) {
+            KeysPressed['w'] = true;
+        }
+        else {
+            KeysPressed['W'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_E)) {
+        if (R_SHIFT) {
+            KeysPressed['e'] = true;
+        }
+        else {
+            KeysPressed['E'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_R)) {
+        if (R_SHIFT) {
+            KeysPressed['r'] = true;
+        }
+        else {
+            KeysPressed['R'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_T)) {
+        if (R_SHIFT) {
+            KeysPressed['t'] = true;
+        }
+        else {
+            KeysPressed['T'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_Y)) {
+        if (R_SHIFT) {
+            KeysPressed['y'] = true;
+        }
+        else {
+            KeysPressed['Y'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_U)) {
+        if (R_SHIFT) {
+            KeysPressed['u'] = true;
+        }
+        else {
+            KeysPressed['U'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_I)) {
+        if (R_SHIFT) {
+            KeysPressed['i'] = true;
+        }
+        else {
+            KeysPressed['I'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_O)) {
+        if (R_SHIFT) {
+            KeysPressed['o'] = true;
+        }
+        else {
+            KeysPressed['O'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_P)) {
+        if (R_SHIFT) {
+            KeysPressed['p'] = true;
+        }
+        else {
+            KeysPressed['P'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_A)) {
+        if (R_SHIFT) {
+            KeysPressed['a'] = true;
+        }
+        else {
+            KeysPressed['A'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_S)) {
+        if (R_SHIFT) {
+            KeysPressed['s'] = true;
+        }
+        else {
+            KeysPressed['S'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_D)) {
+        if (R_SHIFT) {
+            KeysPressed['d'] = true;
+        }
+        else {
+            KeysPressed['D'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_F)) {
+        if (R_SHIFT) {
+            KeysPressed['f'] = true;
+        }
+        else {
+            KeysPressed['F'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_G)) {
+        if (R_SHIFT) {
+            KeysPressed['g'] = true;
+        }
+        else {
+            KeysPressed['G'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_H)) {
+        if (R_SHIFT) {
+            KeysPressed['h'] = true;
+        }
+        else {
+            KeysPressed['H'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_J)) {
+        if (R_SHIFT) {
+            KeysPressed['j'] = true;
+        }
+        else {
+            KeysPressed['J'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_K)) {
+        if (R_SHIFT) {
+            KeysPressed['k'] = true;
+        }
+        else {
+            KeysPressed['K'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_L)) {
+        if (R_SHIFT) {
+            KeysPressed['l'] = true;
+        }
+        else {
+            KeysPressed['L'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_Z)) {
+        if (R_SHIFT) {
+            KeysPressed['z'] = true;
+        }
+        else {
+            KeysPressed['Z'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_X)) {
+        if (R_SHIFT) {
+            KeysPressed['x'] = true;
+        }
+        else {
+            KeysPressed['X'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_C)) {
+        if (R_SHIFT) {
+            KeysPressed['c'] = true;
+        }
+        else {
+            KeysPressed['C'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_V)) {
+        if (R_SHIFT) {
+            KeysPressed['v'] = true;
+        }
+        else {
+            KeysPressed['V'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_B)) {
+        if (R_SHIFT) {
+            KeysPressed['b'] = true;
+        }
+        else {
+            KeysPressed['B'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_N)) {
+        if (R_SHIFT) {
+            KeysPressed['n'] = true;
+        }
+        else {
+            KeysPressed['N'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_M)) {
+        if (R_SHIFT) {
+            KeysPressed['m'] = true;
+        }
+        else {
+            KeysPressed['M'] = true;
+        }
+    }
+    if (TestForKeyInputs(GLFW_KEY_SPACE)) {
+        KeysPressed[' '] = true;
+    }
 }
