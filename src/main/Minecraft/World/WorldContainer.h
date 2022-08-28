@@ -5,6 +5,7 @@
 #include "../../utils/MathHelper.h"
 #include "../../utils/Clock.h"
 #include "../../utils/LogUtils.h"
+#include "../../Utils/MutithreadedData.h"
 #include "Entity/Entity.h"
 #include <vector>
 #include <algorithm>
@@ -39,7 +40,7 @@ public:
     void JoinWorld(std::string PlayerNmae, Entity* PlayerAddress);
     void LeaveWorld();
 
-    std::unordered_map<CHUNK_ID, Chunk> ChunkMapLoaded;
+    AsyncHashMap<CHUNK_ID, Chunk> ChunkMapLoaded;
 protected:
 
     void AddWorldGenWorker();
@@ -52,25 +53,20 @@ protected:
     void UpdatePlayerPosition(int Player_ID, int x, int y, int z);
     int JoinWorld(std::string name);
 
-    std::deque<glm::ivec3> ChunkLoadQueue;
+    AsyncVector<glm::ivec3> ChunkLoadQueue;
 
-    std::unordered_map<long long int, std::string> PlayerList;
-    std::unordered_map<long long int, Entity*> EntityList; 
+    AsyncHashMap<long long int, std::string> PlayerList;
+    AsyncHashMap<long long int, Entity*> EntityList;
 
-    std::unordered_map<long long int, Chunk> ClientChunkToUpdate;
+    AsyncHashMap<long long int, Chunk> ClientChunkToUpdate;
 private:
     void WorldGenerator();
 
-    //bool GenQueueBusy = false;
-    //bool ChunkStorageBusy = false;
-
-    std::mutex ChunkStorageMutex;
-    std::mutex ChunkGenQueueMutex;
     
-    std::unordered_map<CHUNK_ID, Chunk> ChunkMapStore;
-    std::unordered_map<CHUNK_ID, bool> ChunkProcessing;
+    AsyncHashMap<CHUNK_ID, Chunk> ChunkMapStore;
+    AsyncHashMap<CHUNK_ID, bool> ChunkProcessing;
 
-    std::deque<glm::vec3> ChunkGenQueue;
+    AsyncDeque<glm::vec3> ChunkGenQueue;
 
     std::vector<std::thread> WorldGenWorkers;
 

@@ -27,5 +27,6 @@ private:
 
 	bool FirstPersonMode = false;
 
+	World TestWorld;
 	IGUI GUI;
 };

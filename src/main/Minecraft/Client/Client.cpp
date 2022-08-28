@@ -1,4 +1,5 @@
 #include "Client.h"
+#include "../World/World.h"
 
 #define EVENT_NULL 0x0000
 #define EVENT_START_INTEGRATED_SERVER 0x0001 //start single player world
@@ -12,6 +13,10 @@ void Client::Initialize() {
 	
 	GUI.init(getWindow(), &ClientEvents);
     GUI.update();
+
+    
+    TestWorld.Initialize();
+    TestWorld.StartGenThreads(4);
 
 	ClientLoop();
 

@@ -7,40 +7,38 @@ void WorldContainer::LoadChunk(int x, int y, int z) {
 	CHUNK_ID ChunkID = getChunkID(x, y, z);
 
 	if (CheckChunkIsStored(x,y,z)) { // Check is chunk is stored
-		ChunkMapLoaded[ChunkID] = ChunkMapStore[ChunkID]; // Copy Chunk To Loaded Cache
-		ChunkMapLoaded[ChunkID].clearNeighbors();
+		ChunkMapLoaded.insert(ChunkID, ChunkMapStore.get(ChunkID)); // Copy Chunk To Loaded Cache
+		ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::clearNeighbors);
 		if (ChunkMapLoaded.count(getChunkID(x, y + 1, z))) {
-			ChunkMapLoaded[getChunkID(x, y + 1, z)].setNeighborNY(&ChunkMapLoaded[getChunkID(x, y, z)]);
-			ChunkMapLoaded[getChunkID(x, y, z)].setNeighborPY(&ChunkMapLoaded[getChunkID(x, y + 1, z)]);
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y + 1, z), &Chunk::setNeighborNY, ChunkMapLoaded.getAddress(getChunkID(x, y, z)));
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z), &Chunk::setNeighborPY,ChunkMapLoaded.getAddress(getChunkID(x, y + 1, z)));
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y - 1, z))) {
-			ChunkMapLoaded[getChunkID(x, y - 1, z)].setNeighborPY(&ChunkMapLoaded[getChunkID(x, y, z)]);
-			ChunkMapLoaded[getChunkID(x, y, z)].setNeighborNY(&ChunkMapLoaded[getChunkID(x, y - 1, z)]);
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y - 1, z), &Chunk::setNeighborPY,ChunkMapLoaded.getAddress(getChunkID(x, y, z)));
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z), &Chunk::setNeighborNY,ChunkMapLoaded.getAddress(getChunkID(x, y - 1, z)));
 		}
 		if (ChunkMapLoaded.count(getChunkID(x + 1, y, z))) {
-			ChunkMapLoaded[getChunkID(x + 1, y, z)].setNeighborNX(&ChunkMapLoaded[getChunkID(x, y, z)]);
-			ChunkMapLoaded[getChunkID(x, y, z)].setNeighborPX(&ChunkMapLoaded[getChunkID(x + 1, y, z)]);
+			ChunkMapLoaded.RunObjFunction(getChunkID(x + 1, y, z), &Chunk::setNeighborNX,ChunkMapLoaded.getAddress(getChunkID(x, y, z)));
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z), &Chunk::setNeighborPX,ChunkMapLoaded.getAddress(getChunkID(x + 1, y, z)));
 		}
 		if (ChunkMapLoaded.count(getChunkID(x - 1, y, z))) {
-			ChunkMapLoaded[getChunkID(x - 1, y, z)].setNeighborPX(&ChunkMapLoaded[getChunkID(x, y, z)]);
-			ChunkMapLoaded[getChunkID(x, y, z)].setNeighborNX(&ChunkMapLoaded[getChunkID(x - 1, y, z)]);
+			ChunkMapLoaded.RunObjFunction(getChunkID(x - 1, y, z), &Chunk::setNeighborPX,ChunkMapLoaded.getAddress(getChunkID(x, y, z)));
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z), &Chunk::setNeighborNX,ChunkMapLoaded.getAddress(getChunkID(x - 1, y, z)));
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y, z + 1))) {
-			ChunkMapLoaded[getChunkID(x, y, z + 1)].setNeighborNZ(&ChunkMapLoaded[getChunkID(x, y, z)]);
-			ChunkMapLoaded[getChunkID(x, y, z)].setNeighborPZ(&ChunkMapLoaded[getChunkID(x, y, z + 1)]);
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z + 1), &Chunk::setNeighborNZ,ChunkMapLoaded.getAddress(getChunkID(x, y, z)));
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z), &Chunk::setNeighborPZ,ChunkMapLoaded.getAddress(getChunkID(x, y, z + 1)));
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y, z - 1))) {
-			ChunkMapLoaded[getChunkID(x, y, z - 1)].setNeighborPZ(&ChunkMapLoaded[getChunkID(x, y, z)]);
-			ChunkMapLoaded[getChunkID(x, y, z)].setNeighborNZ(&ChunkMapLoaded[getChunkID(x, y, z - 1)]);
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z - 1), &Chunk::setNeighborPZ,ChunkMapLoaded.getAddress(getChunkID(x, y, z)));
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z), &Chunk::setNeighborNZ,ChunkMapLoaded.getAddress(getChunkID(x, y, z - 1)));
 		}
 		return;
 	} 
-	ChunkGenQueueMutex.lock();
 	if (!ChunkProcessing.count(getChunkID(x, y, z))) {
 		ChunkGenQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to gen queue
-		ChunkProcessing[getChunkID(x, y, z)] = true;
+		ChunkProcessing.insert(getChunkID(x, y, z), true);
 	}
-	ChunkGenQueueMutex.unlock();
 	ChunkLoadQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to load queue
 }
 
@@ -55,35 +53,29 @@ void WorldContainer::UnloadChunk(int x, int y, int z) {
 	if (CheckChunkIsLoaded(x, y, z)) { // Check is chunk is loaded
 		ChunkMapLoaded.erase(getChunkID(x, y, z));
 		if (ChunkMapLoaded.count(getChunkID(x, y + 1, z))) {
-			ChunkMapLoaded[getChunkID(x, y + 1, z)].setNeighborNY(nullptr);
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y + 1, z), &Chunk::setNeighborNY, nullptr);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y - 1, z))) {
-			ChunkMapLoaded[getChunkID(x, y - 1, z)].setNeighborPY(nullptr);
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y - 1, z), &Chunk::setNeighborPY,nullptr);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x + 1, y, z))) {
-			ChunkMapLoaded[getChunkID(x + 1, y, z)].setNeighborNX(nullptr);
+			ChunkMapLoaded.RunObjFunction(getChunkID(x + 1, y, z), &Chunk::setNeighborNX,nullptr);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x - 1, y, z))) {
-			ChunkMapLoaded[getChunkID(x - 1, y, z)].setNeighborPX(nullptr);
+			ChunkMapLoaded.RunObjFunction(getChunkID(x - 1, y, z), &Chunk::setNeighborPX,nullptr);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y, z + 1))) {
-			ChunkMapLoaded[getChunkID(x, y, z + 1)].setNeighborNZ(nullptr);
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z + 1), &Chunk::setNeighborNZ,nullptr);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y, z - 1))) {
-			ChunkMapLoaded[getChunkID(x, y, z - 1)].setNeighborPZ(nullptr);
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z - 1), &Chunk::setNeighborPZ,nullptr);
 		}
 	}
 }
 
 bool WorldContainer::CheckChunkIsStored(int x, int y, int z) {
-	ChunkStorageMutex.lock();
-	if (ChunkMapStore.count(getChunkID(x, y, z)) == true) {
-		ChunkStorageMutex.unlock();
+	if (ChunkMapStore.count(getChunkID(x, y, z)) == true)
 		return true;
-		
-	}
-
-	ChunkStorageMutex.unlock();
 	return false;
 }
 
@@ -99,9 +91,6 @@ void WorldContainer::AddWorldGenWorker() {
 void WorldContainer::DeleteWorldGenWorker() {
 
 }
-//void WorldContainer::Initialize() {
-////	WorldGenWorkers.resize(127); // Max workers amount
-//}
 
 void WorldContainer::WorldGenerator() {
 
@@ -114,51 +103,36 @@ void WorldContainer::WorldGenerator() {
 			std::this_thread::sleep_for(std::chrono::milliseconds(12));
 		}
 
-		ChunkGenQueueMutex.lock();
-		ChunkPos = ChunkGenQueue.front();
-		ChunkGenQueue.pop_front();
-		ChunkGenQueueMutex.unlock();
+		ChunkPos = ChunkGenQueue.pop_get_front();
 
 		Chunk chunk;
 		chunk.pos = ChunkPos;
 		chunk.gen_chunk(&noise);
 		WriteChunkMapStore(chunk);
 
-		ChunkGenQueueMutex.lock();
 		ChunkProcessing.erase(getChunkID(ChunkPos));
-		ChunkGenQueueMutex.unlock();
 	}
 }
 
 void WorldContainer::WriteChunkMapStore(Chunk chunk) {
-	//while (ChunkStorageBusy) {}
-
-	ChunkStorageMutex.lock();
-
-	ChunkMapStore[getChunkID(chunk.pos)] = chunk;
-
-	ChunkStorageMutex.unlock();
+	ChunkMapStore.insert(getChunkID(chunk.pos), chunk);
 }
 
 Chunk WorldContainer::ReadChunkMapStore(int x, int y, int z) {
-	//while (ChunkStorageBusy) {}
-
-	Chunk chunk;
-
-	ChunkStorageMutex.lock();
-
-	chunk = ChunkMapStore[getChunkID(x, y, z)];
-
-	ChunkStorageMutex.unlock();
-	return chunk;
+	return ChunkMapStore.get(getChunkID(x, y, z));
 
 }
+
+
 
 void WorldContainer::UpdatePlayerPosition(int Player_ID, int x, int y, int z) {
-	EntityList[Player_ID]->PosX = x;
-	EntityList[Player_ID]->PosX = y;
-	EntityList[Player_ID]->PosX = z;
+
+	EntityList.ChangeObjMember(Player_ID, &Entity::PosX, x);
+	EntityList.ChangeObjMember(Player_ID, &Entity::PosY, y);
+	EntityList.ChangeObjMember(Player_ID, &Entity::PosZ, z);
+
 }
+
 
 int WorldContainer::JoinWorld(std::string name) {
 	Entity* PLAYER = new Player;
@@ -166,11 +140,12 @@ int WorldContainer::JoinWorld(std::string name) {
 	PLAYER->PosY = 100;
 	PLAYER->PosZ = 0;
 	PLAYER->EntityID = getID();
-	PlayerList[PLAYER->EntityID] = name;
+	PlayerList.insert(PLAYER->EntityID, name);
 	AddEntity(PLAYER);
 	return PLAYER->EntityID;
 }
 
 void WorldContainer::AddEntity(Entity* Entity) {
-	EntityList[Entity->EntityID] = Entity
+	EntityList.insert(Entity->EntityID, Entity);
 }
+
