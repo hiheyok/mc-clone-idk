@@ -7,7 +7,6 @@ public:
 	const unsigned int TPS = 20;
 
 	World() {
-		StartGenThreads(4);
 	}
 	void Initialize();
 

@@ -100,7 +100,7 @@ void WorldContainer::WorldGenerator() {
 	
 	while (true) {
 		while (ChunkGenQueue.empty()) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(12));
+			std::this_thread::sleep_for(std::chrono::milliseconds(12)); //testt
 		}
 
 		ChunkPos = ChunkGenQueue.pop_get_front();
@@ -127,9 +127,9 @@ Chunk WorldContainer::ReadChunkMapStore(int x, int y, int z) {
 
 void WorldContainer::UpdatePlayerPosition(int Player_ID, int x, int y, int z) {
 
-	EntityList.ChangeObjMember(Player_ID, &Entity::PosX, x);
-	EntityList.ChangeObjMember(Player_ID, &Entity::PosY, y);
-	EntityList.ChangeObjMember(Player_ID, &Entity::PosZ, z);
+	EntityList.ChangeObjMember(Player_ID, &Entity::PosX, (double)x);
+	EntityList.ChangeObjMember(Player_ID, &Entity::PosY, (double)y);
+	EntityList.ChangeObjMember(Player_ID, &Entity::PosZ, (double)z);
 
 }
 
@@ -141,11 +141,11 @@ int WorldContainer::JoinWorld(std::string name) {
 	PLAYER->PosZ = 0;
 	PLAYER->EntityID = getID();
 	PlayerList.insert(PLAYER->EntityID, name);
-	AddEntity(PLAYER);
+	AddEntity(*PLAYER);
 	return PLAYER->EntityID;
 }
 
-void WorldContainer::AddEntity(Entity* Entity) {
-	EntityList.insert(Entity->EntityID, Entity);
+void WorldContainer::AddEntity(Entity Entity) {
+	EntityList.insert(Entity.EntityID, Entity);
 }
 

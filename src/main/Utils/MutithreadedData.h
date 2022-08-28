@@ -4,7 +4,7 @@
 #include <list>
 #include <mutex>
 
-template <typename Hasher, typename Object> class AsyncHashMap {
+template <typename Hasher, typename Object> class AsyncHashMapClass {
 public:std::unordered_map<Hasher, Object> HashMap;
 
 	  bool count(Hasher Hash) {
@@ -33,15 +33,60 @@ public:std::unordered_map<Hasher, Object> HashMap;
 		  return &HashMap[Hash];
 	  }
 
-	  template <typename Val, class... Args> void  RunObjFunction(Hasher Hash, Val Object::* Function, Args... args) { //pp
+	  template <typename Val, class... Args> void RunObjFunction(Hasher Hash, Val Object::* Function, Args... args) {
 		  Mut.lock();
 		  (&HashMap[Hash]->*Function)(args...);
 		  Mut.unlock();
 	  }
 
-	  template <typename Val> void ChangeObjMember(Hasher Hash, Val Object::* Member, Val Value) { //took me so long to make this
+	  template <typename Val> void ChangeObjMember(Hasher Hash, Val Object::* Member, Val Value) {
 		  Mut.lock();
 		  HashMap[Hash].*Member = Value;
+		  Mut.unlock();
+	  }
+
+	  void insert(Hasher Hash, Object Obj) {
+		  Mut.lock();
+		  HashMap[Hash] = Obj;
+		  Mut.unlock();
+	  }
+
+private:
+	std::mutex Mut;
+};
+
+template <typename Hasher, typename Object> class AsyncHashMapNonClass {
+public:std::unordered_map<Hasher, Object> HashMap;
+
+	  bool count(Hasher Hash) {
+		  bool out = false;
+		  Mut.lock();
+		  out = HashMap.count(Hash);
+		  Mut.unlock();
+		  return out;
+	  }
+
+	  void erase(Hasher Hash) {
+		  Mut.lock();
+		  HashMap.erase(Hash);
+		  Mut.unlock();
+	  }
+
+	  Object get(Hasher Hash) {
+		  Object Obj;
+		  Mut.lock();
+		  Obj = HashMap[Hash];
+		  Mut.unlock();
+		  return Obj;
+	  }
+
+	  Object* getAddress(Hasher Hash) {
+		  return &HashMap[Hash];
+	  }
+
+	  template <typename Val> void ChangeObjMember(Hasher Hash, Val Value) { //took me so long to make this
+		  Mut.lock();
+		  HashMap[Hash] = Value;
 		  Mut.unlock();
 	  }
 
@@ -181,12 +226,6 @@ public:std::vector<Object> Vector;
 	void pop_back() {
 		Mut.lock();
 		Vector.push_back();
-		Mut.unlock();
-	}
-
-	void pop_front() {
-		Mut.lock();
-		Vector.pop_front();
 		Mut.unlock();
 	}
 

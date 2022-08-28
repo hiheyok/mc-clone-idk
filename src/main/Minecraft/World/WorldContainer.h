@@ -40,7 +40,7 @@ public:
     void JoinWorld(std::string PlayerNmae, Entity* PlayerAddress);
     void LeaveWorld();
 
-    AsyncHashMap<CHUNK_ID, Chunk> ChunkMapLoaded;
+    AsyncHashMapClass<CHUNK_ID, Chunk> ChunkMapLoaded;
 protected:
 
     void AddWorldGenWorker();
@@ -49,26 +49,26 @@ protected:
     void DoQueuedTasks();
     void SaveWorld(); //dump loaded data to store map
 
-    void AddEntity(Entity* Entity);
+    void AddEntity(Entity Entity);
     void UpdatePlayerPosition(int Player_ID, int x, int y, int z);
     int JoinWorld(std::string name);
 
-    AsyncVector<glm::ivec3> ChunkLoadQueue;
+    AsyncDeque<glm::ivec3> ChunkLoadQueue;
 
-    AsyncHashMap<long long int, std::string> PlayerList;
-    AsyncHashMap<long long int, Entity*> EntityList;
+    AsyncHashMapNonClass<long long int, std::string> PlayerList;
+    AsyncHashMapClass<long long int, Entity> EntityList;
 
-    AsyncHashMap<long long int, Chunk> ClientChunkToUpdate;
+    AsyncHashMapClass<long long int, Chunk> ClientChunkToUpdate;
 private:
     void WorldGenerator();
 
     
-    AsyncHashMap<CHUNK_ID, Chunk> ChunkMapStore;
-    AsyncHashMap<CHUNK_ID, bool> ChunkProcessing;
+    AsyncHashMapClass<CHUNK_ID, Chunk> ChunkMapStore;
+    AsyncHashMapNonClass<CHUNK_ID, bool> ChunkProcessing;
 
     AsyncDeque<glm::vec3> ChunkGenQueue;
 
-    std::vector<std::thread> WorldGenWorkers;
+    std::deque<std::thread> WorldGenWorkers;
 
     FastNoiseLite noise;
 };
