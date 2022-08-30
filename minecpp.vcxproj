@@ -126,6 +126,9 @@
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,10 +147,11 @@
       <ConformanceMode>true</ConformanceMode>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointModel>Fast</FloatingPointModel>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -161,6 +165,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main\Minecraft\Client\Client.cpp" />
+    <ClCompile Include="src\main\Minecraft\Client\ClientWorld\ClientWorld.cpp" />
     <ClCompile Include="src\main\Minecraft\Client\Renderer\PlayerFOV.cpp" />
     <ClCompile Include="src\main\Minecraft\Core.cpp" />
     <ClCompile Include="src\main\Minecraft\Core\Registry.cpp" />
@@ -200,6 +205,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main\Minecraft\Client\Client.h" />
+    <ClInclude Include="src\main\Minecraft\Client\ClientWorld\ClientWorld.h" />
     <ClInclude Include="src\main\Minecraft\Client\Renderer\PlayerFOV.h" />
     <ClInclude Include="src\main\Minecraft\Client\WorldMGR\WorldMGR.h" />
     <ClInclude Include="src\main\Minecraft\Core.h" />
@@ -230,6 +236,7 @@
     <ClInclude Include="src\main\Utils\Clock.h" />
     <ClInclude Include="src\main\Utils\LogUtils.h" />
     <ClInclude Include="src\main\Utils\MathHelper.h" />
+    <ClInclude Include="src\main\Utils\MutithreadedData.h" />
     <ClInclude Include="src\main\Utils\NumGen.h" />
   </ItemGroup>
   <ItemGroup>

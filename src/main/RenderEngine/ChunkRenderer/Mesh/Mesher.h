@@ -46,6 +46,16 @@ BIT_OFFSET		TYPE			SIZE
 20				L3				4
 */
 
+
+struct ChunkVerticesData {
+	std::vector<unsigned int> TransparentVertices;
+	std::vector<unsigned int> SolidVertices;
+	int x = 0;
+	int y = 0;
+	int z = 0;
+
+};
+
 struct BlockVerticesData {
 	unsigned int Vdata[6]{};
 	Block data;

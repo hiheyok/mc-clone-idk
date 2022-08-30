@@ -10,28 +10,28 @@ void WorldContainer::LoadChunk(int x, int y, int z) {
 		ChunkMapLoaded.insert(ChunkID, ChunkMapStore.get(ChunkID)); // Copy Chunk To Loaded Cache
 		ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::clearNeighbors);
 		if (ChunkMapLoaded.count(getChunkID(x, y + 1, z))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y + 1, z), &Chunk::setNeighborNY, ChunkMapLoaded.getAddress(getChunkID(x, y, z)));
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z), &Chunk::setNeighborPY,ChunkMapLoaded.getAddress(getChunkID(x, y + 1, z)));
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y + 1, z), &Chunk::setNeighborNY, ChunkMapLoaded.getAddress(ChunkID));
+			ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::setNeighborPY,ChunkMapLoaded.getAddress(getChunkID(x, y + 1, z)));
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y - 1, z))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y - 1, z), &Chunk::setNeighborPY,ChunkMapLoaded.getAddress(getChunkID(x, y, z)));
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z), &Chunk::setNeighborNY,ChunkMapLoaded.getAddress(getChunkID(x, y - 1, z)));
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y - 1, z), &Chunk::setNeighborPY,ChunkMapLoaded.getAddress(ChunkID));
+			ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::setNeighborNY,ChunkMapLoaded.getAddress(getChunkID(x, y - 1, z)));
 		}
 		if (ChunkMapLoaded.count(getChunkID(x + 1, y, z))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x + 1, y, z), &Chunk::setNeighborNX,ChunkMapLoaded.getAddress(getChunkID(x, y, z)));
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z), &Chunk::setNeighborPX,ChunkMapLoaded.getAddress(getChunkID(x + 1, y, z)));
+			ChunkMapLoaded.RunObjFunction(getChunkID(x + 1, y, z), &Chunk::setNeighborNX,ChunkMapLoaded.getAddress(ChunkID));
+			ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::setNeighborPX,ChunkMapLoaded.getAddress(getChunkID(x + 1, y, z)));
 		}
 		if (ChunkMapLoaded.count(getChunkID(x - 1, y, z))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x - 1, y, z), &Chunk::setNeighborPX,ChunkMapLoaded.getAddress(getChunkID(x, y, z)));
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z), &Chunk::setNeighborNX,ChunkMapLoaded.getAddress(getChunkID(x - 1, y, z)));
+			ChunkMapLoaded.RunObjFunction(getChunkID(x - 1, y, z), &Chunk::setNeighborPX,ChunkMapLoaded.getAddress(ChunkID));
+			ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::setNeighborNX,ChunkMapLoaded.getAddress(getChunkID(x - 1, y, z)));
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y, z + 1))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z + 1), &Chunk::setNeighborNZ,ChunkMapLoaded.getAddress(getChunkID(x, y, z)));
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z), &Chunk::setNeighborPZ,ChunkMapLoaded.getAddress(getChunkID(x, y, z + 1)));
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z + 1), &Chunk::setNeighborNZ,ChunkMapLoaded.getAddress(ChunkID));
+			ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::setNeighborPZ,ChunkMapLoaded.getAddress(getChunkID(x, y, z + 1)));
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y, z - 1))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z - 1), &Chunk::setNeighborPZ,ChunkMapLoaded.getAddress(getChunkID(x, y, z)));
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z), &Chunk::setNeighborNZ,ChunkMapLoaded.getAddress(getChunkID(x, y, z - 1)));
+			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z - 1), &Chunk::setNeighborPZ,ChunkMapLoaded.getAddress(ChunkID));
+			ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::setNeighborNZ,ChunkMapLoaded.getAddress(getChunkID(x, y, z - 1)));
 		}
 		return;
 	} 

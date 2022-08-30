@@ -93,6 +93,9 @@
     <ClCompile Include="src\main\Minecraft\World\Entity\EntityType.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\main\Minecraft\Client\ClientWorld\ClientWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\vert.glsl">
@@ -207,6 +210,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\main\Minecraft\Client\WorldMGR\WorldMGR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\Client\ClientWorld\ClientWorld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Utils\MutithreadedData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

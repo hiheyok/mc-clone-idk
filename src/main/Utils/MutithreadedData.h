@@ -39,6 +39,13 @@ public:std::unordered_map<Hasher, Object> HashMap;
 		  Mut.unlock();
 	  }
 
+	  template <typename Val, class... Args> void RunObjFunctionReturn(Hasher Hash, Val Object::* Function,Val* ReturnAddress Args... args) {
+		  Mut.lock();
+		  *ReturnAddress = (&HashMap[Hash]->*Function)(args...);
+		  Mut.unlock();
+		  return Obj;
+	  }
+
 	  template <typename Val> void ChangeObjMember(Hasher Hash, Val Object::* Member, Val Value) {
 		  Mut.lock();
 		  HashMap[Hash].*Member = Value;

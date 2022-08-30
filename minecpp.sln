@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MinecraftClone", "minecpp.vcxproj", "{025E0967-6CE7-44BB-9834-64094C29CD5D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MC CLONE", "minecpp.vcxproj", "{025E0967-6CE7-44BB-9834-64094C29CD5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
