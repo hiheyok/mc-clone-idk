@@ -71,19 +71,10 @@ public:
 	void add(int x, int y, int z, char B_ID, unsigned int L0_, unsigned int L1_, unsigned int L2_, unsigned int L3_, char side);
 };
 
-struct ChunkMeshVertexData {
-	std::vector<unsigned int> vertices;
-	std::vector<unsigned int> transparentVertices;
-	glm::ivec3 pos;
-};
-
 class ChunkMesh {
 public:
 
-	ChunkMesh() {
-	}
-
-	Chunk* chunk;
+	Chunk* chunk = nullptr;
 
 	void SmartGreedyMeshing();
 

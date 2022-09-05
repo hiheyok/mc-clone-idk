@@ -24,8 +24,6 @@ constexpr auto CHUNK_SIZE_3 = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
 
 #define GENERATED true
 
-
-
 #include <vector>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -33,7 +31,6 @@ constexpr auto CHUNK_SIZE_3 = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
 #include <string>
 #include <fstream>
 #include "../../../../utils/FastNoiseLite.h"
-#include "../../../../RenderEngine/ChunkRenderer/Mesh/Mesher.h"
 
 
 unsigned int extractBlockData(char type, unsigned int data);
@@ -164,18 +161,7 @@ public:
 		return neighbors[5];
 	}
 
-	ChunkVerticesData getVertices() {
-		ChunkMesh mesh;
-		mesh.chunk = this;
-		mesh.SmartGreedyMeshing();
-		ChunkVerticesData Vertices;
-		Vertices.SolidVertices = mesh.vertices;
-		Vertices.TransparentVertices = mesh.transparentVertices;
-		Vertices.x = pos.x;
-		Vertices.y = pos.y;
-		Vertices.z = pos.z;
-		return Vertices;
-	}
+	
 
 	void clearNeighbors() {
 		neighborsSet = false;

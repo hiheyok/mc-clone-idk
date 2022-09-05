@@ -126,7 +126,6 @@ public:
             Zoom = 70.0f;
     }
 
-private:
     // calculates the front vector from the Camera's (updated) Euler Angles
     void updateCameraVectors()
     {
@@ -140,6 +139,9 @@ private:
         Right = glm::normalize(glm::cross(Front, WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
         Up = glm::normalize(glm::cross(Right, Front));
     }
+
+private:
+    
 };
 
 #endif CAMERA_H

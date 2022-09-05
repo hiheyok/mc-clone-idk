@@ -3,7 +3,7 @@
 #include "../../World/Level/Chunk/Chunk.h"
 #include "../../../Utils/MutithreadedData.h"
 
-#include <deque>`
+#include <deque>
 #include <unordered_map>
 #include <thread>
 #include "../../World/Entity/Entities/Player.h"
@@ -16,30 +16,32 @@ public:
 
 	void AddChunkServer(Chunk chunk);
 	void ClientWorldMainLoop();
-	void Start();
-	void UpdatePlayer(double delta);  //update player stuff pos rot 
+	void Start(GLFWwindow* window_);
+	void UpdatePlayer(double delta, std::unordered_map<char, bool> Keys);  //update player stuff pos rot 
 	void Render();
+	void PrepareRenderer();
 
 	double MouseSens = 1.0;
 
 private:
 	
-	void PrepareRenderer();
+	void DumpRenderQueuedData();
+	
 	void AddChunkToRenderQueue(Chunk chunk);
 	void UpdateChunks();
 
-	Entity* player;
+	ChunkRenderer* TerrrainRenderer = nullptr;
+	Entity* player = nullptr;
 	Camera camera;
 
 	AsyncDeque<Chunk> ChunkAddQueue;
 //	AsyncDeque<???> BlockUpdates; //Work on later
 	AsyncHashMapClass<CHUNK_ID, Chunk> ChunkCache;
-	AsyncHashMapClass<CHUNK_ID, mesher> RenderChunkUpdateQueue;
+	AsyncHashMapClass<CHUNK_ID, Chunk> RenderChunkUpdateQueue;
 
 	bool stop = false;
 
 	std::thread ClientWorldThread;
 
-	std::unordered_map<char, bool> KeysInputs;
 	glm::vec2 MouseMovement = glm::vec2(0.0,0.0);
 };

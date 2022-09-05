@@ -6,9 +6,9 @@
 #include "../Camera/camera.h"
 #include "../frustum/frustum.h"
 #include "../OpenGL/shader/shader.h"
-
+#include "../OpenGL/Texture/texture.h"
 #include "../../Utils/MathHelper.h"
-#include "../OpenGL/Texture/stb_image.h"
+#include "../../Utils/MutithreadedData.h"
 #include <unordered_map>
 #include <deque>
 #include <queue>
@@ -21,7 +21,7 @@ struct DrawArraysIndirectCommand {
 };
 
 struct ChunkRenderDataBufferAddress {
-	int offset = 0;
+	size_t offset = 0;
 	size_t size = 0;
 	int x = 0;
 	int y = 0;
@@ -32,10 +32,6 @@ struct ChunkRenderDataBufferAddress {
 class ChunkRenderer {
 
 public:
-	ChunkRenderer() {
-
-
-	}
 
 	void init(GLFWwindow* window_, Camera* camera_) {
 
@@ -71,9 +67,11 @@ public:
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, GPUSSBOMAXSIZE, nullptr, GL_DYNAMIC_COPY);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+		ReloadAssets();
 	}
 
-	void DeleteChunk(long long int ChunkID) {
+	void _DeleteChunk(long long int ChunkID) {
 		for (int i = 0; i < ChunkRenderListSolid.size(); i++) {
 			if (getChunkID(ChunkRenderListSolid[i].x, ChunkRenderListSolid[i].y, ChunkRenderListSolid[i].z) == ChunkID) {
 				MeshList[ChunkID] = false;
@@ -85,47 +83,42 @@ public:
 		}
 	}
 
-	void AddChunk(ChunkMesh* mesh) {
+	void _AddChunk(ChunkVerticesData data) {
 
-		long long int ChunkID = getChunkID(mesh->pos);
+		long long int ChunkID = getChunkID(data.x, data.y, data.z);
 
-		/*if (chunk.isEmpty()) {
-			return;
-		}*/
+		size_t MeshSizeSolid = data.SolidVertices.size() * sizeof(unsigned int);
+		size_t MeshSizeTransparent = data.TransparentVertices.size() * sizeof(unsigned int);
 
-
-		size_t MeshSizeSolid = mesh->vertices.size() * sizeof(unsigned int);
-		size_t MeshSizeTransparent = mesh->transparentVertices.size() * sizeof(unsigned int);
-
-		if (mesh->vertices.size() == 0) {
-			MeshList[getChunkID(mesh->pos)] = true;
+		if (MeshSizeSolid == 0) {
+			MeshList[ChunkID] = true;
 			//std::cout << "ERROR: No data " << mesh->pos.x << ", " << mesh->pos.y << ", " << mesh->pos.z << "\n";
 	//		delete mesh;
 			return;
 		}
 
 		ChunkRenderDataBufferAddress renderdata;
-		renderdata.x = mesh->pos.x;
-		renderdata.y = mesh->pos.y;
-		renderdata.z = mesh->pos.z;
+		renderdata.x = data.x;
+		renderdata.y = data.y;
+		renderdata.z = data.z;
 
 		if (ChunkRenderListSolid.size() == 0) {
 			renderdata.offset = 0;
 			renderdata.size = MeshSizeSolid;
-			insertData(VBO, GL_ARRAY_BUFFER, renderdata.offset, &mesh->vertices);
+			insertData(VBO, GL_ARRAY_BUFFER, renderdata.offset, &data.SolidVertices);
 			ChunkRenderListSolid.insert(ChunkRenderListSolid.begin(), renderdata);
-			MeshList[getChunkID(mesh->pos)] = true;
-			ChunkRenderListSolidOffsetLookup[getChunkID(mesh->pos)] = 0;
+			MeshList[ChunkID] = true;
+			ChunkRenderListSolidOffsetLookup[ChunkID] = 0;
 			//	std::cout << "[ Info ]: Added Chunk: " << mesh->cpos.x << ", " << mesh->cpos.y << ", " << mesh->cpos.z << "\n";
 		}
 		else {
 			if (ChunkRenderListSolid.back().offset + ChunkRenderListSolid.back().size + MeshSizeSolid < GPUBufferSizeSolid) {
 				renderdata.offset = ChunkRenderListSolid.back().offset + ChunkRenderListSolid.back().size;
 				renderdata.size = MeshSizeSolid;
-				insertData(VBO, GL_ARRAY_BUFFER, renderdata.offset, &mesh->vertices);
+				insertData(VBO, GL_ARRAY_BUFFER, renderdata.offset, &data.SolidVertices);
 				ChunkRenderListSolid.emplace_back(renderdata);
-				MeshList[getChunkID(mesh->pos)] = true;
-				ChunkRenderListSolidOffsetLookup[getChunkID(mesh->pos)] = ChunkRenderListSolid.size() - 1;
+				MeshList[ChunkID] = true;
+				ChunkRenderListSolidOffsetLookup[ChunkID] = ChunkRenderListSolid.size() - 1;
 			}
 			else {
 				bool added = false;
@@ -133,17 +126,17 @@ public:
 					if (ChunkRenderListSolid[i].offset + ChunkRenderListSolid[i].size + MeshSizeSolid < ChunkRenderListSolid[i + 1].offset) {
 						renderdata.offset = ChunkRenderListSolid[i].offset + ChunkRenderListSolid[i].size;
 						renderdata.size = MeshSizeSolid;
-						insertData(VBO, GL_ARRAY_BUFFER, renderdata.offset, &mesh->vertices);
+						insertData(VBO, GL_ARRAY_BUFFER, renderdata.offset, &data.SolidVertices);
 						ChunkRenderListSolid.insert(ChunkRenderListSolid.begin() + i + 1, renderdata);
-						MeshList[getChunkID(mesh->pos)] = true;
-						ChunkRenderListSolidOffsetLookup[getChunkID(mesh->pos)] = i;
+						MeshList[ChunkID] = true;
+						ChunkRenderListSolidOffsetLookup[ChunkID] = i;
 						added = true;
 						//std::cout << "[ Info ]: Added Chunk: " << mesh->cpos.x << ", " << mesh->cpos.y << ", " << mesh->cpos.z << "\n";
 						break;
 					}
 				}
 				if (added == false) {
-					std::cout << "ERROR (GPU): Out of memory\n";
+					getLogger()->LogError("Chunk Renderer","GPU Out of Memory");
 				}
 			}
 		}
@@ -158,8 +151,8 @@ public:
 
 		SpreadCache.clear();
 
-		const int SBSize = rd * 2 + 1;
-		const int SBSize2x = SBSize * SBSize;
+		const unsigned int SBSize = rd * 2 + 1;
+		const unsigned int SBSize2x = SBSize * SBSize;
 
 		spread.resize(SBSize * SBSize * SBSize);
 
@@ -269,9 +262,9 @@ public:
 			if (!(data.x + -Pos.x > RenderDistance || data.y + -Pos.y > RenderDistance || data.z + -Pos.z > RenderDistance || data.x + -Pos.x < -RenderDistance || data.y + -Pos.y < -RenderDistance || data.z + -Pos.z < -RenderDistance)) {//if (FindDistance(data.second.x, data.second.y, data.second.z, (int)x12 / CHUNK_SIZE, (int)y12 / CHUNK_SIZE, (int)z12 / CHUNK_SIZE) <= renderDistance) {
 			//	if (fr.SphereInFrustum((float)data.x * CHUNK_SIZE, (float)data.y * CHUNK_SIZE, (float)data.z * CHUNK_SIZE, (float)CHUNK_SIZE * 2)) {
 					DrawArraysIndirectCommand cmd;
-					cmd.count = data.size / (sizeof(unsigned int) * 2);
+					cmd.count = (unsigned int)data.size / (sizeof(unsigned int) * 2);
 					cmd.instanceCount = 1;
-					cmd.first = data.offset / (sizeof(unsigned int) * 2);
+					cmd.first = (unsigned int)data.offset / (sizeof(unsigned int) * 2);
 					cmd.baseInstance = SolidIndex;
 					DrawArraysIndirectCommandListSolid.push_back(cmd);
 					SolidChunkShaderPos.emplace_back(data.x);
@@ -315,8 +308,8 @@ public:
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, SSBO);
 		SolidShader->use();
 	//	std::cout << DrawArraysIndirectCommandListSolid.size() << "\n";
-		glMultiDrawArraysIndirect(GL_TRIANGLES, (GLvoid*)0, DrawArraysIndirectCommandListSolid.size(),0);
-
+		glMultiDrawArraysIndirect(GL_TRIANGLES, (GLvoid*)0, (GLsizei)DrawArraysIndirectCommandListSolid.size(),0);
+		
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, 0);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
@@ -348,29 +341,33 @@ public:
 		
 	}
 
-	void ReplaceChunk(Chunk chunk) {
-		ChunkMesh Mesh;
-		Mesh.chunk = &chunk;
-		Mesh.SmartGreedyMeshing();
+	void ReplaceChunk(ChunkVerticesData chunk) {
 
-		if (MeshList.count(getChunkID(chunk.pos))) {
-			DeleteChunk(getChunkID(chunk.pos));
+		if (MeshList.count(getChunkID(chunk.x, chunk.y, chunk.z))) {
+			_DeleteChunk(getChunkID(chunk.x, chunk.y, chunk.z));
 		}
 
-		AddChunk(&Mesh);
+		_AddChunk(chunk);
 	}
 
-	void AddChunk(Chunk chunk) {
-		if (MeshList.count(getChunkID(chunk.pos))) {
+	void AddChunk(ChunkVerticesData chunk) {
+		if (MeshList.count(getChunkID(chunk.x, chunk.y, chunk.z))) {
 			ReplaceChunk(chunk);
-			return;
 		}
+		else {
+			_AddChunk(chunk);
+		}
+		
+	}
 
-		ChunkMesh Mesh;
-		Mesh.chunk = &chunk;
-		Mesh.SmartGreedyMeshing();
+	void AddChunkQueue(ChunkVerticesData chunk) {
+		MeshDataQueued.push_back(chunk);
+	}
 
-		AddChunk(&Mesh);
+	void DumpQueuedDataToGPU() {
+		while (!MeshDataQueued.empty()) {
+			AddChunk(MeshDataQueued.pop_get_front());
+		}
 	}
 
 	void ReloadAssets() {
@@ -394,7 +391,7 @@ public:
 		for (int i = 0; i < filenames.size(); i++) {
 			std::string path = "assets/textures/array/block/" + filenames.data()[i];
 			unsigned char* tdata = stbi_load(path.c_str(), &width, &height, &nrComponents, 0);
-			std::cout << "Width: " << width << " Height: " << height << "nrComponents: " << nrComponents << " Loaded Image: " << path << "\n";
+			getLogger()->LogInfo("Chunk Renderer", "Loaded Texture: Width: " + std::to_string(width) + " Height: " + std::to_string(height) + "nrComponents: " + std::to_string(nrComponents) + " Loaded Image: " + path);
 			if (tdata) {
 				if (nrComponents == 3) {
 					for (int index = 0; index < width * height; index++) {
@@ -420,22 +417,14 @@ public:
 
 		}
 
-
 		GLsizei layerCount = (GLsizei)filenames.size();
 		GLsizei mipLevelCount = 5;
 
-		// Read you texels here. In the current example, we have 2*2*2 = 8 texels, with each texel being 4 GLubytes.
-
-
 		glGenTextures(1, &BlockTexture);
 		glBindTexture(GL_TEXTURE_2D_ARRAY, BlockTexture);
-		// Allocate the storage.
+
 		glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevelCount, GL_RGBA8, 16, 16, layerCount);
-		// Upload pixel data.
-		// The first 0 refers to the mipmap level (level 0, since there's only 1)
-		// The following 2 zeroes refers to the x and y offsets in case you only want to specify a subrectangle.
-		// The final 0 refers to the layer index offset (we start from index 0 and have 2 levels).
-		// Altogether you can specify a 3D box subset of the overall texture, but only one mip level at a time.
+
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
@@ -444,9 +433,6 @@ public:
 		//glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, width, height, layerCount, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data());
 		//glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 		glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
-		
-		// Always set reasonable texture parameters
-
 
 		SolidShader->bindTextureArray2D(0, BlockTexture, "BlockTexture");
 	}
@@ -487,8 +473,10 @@ private:
 	Camera* camera = nullptr;
 	CFrustum fr;
 
-	std::unordered_map<long long int, int> ChunkRenderListSolidOffsetLookup;
-	std::unordered_map<long long int, int> ChunkRenderListTransparentOffsetCache;
+	AsyncDeque<ChunkVerticesData> MeshDataQueued;
+
+	std::unordered_map<long long int, size_t> ChunkRenderListSolidOffsetLookup;
+	std::unordered_map<long long int, size_t> ChunkRenderListTransparentOffsetCache;
 
 	std::vector<ChunkRenderDataBufferAddress> ChunkRenderListSolid;
 	std::vector<DrawArraysIndirectCommand> DrawArraysIndirectCommandListSolid;
@@ -496,6 +484,4 @@ private:
 	std::vector<ChunkRenderDataBufferAddress> ChunkRenderListTransparent;
 	std::vector<DrawArraysIndirectCommand> DrawArraysIndirectCommandListTransparent;
 };
-
-
 #endif

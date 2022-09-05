@@ -158,7 +158,7 @@
     <ClInclude Include="src\main\RenderEngine\Frustum\frustum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\main\RenderEngine\OpenGL\Texture\stb_image.h">
+    <ClInclude Include="src\main\Utils\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\main\RenderEngine\OpenGL\OpenGL.h">

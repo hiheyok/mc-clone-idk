@@ -34,14 +34,15 @@ public:
         // create a color attachment texture
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, *x * muti, *y * muti, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)(*x * muti), (int)(*y * muti), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
         // create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
         glGenRenderbuffers(1, &RBO);
         glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, *x * muti, *y * muti); // use a single renderbuffer object for both a depth AND stencil buffer.
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (int)(*x * muti), (int)(*y * muti)); // use a single renderbuffer object for both a depth AND stencil buffer.
+        
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO); // now actually attach it
         // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -83,12 +84,12 @@ public:
 
     void bindFBO() {
         glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-        glViewport(0, 0, *sx * smuti, *sy * smuti);
+        glViewport(0, 0, (int)(*sx * smuti), (int)(*sy * smuti));
         if (*sx != glTextSizeX || *sy != glTextSizeY) {
             glBindTexture(GL_TEXTURE_2D, texture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, *sx * smuti, *sy * smuti, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)(*sx * smuti), (int)(*sy * smuti), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
             glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, *sx * smuti, *sy * smuti);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (int)(*sx * smuti), (int)(*sy * smuti));
             glTextSizeY = *sy;
             glTextSizeX = *sx;
         }
@@ -99,9 +100,9 @@ public:
         glViewport(0, 0, *sx, *sy);
         if (*sx != glTextSizeX || *sy != glTextSizeY) {
             glBindTexture(GL_TEXTURE_2D, texture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, *sx * smuti, *sy * smuti, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)(*sx * smuti), (int)(*sy * smuti), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
             glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, *sx * smuti, *sy * smuti);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (int)(*sx * smuti), (int)(*sy * smuti));
             glTextSizeY = *sy;
             glTextSizeX = *sx;
         }

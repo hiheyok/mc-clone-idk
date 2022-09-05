@@ -2,6 +2,11 @@
 #include "Entity/Entities/Player.h"
 #include "../../Utils/Clock.h"
 #include "../../Utils/NumGen.h"
+#include "Level/Chunk/Chunk.h"
+#include "../../utils/FastNoiseLite.h"
+#include "../../utils/MathHelper.h"
+#include "../../utils/Clock.h"
+#include "../../utils/LogUtils.h"
 
 void WorldContainer::LoadChunk(int x, int y, int z) {
 	CHUNK_ID ChunkID = getChunkID(x, y, z);
@@ -33,19 +38,26 @@ void WorldContainer::LoadChunk(int x, int y, int z) {
 			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z - 1), &Chunk::setNeighborPZ,ChunkMapLoaded.getAddress(ChunkID));
 			ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::setNeighborNZ,ChunkMapLoaded.getAddress(getChunkID(x, y, z - 1)));
 		}
+		ClientChunkToUpdate.insert(ChunkID, ChunkMapLoaded.get(ChunkID));
 		return;
-	} 
-	if (!ChunkProcessing.count(getChunkID(x, y, z))) {
-		ChunkGenQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to gen queue
-		ChunkProcessing.insert(getChunkID(x, y, z), true);
 	}
-	ChunkLoadQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to load queue
+	else {
+		if (!ChunkProcessing.count(getChunkID(x, y, z))) {
+			ChunkGenQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to gen queue
+			ChunkProcessing.insert(getChunkID(x, y, z), true);
+		}
+		ChunkLoadQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to load queue
+		return;
+	}
+	
+	
 }
 
 void WorldContainer::DoQueuedTasks() {
 	while (!ChunkLoadQueue.empty()) {
 		LoadChunk(ChunkLoadQueue.front().x, ChunkLoadQueue.front().y, ChunkLoadQueue.front().z);
 		ChunkLoadQueue.pop_front();
+
 	}
 }
 
@@ -134,15 +146,16 @@ void WorldContainer::UpdatePlayerPosition(int Player_ID, int x, int y, int z) {
 }
 
 
-int WorldContainer::JoinWorld(std::string name) {
-	Entity* PLAYER = new Player;
-	PLAYER->PosX = 0;
-	PLAYER->PosY = 100;
-	PLAYER->PosZ = 0;
-	PLAYER->EntityID = getID();
-	PlayerList.insert(PLAYER->EntityID, name);
-	AddEntity(*PLAYER);
-	return PLAYER->EntityID;
+void WorldContainer::JoinWorld(std::string name, ClientWorld* ClientAddress) {
+	Entity PLAYER;
+	PLAYER.PosX = 0;
+	PLAYER.PosY = 0;
+	PLAYER.PosZ = 0;
+	PLAYER.EntityID = getID();
+	PlayerList.insert(PLAYER.EntityID, name);
+	PlayerAddress.insert(PLAYER.EntityID, ClientAddress);
+	AddEntity(PLAYER);
+	//return PLAYER->EntityID;
 }
 
 void WorldContainer::AddEntity(Entity Entity) {

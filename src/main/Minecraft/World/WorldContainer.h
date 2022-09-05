@@ -1,11 +1,7 @@
 #ifndef CHUNK_CONTAINERH
 #define CHUNK_CONTAINERH
-#include "Level/Chunk/Chunk.h"
-#include "../../utils/FastNoiseLite.h"
-#include "../../utils/MathHelper.h"
-#include "../../utils/Clock.h"
-#include "../../utils/LogUtils.h"
 #include "../../Utils/MutithreadedData.h"
+#include "../Client/ClientWorld/ClientWorld.h"
 #include "Entity/Entity.h"
 #include <vector>
 #include <algorithm>
@@ -25,6 +21,16 @@ public:
 
     /*void Initialize();*/
 
+    
+
+    Chunk RequestChunk(int x, int y, int z);
+
+    void JoinWorld(std::string PlayerName, ClientWorld* PlayerAddress);
+    void LeaveWorld();
+
+    AsyncHashMapClass<CHUNK_ID, Chunk> ChunkMapLoaded;
+protected:
+
     void LoadChunk(int x, int y, int z);
 
     void WriteChunkMapStore(Chunk chunk);
@@ -35,14 +41,6 @@ public:
     bool CheckChunkIsStored(int x, int y, int z);
     bool CheckChunkIsLoaded(int x, int y, int z);
 
-    Chunk RequestChunk(int x, int y, int z);
-
-    void JoinWorld(std::string PlayerNmae, Entity* PlayerAddress);
-    void LeaveWorld();
-
-    AsyncHashMapClass<CHUNK_ID, Chunk> ChunkMapLoaded;
-protected:
-
     void AddWorldGenWorker();
     void DeleteWorldGenWorker();
 
@@ -51,11 +49,11 @@ protected:
 
     void AddEntity(Entity Entity);
     void UpdatePlayerPosition(int Player_ID, int x, int y, int z);
-    int JoinWorld(std::string name);
 
     AsyncDeque<glm::ivec3> ChunkLoadQueue;
 
     AsyncHashMapNonClass<long long int, std::string> PlayerList;
+    AsyncHashMapNonClass<long long int, ClientWorld*> PlayerAddress;
     AsyncHashMapClass<long long int, Entity> EntityList;
 
     AsyncHashMapClass<long long int, Chunk> ClientChunkToUpdate;

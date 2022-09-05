@@ -1,6 +1,7 @@
 #include "Client.h"
 #include "../World/World.h"
 
+
 #define EVENT_NULL 0x0000
 #define EVENT_START_INTEGRATED_SERVER 0x0001 //start single player world
 #define EVENT_CHANGE_SETTINGS 0x0002
@@ -18,6 +19,10 @@ void Client::Initialize() {
     TestWorld.Initialize();
     TestWorld.StartGenThreads(4);
 
+    cworld.Start(getWindow());
+
+    TestWorld.JoinWorld("hiheyok", &cworld);
+
 	ClientLoop();
 
     
@@ -31,13 +36,13 @@ void Client::ClientLoop() {
         auto time1 = std::chrono::high_resolution_clock::now();
 
         if ((std::chrono::high_resolution_clock::now() - time0).count() / 1000000000.0 > .15) {
-            FPS = (double)FrameCount / ((std::chrono::high_resolution_clock::now() - time0).count() / 1000000000.0);
+            FPS = (int)((double)FrameCount / ((std::chrono::high_resolution_clock::now() - time0).count() / 1000000000.0));
             FPS_LOW = FPS;
             FPS_HIGH = FPS;
             time0 = std::chrono::high_resolution_clock::now();
             FrameCount = 0;
         }
-
+        
       //  getLogger()->LogDebug("Client","Size of Chunk: " + std::to_string(sizeof(Chunk)));
 
         PollInputs();
@@ -45,12 +50,12 @@ void Client::ClientLoop() {
         Render();
 		Refresh();
        
-        double frametime = (std::chrono::high_resolution_clock::now() - time1).count() / 1000000000.0;
+        frametime = (std::chrono::high_resolution_clock::now() - time1).count() / 1000000000.0;
 
         if (FPS_LOW > (1 / frametime))
-            FPS_LOW = (1 / frametime);
-        if (FPS_HIGH < (1 / frametime))
-            FPS_HIGH = (1 / frametime);
+            FPS_LOW = (int)(1 / frametime);
+        if (FPS_HIGH < (1 / frametime));
+            FPS_HIGH = (int(1 / frametime));
         
 	}
 }
@@ -69,10 +74,12 @@ void Client::Update() {
     GUI.prepareRenderer();
 
     UpdateKeyboardInputs();
-
+    cworld.UpdatePlayer(frametime, KeysPressed);
+    cworld.PrepareRenderer();
 }
 
 void Client::Render() {
+    cworld.Render();
     GUI.Render();
 }
 

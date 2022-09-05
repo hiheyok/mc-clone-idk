@@ -19,6 +19,7 @@ private:
 	void UpdateKeyboardInputs();
 	void ClientLoop();
 	//Stats
+	double frametime = 0;
 	int FPS = 0;
 	int FPS_LOW = 0;
 	int FPS_HIGH = 0;
@@ -27,6 +28,7 @@ private:
 
 	bool FirstPersonMode = false;
 
+	ClientWorld cworld;
 	World TestWorld;
 	IGUI GUI;
 };

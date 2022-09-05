@@ -1,3 +1,5 @@
+#pragma once
+
 #include <deque>
 #include <unordered_map>
 #include <vector>
@@ -15,10 +17,32 @@ public:std::unordered_map<Hasher, Object> HashMap;
 		  return out;
 	  }
 
+	  bool empty() {
+		  bool IsEmpty = false;
+		  Mut.lock();
+		  IsEmpty = HashMap.empty();
+		  Mut.unlock();
+		  return IsEmpty;
+	  }
+
 	  void erase(Hasher Hash) {
 		  Mut.lock();
 		  HashMap.erase(Hash);
 		  Mut.unlock();
+	  }
+
+	  void clear() {
+		  Mut.lock();
+		  HashMap.clear();
+		  Mut.unlock();
+	  }
+
+	  std::unordered_map<Hasher, Object> DumpData() {
+		  std::unordered_map<Hasher, Object> Map;
+		  Mut.lock();
+		  Map = HashMap;
+		  Mut.unlock();
+		  return Map;
 	  }
 
 	  Object get(Hasher Hash) {
@@ -39,11 +63,10 @@ public:std::unordered_map<Hasher, Object> HashMap;
 		  Mut.unlock();
 	  }
 
-	  template <typename Val, class... Args> void RunObjFunctionReturn(Hasher Hash, Val Object::* Function,Val* ReturnAddress Args... args) {
+	  template <typename Val, class... Args> void RunObjFunctionReturn(Hasher Hash, Val Object::* Function,Val* ReturnAddress, Args... args) {
 		  Mut.lock();
 		  *ReturnAddress = (&HashMap[Hash]->*Function)(args...);
 		  Mut.unlock();
-		  return Obj;
 	  }
 
 	  template <typename Val> void ChangeObjMember(Hasher Hash, Val Object::* Member, Val Value) {
@@ -73,9 +96,23 @@ public:std::unordered_map<Hasher, Object> HashMap;
 		  return out;
 	  }
 
+	  bool empty() {
+		  bool IsEmpty = false;
+		  Mut.lock();
+		  IsEmpty = HashMap.empty();
+		  Mut.unlock();
+		  return IsEmpty;
+	  }
+
 	  void erase(Hasher Hash) {
 		  Mut.lock();
 		  HashMap.erase(Hash);
+		  Mut.unlock();
+	  }
+
+	  void clear() {
+		  Mut.lock();
+		  HashMap.clear();
 		  Mut.unlock();
 	  }
 
@@ -85,6 +122,14 @@ public:std::unordered_map<Hasher, Object> HashMap;
 		  Obj = HashMap[Hash];
 		  Mut.unlock();
 		  return Obj;
+	  }
+
+	  std::unordered_map<Hasher, Object> DumpData() {
+		  std::unordered_map<Hasher, Object> Map;
+		  Mut.lock();
+		  Map = HashMap;
+		  Mut.unlock();
+		  return Map;
 	  }
 
 	  Object* getAddress(Hasher Hash) {

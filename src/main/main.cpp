@@ -1,8 +1,6 @@
-
+#define STB_IMAGE_IMPLEMENTATION
 #include <thread>
 #include <chrono>
-#define STB_IMAGE_IMPLEMENTATION
-//#include "RenderEngine\OpenGL\Texture\stb_image.h"
 #include <iostream>
 #include "RenderEngine/Window.h"
 #include "Utils/LogUtils.h"

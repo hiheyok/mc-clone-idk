@@ -6,7 +6,7 @@
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "stb_image.h"
+#include "../../../Utils/stb_image.h"
 #include "../../../Utils/LogUtils.h"
 
 class Texture {

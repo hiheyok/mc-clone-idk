@@ -1,13 +1,11 @@
 #pragma once
 #include "WorldContainer.h"
 
-class World : WorldContainer {
+class World : public WorldContainer {
 public:
 
 	const unsigned int TPS = 20;
 
-	World() {
-	}
 	void Initialize();
 
 	void StartGenThreads(int amount);
@@ -17,6 +15,9 @@ public:
 	bool stop = false;
 
 private:
+
+	void SendChunkDataToClient();
+
 	const int SpawnChunksSize = 10;
 	std::thread WorldMainThread;
 };

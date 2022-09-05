@@ -228,7 +228,7 @@
     <ClInclude Include="src\main\RenderEngine\OpenGL\Framebuffer\Framebuffer.h" />
     <ClInclude Include="src\main\RenderEngine\OpenGL\OpenGL.h" />
     <ClInclude Include="src\main\RenderEngine\OpenGL\Shader\Shader.h" />
-    <ClInclude Include="src\main\RenderEngine\OpenGL\Texture\stb_image.h" />
+    <ClInclude Include="src\main\Utils\stb_image.h" />
     <ClInclude Include="src\main\RenderEngine\OpenGL\Texture\Texture.h" />
     <ClInclude Include="src\main\RenderEngine\Window.h" />
     <ClInclude Include="src\main\Utils\BetterMutex.h" />
