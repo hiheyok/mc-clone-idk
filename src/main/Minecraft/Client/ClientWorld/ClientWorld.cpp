@@ -5,6 +5,8 @@
 
 void ClientWorld::AddChunkServer(Chunk chunk) {
 	ChunkAddQueue.push_back(chunk);
+	
+	
 }
 
 void ClientWorld::Start(GLFWwindow* window_) {
@@ -25,6 +27,7 @@ void ClientWorld::UpdateChunks() {
 
 		CHUNK_ID ChunkID = getChunkID(x, y, z);
 		ChunkCache.insert(ChunkID, chunk); // Copy Chunk To Loaded Cache
+		
 		ChunkCache.RunObjFunction(ChunkID, &Chunk::clearNeighbors);
 		if (ChunkCache.count(getChunkID(x, y + 1, z))) {
 			ChunkCache.RunObjFunction(getChunkID(x, y + 1, z), &Chunk::setNeighborNY, ChunkCache.getAddress(ChunkID));
@@ -122,6 +125,9 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 	if (KeysInputs.count(' ')) {
 		player->PosY += Distance;
 	}
+	if (KeysInputs.count(0)) {
+		player->PosY -= Distance;
+	}
 
 	//Process Rotation
 	MouseMovement.x *= (float)MouseSens;
@@ -137,7 +143,7 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 
 	if (player->RotY < 0.0f)
 		player->RotY += 360.0f;
-	if (player->RotY > 360.0f);
+	if (player->RotY > 360.0f)
 		player->RotY -= 360.0f;
 }
 
@@ -146,7 +152,7 @@ void ClientWorld::DumpRenderQueuedData() {
 	std::unordered_map<CHUNK_ID, Chunk> Map = RenderChunkUpdateQueue.DumpData();
 	RenderChunkUpdateQueue.clear();
 	
-	for (auto chunk : Map) {
+	for (auto& chunk : Map) {
 		ChunkMesh mesh;
 		mesh.chunk = &chunk.second;
 		mesh.SmartGreedyMeshing();
@@ -172,6 +178,7 @@ void ClientWorld::PrepareRenderer() {
 	camera.Pitch = (float)player->RotZ;
 	camera.updateCameraVectors();
 	TerrrainRenderer->DumpQueuedDataToGPU();
+	TerrrainRenderer->GenCallDrawCommands();
 	TerrrainRenderer->UpdateData();
 }
 
@@ -189,6 +196,6 @@ void ClientWorld::ClientWorldMainLoop() {
 		double time1 = ((std::chrono::high_resolution_clock::now() - time0).count() / 1000000000.0);
 		if (time1 < (1.0 / (double)TPS))
 			timerSleep((1.0 / (double)TPS) - time1);
-		getLogger()->LogDebug("Client Tick", std::to_string(1000000000.0 / (std::chrono::high_resolution_clock::now() - time0).count()));
+	//	getLogger()->LogDebug("Client Tick", std::to_string(1000000000.0 / (std::chrono::high_resolution_clock::now() - time0).count()));
 	}
 }

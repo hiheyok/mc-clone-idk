@@ -37,6 +37,14 @@ public:std::unordered_map<Hasher, Object> HashMap;
 		  Mut.unlock();
 	  }
 
+	  size_t size() {
+		  size_t size_ = 0;
+		  Mut.lock();
+		  size_ = HashMap.size();
+		  Mut.unlock();
+		  return size_;
+	  }
+
 	  std::unordered_map<Hasher, Object> DumpData() {
 		  std::unordered_map<Hasher, Object> Map;
 		  Mut.lock();

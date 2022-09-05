@@ -20,9 +20,9 @@ public:
 	double PosX, PosY, PosZ = 0.0;
 	double RotX, RotY, RotZ = 0.0;
 
-	double Speed = 1.0;
-	double Sink = 1.0;
-	double Lift = 1.0;
+	double Speed = 10.0;
+	double Sink = 10.0;
+	double Lift = 10.0;
 
 	bool Jump = false;
 

@@ -30,17 +30,18 @@ void World::WorldLoop() {
 		double time1 = ((std::chrono::high_resolution_clock::now() - time0).count() / 1000000000.0);
 		if (time1 < (1.0 / (double)TPS))
 			timerSleep((1.0 / (double)TPS) - time1);
-		getLogger()->LogDebug("World Tick", std::to_string(1000000000.0 / (std::chrono::high_resolution_clock::now() - time0).count()));
+		//getLogger()->LogDebug("World Tick", std::to_string(1000000000.0 / (std::chrono::high_resolution_clock::now() - time0).count()));
 		
 	}
 }
 
 void World::SendChunkDataToClient() {
-	for (auto Client : PlayerAddress.HashMap) {
+	for (const auto& Client : PlayerAddress.HashMap) {
 		for (const auto& chunk : ClientChunkToUpdate.HashMap) {
 			Client.second->AddChunkServer(chunk.second);
+			
 		}
 	}
-	//getLogger()->LogDebug("World", "TESTESTST");
+	//getLogger()->LogDebug("World", "Size_: " + std::to_string(ClientChunkToUpdate.size()));
 	ClientChunkToUpdate.clear();
 }

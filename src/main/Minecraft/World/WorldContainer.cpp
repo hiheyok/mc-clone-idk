@@ -108,7 +108,7 @@ void WorldContainer::WorldGenerator() {
 
 	getLogger()->LogInfo("World", "Started World Gen Thread");
 
-	glm::vec3 ChunkPos;
+	glm::ivec3 ChunkPos;
 	
 	while (true) {
 		while (ChunkGenQueue.empty()) {
@@ -116,12 +116,12 @@ void WorldContainer::WorldGenerator() {
 		}
 
 		ChunkPos = ChunkGenQueue.pop_get_front();
-
+		
 		Chunk chunk;
 		chunk.pos = ChunkPos;
 		chunk.gen_chunk(&noise);
 		WriteChunkMapStore(chunk);
-
+		
 		ChunkProcessing.erase(getChunkID(ChunkPos));
 	}
 }
@@ -132,9 +132,11 @@ void WorldContainer::WriteChunkMapStore(Chunk chunk) {
 
 Chunk WorldContainer::ReadChunkMapStore(int x, int y, int z) {
 	return ChunkMapStore.get(getChunkID(x, y, z));
-
 }
 
+Chunk WorldContainer::ReadChunkMapLoaded(int x, int y, int z) {
+	return ChunkMapLoaded.get(getChunkID(x, y, z));
+}
 
 
 void WorldContainer::UpdatePlayerPosition(int Player_ID, int x, int y, int z) {
@@ -155,6 +157,34 @@ void WorldContainer::JoinWorld(std::string name, ClientWorld* ClientAddress) {
 	PlayerList.insert(PLAYER.EntityID, name);
 	PlayerAddress.insert(PLAYER.EntityID, ClientAddress);
 	AddEntity(PLAYER);
+
+	int cx = (int)(PLAYER.PosX / 16.0f);
+	int cy = (int)(PLAYER.PosY / 16.0f);
+	int cz = (int)(PLAYER.PosZ / 16.0f);
+
+	for (int x = -TickingDistance + cx; x < TickingDistance + cx; x++) {
+		for (int y = -TickingDistance + cy; y < TickingDistance + cy; y++) {
+			for (int z = -TickingDistance + cz; z < TickingDistance + cz; z++) {
+				if (CheckChunkIsStored(x,y,z)) {
+					if (CheckChunkIsLoaded(x, y, z)) {
+						ClientAddress->AddChunkServer(ReadChunkMapLoaded(x, y, z));
+					}
+					else {
+						ClientAddress->AddChunkServer(ReadChunkMapStore(x, y, z));
+
+						LoadChunk(x,y,z);
+					}
+				}
+				else {
+					if (!ChunkProcessing.count(getChunkID(x, y, z))) {
+						ChunkGenQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to gen queue
+						ChunkProcessing.insert(getChunkID(x, y, z), true);
+					}
+					ChunkLoadQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to load queue
+				}
+			}
+		}
+	}
 	//return PLAYER->EntityID;
 }
 

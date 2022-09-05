@@ -141,6 +141,7 @@ public:
 			}
 		}
 	//	delete mesh;
+		//getLogger()->LogError("Chunk Renderer", "Added chunk data to GPU");
 	}
 
 
@@ -215,7 +216,7 @@ public:
 			}
 		}
 
-		spread.empty();
+		spread.clear();
 		spread.resize(1);
 	}
 
@@ -296,7 +297,9 @@ public:
 	}
 
 	void draw() {
-
+	//	glClearColor(1.0,0.0,1.0,1.0);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_FRONT);
@@ -307,7 +310,7 @@ public:
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO);
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, SSBO);
 		SolidShader->use();
-	//	std::cout << DrawArraysIndirectCommandListSolid.size() << "\n";
+		//getLogger()->LogDebug("Renderer", std::to_string(DrawArraysIndirectCommandListSolid.size()));
 		glMultiDrawArraysIndirect(GL_TRIANGLES, (GLvoid*)0, (GLsizei)DrawArraysIndirectCommandListSolid.size(),0);
 		
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, 0);
@@ -315,6 +318,10 @@ public:
 		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
+	//	
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_BLEND);
 	}
 
 	void UpdateData() {
@@ -341,32 +348,22 @@ public:
 		
 	}
 
-	void ReplaceChunk(ChunkVerticesData chunk) {
-
-		if (MeshList.count(getChunkID(chunk.x, chunk.y, chunk.z))) {
-			_DeleteChunk(getChunkID(chunk.x, chunk.y, chunk.z));
-		}
-
-		_AddChunk(chunk);
-	}
-
-	void AddChunk(ChunkVerticesData chunk) {
-		if (MeshList.count(getChunkID(chunk.x, chunk.y, chunk.z))) {
-			ReplaceChunk(chunk);
-		}
-		else {
-			_AddChunk(chunk);
-		}
-		
-	}
-
 	void AddChunkQueue(ChunkVerticesData chunk) {
 		MeshDataQueued.push_back(chunk);
 	}
 
 	void DumpQueuedDataToGPU() {
 		while (!MeshDataQueued.empty()) {
-			AddChunk(MeshDataQueued.pop_get_front());
+			ChunkVerticesData chunk = MeshDataQueued.pop_get_front();
+
+			if (MeshList.count(getChunkID(chunk.x, chunk.y, chunk.z))) {
+				_DeleteChunk(getChunkID(chunk.x, chunk.y, chunk.z));
+				_AddChunk(chunk);
+			}
+			else {
+				_AddChunk(chunk);
+			}
+			
 		}
 	}
 

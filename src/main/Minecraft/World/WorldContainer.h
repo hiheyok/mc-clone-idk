@@ -35,6 +35,7 @@ protected:
 
     void WriteChunkMapStore(Chunk chunk);
     Chunk ReadChunkMapStore(int x, int y, int z);
+    Chunk ReadChunkMapLoaded(int x, int y, int z);
 
     void UnloadChunk(int x, int y, int z);
 
@@ -60,11 +61,12 @@ protected:
 private:
     void WorldGenerator();
 
-    
+    int TickingDistance = 10;
+
     AsyncHashMapClass<CHUNK_ID, Chunk> ChunkMapStore;
     AsyncHashMapNonClass<CHUNK_ID, bool> ChunkProcessing;
 
-    AsyncDeque<glm::vec3> ChunkGenQueue;
+    AsyncDeque<glm::ivec3> ChunkGenQueue;
 
     std::deque<std::thread> WorldGenWorkers;
 

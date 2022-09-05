@@ -94,7 +94,7 @@ void Window::Start() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    window = glfwCreateWindow(sizex, sizey, "1.0.5A (DEV)", NULL, NULL);
+    window = glfwCreateWindow(sizex, sizey, "1.1.0A (DEV)", NULL, NULL);
 
     glfwMakeContextCurrent(window);
 
@@ -124,8 +124,7 @@ void Window::Start() {
     str << "OpenGL Version: " << glGetString(GL_VERSION);
     Logger->LogInfo("OpenGL", str.str());
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
 
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);

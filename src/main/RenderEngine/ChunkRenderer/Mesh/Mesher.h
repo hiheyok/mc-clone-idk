@@ -92,10 +92,6 @@ public:
 		file.close();
 	}
 
-	bool init = false;
-
-	glm::ivec3 pos = glm::ivec3(0, 0, 0);
-
 
 private:
 

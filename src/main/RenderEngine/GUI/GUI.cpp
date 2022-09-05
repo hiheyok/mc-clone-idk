@@ -556,7 +556,8 @@ void IGUI::prepareRenderer() {
 	
 
 void IGUI::Render() {
-	
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	for (int i = 0; i < 16; i++) {
 		if (size[i] != 0) {
 			glBindTexture(GL_TEXTURE_2D, texture[i].get());
@@ -574,6 +575,8 @@ void IGUI::Render() {
 		glDrawElements(GL_TRIANGLES, fontsize, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
+	glDisable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 }
 

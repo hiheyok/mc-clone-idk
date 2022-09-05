@@ -54,7 +54,7 @@ void Client::ClientLoop() {
 
         if (FPS_LOW > (1 / frametime))
             FPS_LOW = (int)(1 / frametime);
-        if (FPS_HIGH < (1 / frametime));
+        if (FPS_HIGH < (1 / frametime))
             FPS_HIGH = (int(1 / frametime));
         
 	}
@@ -79,6 +79,7 @@ void Client::Update() {
 }
 
 void Client::Render() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     cworld.Render();
     GUI.Render();
 }
@@ -88,15 +89,15 @@ void Client::Stop() {
 }
 
 void Client::UpdateKeyboardInputs() {
-    int R_SHIFT = false;
+    int SHIFT = false;
 
     KeysPressed.clear();
 
-    if (TestForKeyInputs(GLFW_KEY_RIGHT_SHIFT))
-        R_SHIFT = true;
+    if (TestForKeyInputs(GLFW_KEY_RIGHT_SHIFT) || TestForKeyInputs(GLFW_KEY_LEFT_SHIFT))
+        SHIFT = true;
 
     if (TestForKeyInputs(GLFW_KEY_Q)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['q'] = true;
         }
         else {
@@ -104,7 +105,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_W)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['w'] = true;
         }
         else {
@@ -112,7 +113,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_E)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['e'] = true;
         }
         else {
@@ -120,7 +121,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_R)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['r'] = true;
         }
         else {
@@ -128,7 +129,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_T)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['t'] = true;
         }
         else {
@@ -136,7 +137,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_Y)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['y'] = true;
         }
         else {
@@ -144,7 +145,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_U)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['u'] = true;
         }
         else {
@@ -152,7 +153,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_I)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['i'] = true;
         }
         else {
@@ -160,7 +161,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_O)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['o'] = true;
         }
         else {
@@ -168,7 +169,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_P)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['p'] = true;
         }
         else {
@@ -176,7 +177,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_A)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['a'] = true;
         }
         else {
@@ -184,7 +185,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_S)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['s'] = true;
         }
         else {
@@ -192,7 +193,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_D)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['d'] = true;
         }
         else {
@@ -200,7 +201,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_F)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['f'] = true;
         }
         else {
@@ -208,7 +209,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_G)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['g'] = true;
         }
         else {
@@ -216,7 +217,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_H)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['h'] = true;
         }
         else {
@@ -224,7 +225,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_J)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['j'] = true;
         }
         else {
@@ -232,7 +233,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_K)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['k'] = true;
         }
         else {
@@ -240,7 +241,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_L)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['l'] = true;
         }
         else {
@@ -248,7 +249,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_Z)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['z'] = true;
         }
         else {
@@ -256,7 +257,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_X)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['x'] = true;
         }
         else {
@@ -264,7 +265,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_C)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['c'] = true;
         }
         else {
@@ -272,7 +273,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_V)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['v'] = true;
         }
         else {
@@ -280,7 +281,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_B)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['b'] = true;
         }
         else {
@@ -288,7 +289,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_N)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['n'] = true;
         }
         else {
@@ -296,7 +297,7 @@ void Client::UpdateKeyboardInputs() {
         }
     }
     if (TestForKeyInputs(GLFW_KEY_M)) {
-        if (R_SHIFT) {
+        if (SHIFT) {
             KeysPressed['m'] = true;
         }
         else {
@@ -305,5 +306,8 @@ void Client::UpdateKeyboardInputs() {
     }
     if (TestForKeyInputs(GLFW_KEY_SPACE)) {
         KeysPressed[' '] = true;
+    }
+    if (SHIFT) {
+        KeysPressed[0] = true;
     }
 }
