@@ -17,11 +17,11 @@ public:
 	void AddChunkServer(Chunk chunk);
 	void ClientWorldMainLoop();
 	void Start(GLFWwindow* window_);
-	void UpdatePlayer(double delta, std::unordered_map<char, bool> Keys);  //update player stuff pos rot 
+	void UpdatePlayer(double delta, std::unordered_map<char, bool> Keys, glm::vec2 MouseMovement);  //update player stuff pos rot 
 	void Render();
 	void PrepareRenderer();
 
-	double MouseSens = 1.0;
+	double MouseSens = 0.25;
 
 private:
 	
@@ -42,6 +42,4 @@ private:
 	bool stop = false;
 
 	std::thread ClientWorldThread;
-
-	glm::vec2 MouseMovement = glm::vec2(0.0,0.0);
 };

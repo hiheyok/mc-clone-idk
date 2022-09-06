@@ -10,7 +10,7 @@ double TREE_RAND_VAL_RANGE = .01f;
 
 void Chunk::gen_chunk(FastNoiseLite* noise) {
 
-
+	noise->SetFrequency(0.009f);
 
 	int cx = pos.x * CHUNK_SIZE;
 	int cz = pos.z * CHUNK_SIZE;

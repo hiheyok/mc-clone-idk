@@ -19,6 +19,10 @@ public:
 	GLFWwindow* getWindow();
 
 protected:
+
+	int cursormovementx = 0;
+	int cursormovementy = 0;
+
 	bool WindowCloseCheck();
 	void DisableCursor();
 	void EnableCursor();
@@ -33,6 +37,9 @@ private:
 	void mouse_callback(double xpos, double ypos);
 	int sizex = 1280;
 	int sizey = 720;
+
+	int cursorlastx = 0;
+	int cursorlasty = 0;
 
 	LogUtils* Logger;
 	GLFWwindow* window;

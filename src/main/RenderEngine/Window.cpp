@@ -132,14 +132,19 @@ void Window::Start() {
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 
 
-    glfwSwapInterval( 0);
+    glfwSwapInterval(0);
 
  
 }
 
 void Window::mouse_callback(double xpos, double ypos) {
+
+    cursormovementx = xpos - cursorx;
+    cursormovementy = ypos - cursory;
+
     cursorx = xpos;
     cursory = ypos;
+
 }
 
 

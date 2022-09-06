@@ -439,7 +439,7 @@ public:
 
 	//Settings
 
-	int RenderDistance = 10;
+	int RenderDistance = 100;
 	glm::vec3 PlayerPosition = glm::vec3(0.f,0.f,0.f);
 
 
@@ -462,7 +462,7 @@ private:
 	std::vector<GLint> SolidChunkShaderPos;
 	std::vector<GLint> TransparentChunkShaderPos;
 
-	size_t GPUBufferSizeSolid = 250000000;
+	size_t GPUBufferSizeSolid = 6000000000;
 	size_t GPUBufferSizeTransparent = 250000000;
 	size_t GPUSSBOMAXSIZE = 1000000;
 

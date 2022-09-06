@@ -224,7 +224,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 					}
 					unsigned int quad = SMesh->extract(x, y, z).Vdata[py];
 					if (!((x0 - x1) == 0 || (z0 - z1) == 0))
-						SGaddSidepy(ivec3(x0, y0, z0), ivec3(x1, y1, z1), transparent, x1 - x, z1 - z, SMesh->extractVData(L0, quad), SMesh->extractVData(L1, quad), SMesh->extractVData(L2, quad), SMesh->extractVData(L3, quad));
+						SGaddSidepy(ivec3(x0, y0, z0), ivec3(x1, y1, z1), false, x1 - x, z1 - z, SMesh->extractVData(L0, quad), SMesh->extractVData(L1, quad), SMesh->extractVData(L2, quad), SMesh->extractVData(L3, quad));
 				}
 				//PX
 				if ((SMesh->extractVData(ID, VDATA[px]) != AIR)) {
@@ -262,7 +262,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 					}
 					unsigned int quad = SMesh->extract(x, y, z).Vdata[px];
 					if (!((y0 - y1) == 0 || (z0 - z1) == 0))
-						SGaddSidepx(ivec3(x0, y0, z0), ivec3(x1, y1, z1), transparent, y1 - y, z1 - z, SMesh->extractVData(L3, quad), SMesh->extractVData(L1, quad), SMesh->extractVData(L0, quad), SMesh->extractVData(L2, quad));
+						SGaddSidepx(ivec3(x0, y0, z0), ivec3(x1, y1, z1), false, y1 - y, z1 - z, SMesh->extractVData(L3, quad), SMesh->extractVData(L1, quad), SMesh->extractVData(L0, quad), SMesh->extractVData(L2, quad));
 				}
 				//PZ
 				if ((SMesh->extractVData(ID, VDATA[pz]) != AIR)) {
@@ -303,7 +303,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 					}
 					unsigned int quad = SMesh->extract(x, y, z).Vdata[pz];
 					if (!((y0 - y1) == 0 || (x0 - x1) == 0))
-						SGaddSidepz(ivec3(x0, y0, z0), ivec3(x1, y1, z1), transparent, x1 - x, y1 - y, SMesh->extractVData(L2, quad), SMesh->extractVData(L1, quad), SMesh->extractVData(L0, quad), SMesh->extractVData(L3, quad));
+						SGaddSidepz(ivec3(x0, y0, z0), ivec3(x1, y1, z1), false, x1 - x, y1 - y, SMesh->extractVData(L2, quad), SMesh->extractVData(L1, quad), SMesh->extractVData(L0, quad), SMesh->extractVData(L3, quad));
 				}
 
 
@@ -344,7 +344,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 					}
 					unsigned int quad = SMesh->extract(x, y, z).Vdata[ny];
 					if (!((x0 - x1) == 0 || (z0 - z1) == 0))
-						SGaddSideny(ivec3(x0, y0, z0), ivec3(x1, y1, z1), transparent, x1 - x, z1 - z, SMesh->extractVData(L0, quad), SMesh->extractVData(L1, quad), SMesh->extractVData(L2, quad), SMesh->extractVData(L3, quad));
+						SGaddSideny(ivec3(x0, y0, z0), ivec3(x1, y1, z1), false, x1 - x, z1 - z, SMesh->extractVData(L0, quad), SMesh->extractVData(L1, quad), SMesh->extractVData(L2, quad), SMesh->extractVData(L3, quad));
 				}
 				//NX
 				if ((SMesh->extractVData(ID, VDATA[nx]) != AIR)) {
@@ -382,7 +382,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 					}
 					unsigned int quad = SMesh->extract(x, y, z).Vdata[nx];
 					if (!((y0 - y1) == 0 || (z0 - z1) == 0))
-						SGaddSidenx(ivec3(x0, y0, z0), ivec3(x1, y1, z1), transparent, y1 - y, z1 - z, SMesh->extractVData(L3, quad), SMesh->extractVData(L1, quad), SMesh->extractVData(L0, quad), SMesh->extractVData(L2, quad));
+						SGaddSidenx(ivec3(x0, y0, z0), ivec3(x1, y1, z1), false, y1 - y, z1 - z, SMesh->extractVData(L3, quad), SMesh->extractVData(L1, quad), SMesh->extractVData(L0, quad), SMesh->extractVData(L2, quad));
 				}
 				//PZ
 				if ((SMesh->extractVData(ID, VDATA[nz]) != AIR)) {
@@ -423,7 +423,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 					}
 					unsigned int quad = SMesh->extract(x, y, z).Vdata[nz];
 					if (!((y0 - y1) == 0 || (x0 - x1) == 0))
-						SGaddSidenz(ivec3(x0, y0, z0), ivec3(x1, y1, z1), transparent, y1 - y , x1 - x, SMesh->extractVData(L2, quad), SMesh->extractVData(L1, quad), SMesh->extractVData(L0, quad), SMesh->extractVData(L3, quad));
+						SGaddSidenz(ivec3(x0, y0, z0), ivec3(x1, y1, z1), false, y1 - y , x1 - x, SMesh->extractVData(L2, quad), SMesh->extractVData(L1, quad), SMesh->extractVData(L0, quad), SMesh->extractVData(L3, quad));
 				}
 
 			}

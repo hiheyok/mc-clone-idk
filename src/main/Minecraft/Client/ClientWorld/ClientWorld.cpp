@@ -100,38 +100,14 @@ void ClientWorld::AddChunkToRenderQueue(Chunk chunk) {
 	}
 }
 
-void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> KeysInputs) {
+void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> KeysInputs, glm::vec2 MouseMovement) {
 
 	double Distance = player->Speed * delta; //Distance travel per unit of time
 	double rad = 0.0174533; //deg to rad
 
-	//Process movemnet
-	if (KeysInputs.count('W') || KeysInputs.count('w')) {
-		player->PosX += Distance * cos(rad * player->RotY);
-		player->PosZ += Distance * sin(rad * player->RotY);
-	}
-	if (KeysInputs.count('S') || KeysInputs.count('s')) {
-		player->PosX -= Distance * cos(rad * player->RotY);
-		player->PosZ -= Distance * sin(rad * player->RotY);
-	}
-	if (KeysInputs.count('D') || KeysInputs.count('d')) {
-		player->PosX += Distance * sin(rad * player->RotY);
-		player->PosZ += Distance * cos(rad * player->RotY);
-	}
-	if (KeysInputs.count('A') || KeysInputs.count('a')) {
-		player->PosX -= Distance * sin(rad * player->RotY);
-		player->PosZ -= Distance * cos(rad * player->RotY);
-	}
-	if (KeysInputs.count(' ')) {
-		player->PosY += Distance;
-	}
-	if (KeysInputs.count(0)) {
-		player->PosY -= Distance;
-	}
-
 	//Process Rotation
 	MouseMovement.x *= (float)MouseSens;
-	MouseMovement.y *= (float)MouseSens;
+	MouseMovement.y *= -(float)MouseSens;
 
 	player->RotY += MouseMovement.x;
 	player->RotZ += MouseMovement.y;
@@ -145,6 +121,33 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 		player->RotY += 360.0f;
 	if (player->RotY > 360.0f)
 		player->RotY -= 360.0f;
+
+	//Process movemnet
+	if (KeysInputs.count('W') || KeysInputs.count('w')) {
+		player->PosX += Distance * cos(rad * player->RotY);
+		player->PosZ += Distance * sin(rad * player->RotY);
+	}
+	if (KeysInputs.count('S') || KeysInputs.count('s')) {
+		player->PosX -= Distance * cos(rad * player->RotY);
+		player->PosZ -= Distance * sin(rad * player->RotY);
+	}
+	if (KeysInputs.count('A') || KeysInputs.count('a')) {
+		player->PosX -= Distance * cos(rad * (player->RotY + 90));
+		player->PosZ -= Distance * sin(rad * (player->RotY + 90));
+	}
+	if (KeysInputs.count('D') || KeysInputs.count('d')) {
+		player->PosX += Distance * cos(rad * (player->RotY + 90));
+		player->PosZ += Distance * sin(rad * (player->RotY + 90));
+	}
+	
+	if (KeysInputs.count(' ')) {
+		player->PosY += Distance;
+	}
+	if (KeysInputs.count(0)) {
+		player->PosY -= Distance;
+	}
+
+	
 }
 
 void ClientWorld::DumpRenderQueuedData() {

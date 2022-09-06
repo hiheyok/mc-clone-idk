@@ -20,6 +20,7 @@ void Client::Initialize() {
     TestWorld.StartGenThreads(4);
 
     cworld.Start(getWindow());
+    DisableCursor();
 
     TestWorld.JoinWorld("hiheyok", &cworld);
 
@@ -45,7 +46,7 @@ void Client::ClientLoop() {
         
       //  getLogger()->LogDebug("Client","Size of Chunk: " + std::to_string(sizeof(Chunk)));
 
-        PollInputs();
+        
         Update();
         Render();
 		Refresh();
@@ -61,6 +62,10 @@ void Client::ClientLoop() {
 }
 
 void Client::Update() {
+    cursormovementx = 0;
+    cursormovementy = 0;
+
+    PollInputs();
     GUI.deleteFromRenderQueue("FPS");
     GUI.addGUIresizedTexturewFont("FPS", std::to_string((int)FPS) + " FPS", vec2(0.6f, 1.f), vec2(-1.2, 0.8), vec3(255, 0, 255), vec2(0, 66), vec2(199, 86), vec2(256, 256), true, 4);
     GUI.addToRenderQueue("FPS");
@@ -74,7 +79,7 @@ void Client::Update() {
     GUI.prepareRenderer();
 
     UpdateKeyboardInputs();
-    cworld.UpdatePlayer(frametime, KeysPressed);
+    cworld.UpdatePlayer(frametime, KeysPressed, glm::vec2(cursormovementx, cursormovementy));
     cworld.PrepareRenderer();
 }
 
