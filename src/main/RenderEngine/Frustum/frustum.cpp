@@ -85,7 +85,7 @@ void CFrustum::CalculateFrustum(Camera* cam)
 	float clip[16];
 
 	glm::mat4 modl = cam->GetViewMatrix();
-	glm::mat4 proj = perspective(radians(70.0f), (float)cam->screenRes.x / (float)cam->screenRes.y, 0.001f, 32768.0f);
+	glm::mat4 proj = perspective(glm::radians(cam->FOV), (float)cam->screenRes.x / (float)cam->screenRes.y, 0.001f, 32768.0f);
 
 
 

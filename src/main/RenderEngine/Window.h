@@ -20,8 +20,8 @@ public:
 
 protected:
 
-	int cursormovementx = 0;
-	int cursormovementy = 0;
+	double cursormovementx = 0;
+	double cursormovementy = 0;
 
 	bool WindowCloseCheck();
 	void DisableCursor();
@@ -30,6 +30,8 @@ protected:
 	void Typing();
 
 	bool TestForKeyInputs(int Key);
+
+	void UpdateWindowName(std::string name);
 
 private:
 	static void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam);

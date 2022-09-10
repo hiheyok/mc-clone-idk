@@ -156,16 +156,18 @@ void ClientWorld::DumpRenderQueuedData() {
 	RenderChunkUpdateQueue.clear();
 	
 	for (auto& chunk : Map) {
-		ChunkMesh mesh;
-		mesh.chunk = &chunk.second;
-		mesh.SmartGreedyMeshing();
-		ChunkVerticesData Vertices;
-		Vertices.SolidVertices = mesh.vertices;
-		Vertices.TransparentVertices = mesh.transparentVertices;
-		Vertices.x = chunk.second.pos.x;
-		Vertices.y = chunk.second.pos.y;
-		Vertices.z = chunk.second.pos.z;
-		TerrrainRenderer->AddChunkQueue(Vertices);
+		if (!chunk.second.isEmpty()) {
+			ChunkMesh mesh;
+			mesh.chunk = &chunk.second;
+			mesh.SmartGreedyMeshing();
+			ChunkVerticesData Vertices;
+			Vertices.SolidVertices = mesh.vertices;
+			Vertices.TransparentVertices = mesh.transparentVertices;
+			Vertices.x = chunk.second.pos.x;
+			Vertices.y = chunk.second.pos.y;
+			Vertices.z = chunk.second.pos.z;
+			TerrrainRenderer->AddChunkQueue(Vertices);
+		}
 	}
 
 	Map.clear();

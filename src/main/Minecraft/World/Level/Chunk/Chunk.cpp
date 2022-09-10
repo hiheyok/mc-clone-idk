@@ -213,71 +213,6 @@ void Chunk::gen_chunkFlat() {
 	}
 }
 
-unsigned int extractBlockData(char type, unsigned int data) {
-	return NULL;
-}
-
-//void Chunk::gen_chunk(FastNoiseLite* noise) {
-//
-//	int cx = pos.x * 16;
-//	int cz = pos.z * 16;
-//	int cy = pos.y * 16;
-//
-//
-//	for (int x = 0 + cx; x < CHUNK_SIZE + cx; x++) {
-//		for (int z = 0 + cz; z < CHUNK_SIZE + cz; z++) {
-//
-//			
-//			for (int y = 0 + cy; y < CHUNK_SIZE + cy; y++) {
-//				float HEIGHT = ((noise->GetNoise((float)x * 3, (float)y * 3, (float)z * 3) + 1) / 2) * 32 + y;
-//				if (HEIGHT < 40) {
-//					addblock(x,y,z,STONE);
-//				}
-//
-//			}
-//
-//		}
-//	}
-//
-//}
-
-/*
-void Chunk::gen_chunk(FastNoiseLite* noise) {
-
-	int cx = pos.x * CHUNK_SIZE;
-	int cz = pos.z * CHUNK_SIZE;
-	int cy = pos.y * CHUNK_SIZE;
-
-
-	for (int x = 0 + cx; x < CHUNK_SIZE + cx; x++) {
-		for (int z = 0 + cz; z < CHUNK_SIZE + cz; z++) {
-
-			float BIOME_MAP = (noise->GetNoise((float)x / 600, (float)z / 600, (float)SEED) + 1) / 2;
-			float HEIGHT_MAP = (((noise->GetNoise((float)x / 3, (float)z / 3, (float)SEED) + 1) * 3) * (((noise->GetNoise((float)x * 5, (float)z * 5, (float)SEED) + 1) * .25) * BIOME_MAP)) * 30;
-			float a = BIOME_MAP * HEIGHT_MAP + 5;
-			for (int y = 0 + cy; y < CHUNK_SIZE + cy; y++) {
-
-				if (y < 10) {
-					addblock(x, y, z, WATER);
-				}
-
-				if (a > y) {
-					if (y < 12) {
-						addblock(x, y, z, SAND);
-					}
-					else {
-						addblock(x, y, z, GRASS);
-					}
-
-				}
-
-			}
-
-		}
-	}
-
-}
-*/
 Block Chunk::checkblock(int x, int y, int z) {
 
 	if (x >= CHUNK_SIZE || y >= CHUNK_SIZE || z >= CHUNK_SIZE || x < 0 || y < 0 || z < 0) {
@@ -350,7 +285,7 @@ Block Chunk::checkblock(int x, int y, int z) {
 
 	}
 	else {
-		return data[(x * CHUNK_SIZE * CHUNK_SIZE) + (z * CHUNK_SIZE) + y];
+		return data[(x * 256) + (z * 16) + y];
 	}
 	return null_block;
 }

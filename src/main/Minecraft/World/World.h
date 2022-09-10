@@ -18,6 +18,6 @@ private:
 
 	void SendChunkDataToClient();
 
-	const int SpawnChunksSize = 10;
+	const int SpawnChunksSize = 16;
 	std::thread WorldMainThread;
 };

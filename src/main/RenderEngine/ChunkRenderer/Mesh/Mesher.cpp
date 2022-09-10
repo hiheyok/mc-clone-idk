@@ -41,8 +41,8 @@ int py1_ = 0;
 int nz1_ = 0;
 int pz1_ = 0;
 
-int lightCvalue_ = 13;
-int lightMvalue_ = 15;
+char lightCvalue_ = 13;
+char lightMvalue_ = 15;
 
 int xDataBitOffset = 0;
 int yDataBitOffset = 5;

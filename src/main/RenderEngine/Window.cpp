@@ -131,7 +131,7 @@ void Window::Start() {
     glDebugMessageCallback(glDebugOutput, nullptr);
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 
-
+    
     glfwSwapInterval(0);
 
  
@@ -147,6 +147,9 @@ void Window::mouse_callback(double xpos, double ypos) {
 
 }
 
+void Window::UpdateWindowName(std::string name) {
+    glfwSetWindowTitle(window, name.c_str());
+}
 
 void Window::resize_window(int x, int y) {
     glViewport(0, 0, x, y);

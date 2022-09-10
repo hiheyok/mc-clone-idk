@@ -17,7 +17,7 @@ void Client::Initialize() {
 
     
     TestWorld.Initialize();
-    TestWorld.StartGenThreads(4);
+    TestWorld.StartGenThreads(8);
 
     cworld.Start(getWindow());
     DisableCursor();
@@ -65,7 +65,13 @@ void Client::Update() {
     cursormovementx = 0;
     cursormovementy = 0;
 
+   // UpdateWindowName("1.1.0A (DEV) | " + std::to_string(1.0 / frametime));
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     PollInputs();
+    UpdateKeyboardInputs();
+
     GUI.deleteFromRenderQueue("FPS");
     GUI.addGUIresizedTexturewFont("FPS", std::to_string((int)FPS) + " FPS", vec2(0.6f, 1.f), vec2(-1.2, 0.8), vec3(255, 0, 255), vec2(0, 66), vec2(199, 86), vec2(256, 256), true, 4);
     GUI.addToRenderQueue("FPS");
@@ -77,14 +83,12 @@ void Client::Update() {
     GUI.addToRenderQueue("FPS_HIGH");
 
     GUI.prepareRenderer();
-
-    UpdateKeyboardInputs();
+    
     cworld.UpdatePlayer(frametime, KeysPressed, glm::vec2(cursormovementx, cursormovementy));
     cworld.PrepareRenderer();
 }
 
 void Client::Render() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     cworld.Render();
     GUI.Render();
 }

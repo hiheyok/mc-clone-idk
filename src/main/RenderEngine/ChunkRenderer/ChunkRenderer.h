@@ -74,6 +74,7 @@ public:
 	void _DeleteChunk(long long int ChunkID) {
 		for (int i = 0; i < ChunkRenderListSolid.size(); i++) {
 			if (getChunkID(ChunkRenderListSolid[i].x, ChunkRenderListSolid[i].y, ChunkRenderListSolid[i].z) == ChunkID) {
+				GPUMemoryUsage -= ChunkRenderListSolid[i].size;
 				MeshList[ChunkID] = false;
 				MeshList.erase(ChunkID);
 				ChunkRenderListSolid.erase(ChunkRenderListSolid.begin() + i);
@@ -82,6 +83,8 @@ public:
 			}
 		}
 	}
+
+	
 
 	void _AddChunk(ChunkVerticesData data) {
 
@@ -92,8 +95,6 @@ public:
 
 		if (MeshSizeSolid == 0) {
 			MeshList[ChunkID] = true;
-			//std::cout << "ERROR: No data " << mesh->pos.x << ", " << mesh->pos.y << ", " << mesh->pos.z << "\n";
-	//		delete mesh;
 			return;
 		}
 
@@ -105,20 +106,23 @@ public:
 		if (ChunkRenderListSolid.size() == 0) {
 			renderdata.offset = 0;
 			renderdata.size = MeshSizeSolid;
+			GPUMemoryUsage += MeshSizeSolid;
 			insertData(VBO, GL_ARRAY_BUFFER, renderdata.offset, &data.SolidVertices);
 			ChunkRenderListSolid.insert(ChunkRenderListSolid.begin(), renderdata);
 			MeshList[ChunkID] = true;
 			ChunkRenderListSolidOffsetLookup[ChunkID] = 0;
-			//	std::cout << "[ Info ]: Added Chunk: " << mesh->cpos.x << ", " << mesh->cpos.y << ", " << mesh->cpos.z << "\n";
+			UpdateDrawCommands = true;
 		}
 		else {
 			if (ChunkRenderListSolid.back().offset + ChunkRenderListSolid.back().size + MeshSizeSolid < GPUBufferSizeSolid) {
 				renderdata.offset = ChunkRenderListSolid.back().offset + ChunkRenderListSolid.back().size;
 				renderdata.size = MeshSizeSolid;
+				GPUMemoryUsage += MeshSizeSolid;
 				insertData(VBO, GL_ARRAY_BUFFER, renderdata.offset, &data.SolidVertices);
 				ChunkRenderListSolid.emplace_back(renderdata);
 				MeshList[ChunkID] = true;
 				ChunkRenderListSolidOffsetLookup[ChunkID] = ChunkRenderListSolid.size() - 1;
+				UpdateDrawCommands = true;
 			}
 			else {
 				bool added = false;
@@ -126,120 +130,30 @@ public:
 					if (ChunkRenderListSolid[i].offset + ChunkRenderListSolid[i].size + MeshSizeSolid < ChunkRenderListSolid[i + 1].offset) {
 						renderdata.offset = ChunkRenderListSolid[i].offset + ChunkRenderListSolid[i].size;
 						renderdata.size = MeshSizeSolid;
+						GPUMemoryUsage += MeshSizeSolid;
 						insertData(VBO, GL_ARRAY_BUFFER, renderdata.offset, &data.SolidVertices);
 						ChunkRenderListSolid.insert(ChunkRenderListSolid.begin() + i + 1, renderdata);
 						MeshList[ChunkID] = true;
 						ChunkRenderListSolidOffsetLookup[ChunkID] = i;
 						added = true;
-						//std::cout << "[ Info ]: Added Chunk: " << mesh->cpos.x << ", " << mesh->cpos.y << ", " << mesh->cpos.z << "\n";
+						UpdateDrawCommands = true;
 						break;
 					}
 				}
 				if (added == false) {
-					getLogger()->LogError("Chunk Renderer","GPU Out of Memory");
+					getLogger()->LogError("Chunk Renderer", "GPU Out of Memory: " + std::to_string(GPUMemoryUsage));
 				}
 			}
 		}
-	//	delete mesh;
-		//getLogger()->LogError("Chunk Renderer", "Added chunk data to GPU");
-	}
-
-
-
-	void genSpreadCache(int rd, int rh) {
-		SpreadCacheRenderDistance = rd;
-		SpreadCacheRenderHeight = rh;
-
-		SpreadCache.clear();
-
-		const unsigned int SBSize = rd * 2 + 1;
-		const unsigned int SBSize2x = SBSize * SBSize;
-
-		spread.resize(SBSize * SBSize * SBSize);
-
-		FIBO.emplace(FIBO.end(), ((rd)*SBSize2x) + ((rd)*SBSize) + (rd));
-		spread[((rd)*SBSize2x) + ((rd)*SBSize) + (rd)] = rd;
-		SpreadCache.push_back(glm::vec3(rd, rd, rd));
-
-		while (!FIBO.empty()) {
-			int index = FIBO.front();
-
-			int lz = index % SBSize;
-			int lx = index / (SBSize2x);
-			int ly = (index % (SBSize2x)) / SBSize;
-
-			int spreadlvl = spread[(lx * SBSize2x) + (ly * SBSize) + lz];
-
-			FIBO.pop_front();
-
-			if (spread[((lx + 1) * SBSize2x) + (ly * SBSize) + lz] + 1 < spreadlvl) {
-				if (abs(ly) - rd < rh) {
-					spread[((lx + 1) * SBSize2x) + (ly * SBSize) + lz] = spreadlvl - 1;
-					SpreadCache.push_back(glm::vec3(lx, ly, lz));
-					FIBO.emplace(FIBO.end(), ((lx + 1) * SBSize2x) + (ly * SBSize) + lz);
-				}
-			}
-			if (spread[((lx - 1) * SBSize2x) + (ly * SBSize) + lz] + 1 < spreadlvl) {
-				if (abs(ly) - rd < rh) {
-					spread[((lx - 1) * SBSize2x) + (ly * SBSize) + lz] = spreadlvl - 1;
-					SpreadCache.push_back(glm::vec3(lx, ly, lz));
-					FIBO.emplace(FIBO.end(), ((lx - 1) * SBSize2x) + (ly * SBSize) + lz);
-				}
-			}
-			if (spread[(lx * SBSize2x) + ((ly + 1) * SBSize) + lz] + 1 < spreadlvl) {
-				if (abs(ly) - rd < rh) {
-					spread[(lx * SBSize2x) + ((ly + 1) * SBSize) + lz] = spreadlvl - 1;
-					SpreadCache.push_back(glm::vec3(lx, ly, lz));
-					FIBO.emplace(FIBO.end(), (lx * SBSize2x) + ((ly + 1) * SBSize) + lz);
-				}
-			}
-			if (spread[(lx * SBSize2x) + ((ly - 1) * SBSize) + lz] + 1 < spreadlvl) {
-				if (abs(ly) - rd < rh) {
-					spread[(lx * SBSize2x) + ((ly - 1) * SBSize) + lz] = spreadlvl - 1;
-					SpreadCache.push_back(glm::vec3(lx, ly, lz));
-					FIBO.emplace(FIBO.end(), (lx * SBSize2x) + ((ly - 1) * SBSize) + lz);
-				}
-			}
-			if (spread[(lx * SBSize2x) + (ly * SBSize) + (lz + 1)] + 1 < spreadlvl) {
-				if (abs(ly) - rd < rh) {
-					spread[(lx * SBSize2x) + (ly * SBSize) + (lz + 1)] = spreadlvl - 1;
-					SpreadCache.push_back(glm::vec3(lx, ly, lz));
-					FIBO.emplace(FIBO.end(), (lx * SBSize2x) + (ly * SBSize) + (lz + 1));
-				}
-			}
-			if (spread[(lx * SBSize2x) + (ly * SBSize) + (lz - 1)] + 1 < spreadlvl) {
-				if (abs(ly) - rd < rh) {
-					spread[(lx * SBSize2x) + (ly * SBSize) + (lz - 1)] = spreadlvl - 1;
-					SpreadCache.push_back(glm::vec3(lx, ly, lz));
-					FIBO.emplace(FIBO.end(), (lx * SBSize2x) + (ly * SBSize) + (lz - 1));
-				}
-			}
-		}
-
-		spread.clear();
-		spread.resize(1);
 	}
 
 	void GenCallDrawCommands() {
+		if (!UpdateDrawCommands)
+			return;
 
 		DrawArraysIndirectCommandListSolid.clear();
 
-		glm::ivec3 Pos = glm::ivec3(floor(PlayerPosition.x / 16), floor(PlayerPosition.y / 16), floor(PlayerPosition.z / 16));
-		
-		/*if (SpreadCacheRenderDistance != rd || SpreadCacheRenderHeight != rh) {
-			genSpreadCache(rd,rh);
-		}
-		
-		for (int i = 0; i < SpreadCache.size(); i++) {
-
-			int inverseI = SpreadCache.size() - (i + 1);
-
-			glm::vec3 SpreadPos = SpreadCache[inverseI];
-
-			if (ChunkRenderListSolidOffsetCache.count(getChunkID(SpreadPos.x + Pos.x - rd, SpreadPos.y + Pos.y - rd, SpreadPos.z + Pos.z - rd))) {
-				ChunkRenderListSolidSorted.emplace(ChunkRenderListSolid[ChunkRenderListSolidOffsetCache[getChunkID(SpreadPos.x + Pos.x - rd, SpreadPos.y + Pos.y - rd, SpreadPos.z + Pos.z - rd)]]);
-			}
-		}*/
+		glm::ivec3 Pos = glm::ivec3(floor(camera->Position.x / 16), floor(camera->Position.y / 16), floor(camera->Position.z / 16));
 
 		std::deque<ChunkRenderDataBufferAddress> ChunkRenderListSolidSorted;
 
@@ -247,11 +161,9 @@ public:
 			ChunkRenderListSolidSorted.emplace_back(e);
 		}
 
-		
-
 		SolidChunkShaderPos.clear();
 
-		//fr.CalculateFrustum(camera);
+		fr.CalculateFrustum(camera);
 
 		int SolidIndex = 1;
 
@@ -261,7 +173,7 @@ public:
 			ChunkRenderListSolidSorted.pop_front();
 
 			if (!(data.x + -Pos.x > RenderDistance || data.y + -Pos.y > RenderDistance || data.z + -Pos.z > RenderDistance || data.x + -Pos.x < -RenderDistance || data.y + -Pos.y < -RenderDistance || data.z + -Pos.z < -RenderDistance)) {//if (FindDistance(data.second.x, data.second.y, data.second.z, (int)x12 / CHUNK_SIZE, (int)y12 / CHUNK_SIZE, (int)z12 / CHUNK_SIZE) <= renderDistance) {
-			//	if (fr.SphereInFrustum((float)data.x * CHUNK_SIZE, (float)data.y * CHUNK_SIZE, (float)data.z * CHUNK_SIZE, (float)CHUNK_SIZE * 2)) {
+				if (fr.SphereInFrustum((float)data.x * 16, (float)data.y * 16, (float)data.z * 16, (float)32)) {
 					DrawArraysIndirectCommand cmd;
 					cmd.count = (unsigned int)data.size / (sizeof(unsigned int) * 2);
 					cmd.instanceCount = 1;
@@ -272,11 +184,8 @@ public:
 					SolidChunkShaderPos.emplace_back(data.y);
 					SolidChunkShaderPos.emplace_back(data.z);
 					SolidIndex++;
-			//	}
+				}
 			}
-
-			
-			//std::cout << ChunkRenderListSolidSorted.size() << "\n";
 		}
 
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO);
@@ -288,8 +197,6 @@ public:
 		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 	}
 
-	
-
 	void insertData(GLuint buffer, GLenum target, size_t offset, std::vector<unsigned int>* data) {
 		glBindBuffer(target, buffer);
 		glBufferSubData(target, offset, data->size() * sizeof(unsigned int), data->data());
@@ -297,8 +204,8 @@ public:
 	}
 
 	void draw() {
-	//	glClearColor(1.0,0.0,1.0,1.0);
-		glEnable(GL_BLEND);
+		glClearColor(0.46274509803f, 0.65882352941f,1.0f,1.0);
+	//	glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
@@ -319,9 +226,9 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 	//	
-		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
-		glDisable(GL_BLEND);
+	//	glDisable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
 	}
 
 	void UpdateData() {
@@ -330,7 +237,7 @@ public:
 		glfwGetWindowSize(window, &width, &height);
 		glm::mat4 model = glm::mat4(1.f);
 
-		//camera->Position = vec3(0,49,0);
+		camera->screenRes = glm::vec2(width, height);
 		glm::mat4 view = camera->GetViewMatrix();
 		
 		int x = width;
@@ -343,9 +250,6 @@ public:
 		SolidShader->setMat4("projection", projection);
 		SolidShader->setFloat("RenderDistance", (float)(RenderDistance * CHUNK_SIZE));
 		SolidShader->setVec3("camPos", camera->Position);
-		
-		
-		
 	}
 
 	void AddChunkQueue(ChunkVerticesData chunk) {
@@ -440,10 +344,10 @@ public:
 	//Settings
 
 	int RenderDistance = 100;
-	glm::vec3 PlayerPosition = glm::vec3(0.f,0.f,0.f);
-
 
 private:
+
+	bool UpdateDrawCommands = false;
 
 	std::vector<glm::vec3> SpreadCache;
 	int SpreadCacheRenderDistance = 0;
@@ -462,9 +366,11 @@ private:
 	std::vector<GLint> SolidChunkShaderPos;
 	std::vector<GLint> TransparentChunkShaderPos;
 
-	size_t GPUBufferSizeSolid = 6000000000;
+	size_t GPUMemoryUsage = 0;
+
+	size_t GPUBufferSizeSolid = 200000000;
 	size_t GPUBufferSizeTransparent = 250000000;
-	size_t GPUSSBOMAXSIZE = 1000000;
+	size_t GPUSSBOMAXSIZE = 5000000;
 
 	GLFWwindow* window = nullptr;
 	Camera* camera = nullptr;
