@@ -20,11 +20,15 @@ public:
 	void UpdatePlayer(double delta, std::unordered_map<char, bool> Keys, glm::vec2 MouseMovement);  //update player stuff pos rot 
 	void Render();
 	void PrepareRenderer();
+	void Tick();
 
+	double Gravity = 10.0;
 	double MouseSens = 0.25;
 
 private:
 	
+	bool TestIfEntityOnGround(Entity* ENTITY);
+	void MoveEntity(Entity* ENTITY, double x, double y, double z);
 	void DumpRenderQueuedData();
 	
 	void AddChunkToRenderQueue(Chunk chunk);

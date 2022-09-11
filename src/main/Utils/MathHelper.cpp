@@ -10,6 +10,13 @@ double toRadians(double x)
     return x* 0.01745329251;
 }
 
+double FindDistanceNoSqrt(int x, int y, int z, int x1, int y1, int z1) {
+	return pow(x - x1, 2) + pow(y - y1, 2) + pow(z - z1, 2);
+}
+
+double FindDistanceNoSqrt(int x, int y, int x1, int y1) {
+	return pow(x - x1, 2) + pow(y - y1, 2);
+}
 
 double FindDistance(int x, int y, int z, int x1, int y1, int z1) {
 	return sqrt(pow(x - x1, 2) + pow(y - y1, 2) + pow(z - z1, 2));

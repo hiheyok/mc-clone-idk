@@ -17,7 +17,7 @@ void Client::Initialize() {
 
     
     TestWorld.Initialize();
-    TestWorld.StartGenThreads(8);
+    TestWorld.StartGenThreads(16);
 
     cworld.Start(getWindow());
     DisableCursor();

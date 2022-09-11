@@ -68,6 +68,7 @@ public:
 		null_block.id = 0;
 	}
 	void addblock(int x, int y, int z, unsigned char type);
+	Block getBlock(int x, int y, int z);
 
 	bool isEmpty() {
 		return empty;

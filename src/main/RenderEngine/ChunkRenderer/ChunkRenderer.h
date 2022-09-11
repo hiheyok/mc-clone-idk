@@ -148,31 +148,19 @@ public:
 	}
 
 	void GenCallDrawCommands() {
-		if (!UpdateDrawCommands)
-			return;
-
 		DrawArraysIndirectCommandListSolid.clear();
 
 		glm::ivec3 Pos = glm::ivec3(floor(camera->Position.x / 16), floor(camera->Position.y / 16), floor(camera->Position.z / 16));
-
-		std::deque<ChunkRenderDataBufferAddress> ChunkRenderListSolidSorted;
-
-		for (const auto& e : ChunkRenderListSolid) {
-			ChunkRenderListSolidSorted.emplace_back(e);
-		}
 
 		SolidChunkShaderPos.clear();
 
 		fr.CalculateFrustum(camera);
 
 		int SolidIndex = 1;
+		for (int i = 0; i < ChunkRenderListSolid.size(); i++) {
+			ChunkRenderDataBufferAddress data = ChunkRenderListSolid[(ChunkRenderListSolid.size() - 1) - i];
 
-		while (!ChunkRenderListSolidSorted.empty()) {
-			
-			ChunkRenderDataBufferAddress data = ChunkRenderListSolidSorted.front();
-			ChunkRenderListSolidSorted.pop_front();
-
-			if (!(data.x + -Pos.x > RenderDistance || data.y + -Pos.y > RenderDistance || data.z + -Pos.z > RenderDistance || data.x + -Pos.x < -RenderDistance || data.y + -Pos.y < -RenderDistance || data.z + -Pos.z < -RenderDistance)) {//if (FindDistance(data.second.x, data.second.y, data.second.z, (int)x12 / CHUNK_SIZE, (int)y12 / CHUNK_SIZE, (int)z12 / CHUNK_SIZE) <= renderDistance) {
+			if (FindDistanceNoSqrt(data.x, data.y, data.z, Pos.x, Pos.y, Pos.z) < pow(RenderDistance,2)) {//if (!(data.x + -Pos.x > RenderDistance || data.y + -Pos.y > RenderDistance || data.z + -Pos.z > RenderDistance || data.x + -Pos.x < -RenderDistance || data.y + -Pos.y < -RenderDistance || data.z + -Pos.z < -RenderDistance)) {//if (FindDistance(data.second.x, data.second.y, data.second.z, (int)x12 / CHUNK_SIZE, (int)y12 / CHUNK_SIZE, (int)z12 / CHUNK_SIZE) <= renderDistance) {
 				if (fr.SphereInFrustum((float)data.x * 16, (float)data.y * 16, (float)data.z * 16, (float)32)) {
 					DrawArraysIndirectCommand cmd;
 					cmd.count = (unsigned int)data.size / (sizeof(unsigned int) * 2);
@@ -186,7 +174,28 @@ public:
 					SolidIndex++;
 				}
 			}
+
 		}
+		//while (!ChunkRenderListSolidSorted.empty()) {
+		//	
+		//	ChunkRenderDataBufferAddress data = ChunkRenderListSolidSorted.front();
+		//	ChunkRenderListSolidSorted.pop_front();
+
+		//	if (FindDistance(data.x * 16,data.y * 16,data.z * 16, camera->Position.x, camera->Position.y,camera->Position.z) < 32 * 16) {//if (!(data.x + -Pos.x > RenderDistance || data.y + -Pos.y > RenderDistance || data.z + -Pos.z > RenderDistance || data.x + -Pos.x < -RenderDistance || data.y + -Pos.y < -RenderDistance || data.z + -Pos.z < -RenderDistance)) {//if (FindDistance(data.second.x, data.second.y, data.second.z, (int)x12 / CHUNK_SIZE, (int)y12 / CHUNK_SIZE, (int)z12 / CHUNK_SIZE) <= renderDistance) {
+		//		if (fr.SphereInFrustum((float)data.x * 16, (float)data.y * 16, (float)data.z * 16, (float)32)) {
+		//			DrawArraysIndirectCommand cmd;
+		//			cmd.count = (unsigned int)data.size / (sizeof(unsigned int) * 2);
+		//			cmd.instanceCount = 1;
+		//			cmd.first = (unsigned int)data.offset / (sizeof(unsigned int) * 2);
+		//			cmd.baseInstance = SolidIndex;
+		//			DrawArraysIndirectCommandListSolid.push_back(cmd);
+		//			SolidChunkShaderPos.emplace_back(data.x);
+		//			SolidChunkShaderPos.emplace_back(data.y);
+		//			SolidChunkShaderPos.emplace_back(data.z);
+		//			SolidIndex++;
+		//		}
+		//	}
+		//}
 
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO);
 		glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, SolidChunkShaderPos.size() * sizeof(int), SolidChunkShaderPos.data());
@@ -368,7 +377,7 @@ private:
 
 	size_t GPUMemoryUsage = 0;
 
-	size_t GPUBufferSizeSolid = 200000000;
+	size_t GPUBufferSizeSolid = 800000000;
 	size_t GPUBufferSizeTransparent = 250000000;
 	size_t GPUSSBOMAXSIZE = 5000000;
 

@@ -11,6 +11,9 @@
 double FindDistance(int x, int y, int z, int x1, int y1, int z1);
 double FindDistance(int x, int y, int x1, int y1);
 
+double FindDistanceNoSqrt(int x, int y, int z, int x1, int y1, int z1);
+double FindDistanceNoSqrt(int x, int y, int x1, int y1);
+
 double FindDistance(glm::ivec3 pos0, glm::ivec3 pos1);
 double FindDistance(glm::ivec2 pos0, glm::ivec2 pos1);
 
