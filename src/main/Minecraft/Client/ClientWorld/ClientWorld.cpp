@@ -13,7 +13,7 @@ void ClientWorld::Start(GLFWwindow* window_) {
 	ClientWorldThread = std::thread(&ClientWorld::ClientWorldMainLoop, this);
 	player = new Player();
 	player->Build();
-	player->PosY = 250;
+	player->PosY = 500;
 	TerrrainRenderer = new ChunkRenderer;
 	TerrrainRenderer->init(window_, &camera);
 }
@@ -124,8 +124,8 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 	if (player->RotY > 360.0f)
 		player->RotY -= 360.0f;
 	
-	double accerlation = 20.0;
-	double friction = 25.0;
+	double accerlation = 35.0;
+	double friction = 2.0;
 
 	/*if (player->VelocityX > 0) {
 		if (player->VelocityX - (friction * delta) < 0) {
@@ -163,7 +163,19 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 		}
 	}*/
 
+	player->VelocityY -= accerlation * delta;
+	if (TestIfEntityOnGround(player)) {
+		player->VelocityX = player->VelocityX - ((player->VelocityX * delta) * (friction));
+		//player->VelocityY = player->VelocityY - ((player->VelocityY * delta) * (1 - friction));
+		player->VelocityZ = player->VelocityZ - ((player->VelocityZ * delta) * (friction));
+		player->VelocityY = 0;
+	}
+
+
 	//Process movemnet
+	if (KeysInputs.count('R') || KeysInputs.count('r')) {
+		player->SetPosition(0,500,0);
+	}
 	if (KeysInputs.count('W') || KeysInputs.count('w')) {
 		player->VelocityX += Distance * cos(rad * player->RotY);
 		player->VelocityZ += Distance * sin(rad * player->RotY);
@@ -188,11 +200,10 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 		
 	}
 	if (KeysInputs.count(0)) {
-		player->VelocityY = -10.0;
+		player->VelocityY = 0;
 	}
 	
-
-	player->VelocityY -= accerlation * delta;
+	
 
 	double movex = player->VelocityX * delta;
 	double movey = player->VelocityY * delta;

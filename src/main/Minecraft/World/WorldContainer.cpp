@@ -163,7 +163,7 @@ void WorldContainer::JoinWorld(std::string name, ClientWorld* ClientAddress) {
 	int cz = (int)(PLAYER.PosZ / 16.0f);
 
 	for (int x = -TickingDistance + cx; x < TickingDistance + cx; x++) {
-		for (int y = 0 + cy; y < 10 + cy; y++) {
+		for (int y = 0 + cy; y < 16 + cy; y++) {
 			for (int z = -TickingDistance + cz; z < TickingDistance + cz; z++) {
 				if (CheckChunkIsStored(x,y,z)) {
 					if (CheckChunkIsLoaded(x, y, z)) {

@@ -9,7 +9,7 @@ void World::StartGenThreads(int amount) {
 void World::Initialize() {
 	//Load 10x10x10 Chunks
 	for (int x = -SpawnChunksSize; x < SpawnChunksSize; x++) {
-		for (int y = 0; y < 10; y++) {
+		for (int y = 0; y < 16; y++) {
 			for (int z = -SpawnChunksSize; z < SpawnChunksSize; z++) {
 				LoadChunk(x, y, z);
 			}

@@ -25,6 +25,7 @@ constexpr auto CHUNK_SIZE_3 = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
 #define GENERATED true
 
 #include <vector>
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <iostream>
@@ -91,6 +92,10 @@ public:
 	void gen_chunkFlat();
 	void gen_chunkTerrain(FastNoiseLite* noise);
 	void gen_chunkPerlinCave(FastNoiseLite* noise);
+	void gen_chunkMinecraft(FastNoiseLite* noise);
+
+	int continentialNoiseHeight(float n);
+
 	Block* getChunKData() {
 
 		return data;
@@ -181,11 +186,31 @@ public:
 	Block null_block;
 	glm::ivec3 pos = glm::ivec3(0, 0, 0);
 private:
+	float anoise(FastNoiseLite* noise, int x, int y, int z, float frequency, int octaves);
+	float anoise(FastNoiseLite* noise, int x, int z, float frequency, int octaves);
+
 	Block data[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE]{};
 	
 	bool empty = true;
 	Chunk* neighbors[6]{ nullptr ,nullptr ,nullptr ,nullptr ,nullptr ,nullptr };
 	bool neighborsSet = false;
+	std::vector<glm::vec2> continentialMapSample =
+	{
+		glm::vec2(0.f, 35.f),
+		glm::vec2(0.05f, 27.f),
+		glm::vec2(0.2f, 25.f),
+		glm::vec2(0.25f, 30.f),
+		glm::vec2(0.50f, 50),
+		glm::vec2(0.60f, 80.f),
+		glm::vec2(0.85f, 95),
+		glm::vec2(1.00f, 105),
+		glm::vec2(1.00f, 128.f),
+	};
+	float pow2LookupDiv[8]{ 1,0.5f,0.25f,0.125f,0.0625f,0.03125f,0.015625f,0.0078125f };
+	int pow2LookupMut[8]{ 1,2,4,8,16,32,64,128 };
+	float normalLookupDiv[16]{ 1, 1.5, 1.75, 1.875, 1.9375, 1.96875, 1.98438, 1.99219, 1.99609, 1.99805, 1.99902, 1.99951, 1.99976, 1.99988, 1.99994 };
+	float normalLookupMut[16]{ 1, 0.666667f, 0.571429f, 0.533333f, 0.516129f, 0.507937f, 0.503937f, 0.501961f, 0.500978f, 0.500489f, 0.500244f, 0.500122f, 0.500061f, 0.500031f, 0.500015f };
+
 };
 
 Chunk GenerateChunk(int x, int y, int z);

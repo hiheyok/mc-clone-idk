@@ -290,7 +290,94 @@ Block Chunk::checkblock(int x, int y, int z) {
 	return null_block;
 }
 
+float Chunk::anoise(FastNoiseLite* noise, int x, int y, int z, float frequency, int octaves) {
+	float total = 0;
 
+	for (int i = 0; i < octaves; i++) {
+		float fx = (float)(x * pow2LookupMut[i]) * frequency;
+		float fy = (float)(y * pow2LookupMut[i]) * frequency;
+		float fz = (float)(z * pow2LookupMut[i]) * frequency;
+		float fn = noise->GetNoise(fx, fy, fz);
+		total = total + fn * pow2LookupDiv[i];
+	}
+
+	return total * normalLookupMut[octaves];
+}
+
+float Chunk::anoise(FastNoiseLite* noise, int x, int z, float frequency, int octaves) {
+	float total = 0;
+
+	for (int i = 0; i < octaves; i++) {
+		float fx = (float)(x * pow2LookupMut[i]) * frequency;
+		float fz = (float)(z * pow2LookupMut[i]) * frequency;
+		float fn = noise->GetNoise(fx, fz);
+		total = total + fn * pow2LookupDiv[i];
+	}
+
+	return total * normalLookupMut[octaves];
+}
+
+void Chunk::gen_chunkMinecraft(FastNoiseLite* noise) {
+	noise->SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+
+	noise->SetSeed(254);
+
+	int cx = pos.x * 16;
+	int cz = pos.z * 16;
+	int cy = pos.y * 16;
+	
+	float height = 32;
+	float dheight = 0.5;
+	float mheight = 256;
+
+	noise->SetFrequency(.00125);
+
+	for (int x = cx; x < CHUNK_SIZE + cx; x++) {
+		for (int z = cz; z < CHUNK_SIZE + cz; z++) {
+			float continental = anoise(noise, x, z, 1, 5);
+			float cny = continentialNoiseHeight(continental);
+			for (int y = 0 + cy; y < CHUNK_SIZE + cy; y++) {
+
+				float density = anoise(noise, x, y, z, 8, 3);
+
+				density = density + 1;
+				density = density * 0.5f;
+
+				float y1 = y - cny;
+
+				if (0.5f > density * (y1 * dheight)) {
+					addblock(x, y, z, STONE);
+				}
+			}
+		}
+	}
+}
+
+
+
+int Chunk::continentialNoiseHeight(float n) {
+	n = n + 1;
+	n = n * 0.5f;
+
+	glm::vec2 s1;
+	glm::vec2 s2;
+
+	for (int i = 0; i < continentialMapSample.size(); i++) {
+		if (continentialMapSample[i].x < n && continentialMapSample[i + 1].x > n) {
+			s1 = continentialMapSample[i];
+			s2 = continentialMapSample[i + 1];
+			break;
+		}
+	}
+
+	float m0 = (n - (s2.x + s1.x) * 0.5f) / (s1.x - s2.x);
+	float m1 = (1 - cos((m0 - 0.5) * 3.141592f)) * 0.5f;
+
+
+	float f = s1.y + (s2.y - s1.y) * m1;
+	return f;
+
+}
 
 void Chunk::addblock(int x, int y, int z, unsigned char type) {
 
