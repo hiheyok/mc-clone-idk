@@ -28,6 +28,8 @@ public:
 private:
 	
 	bool TestIfEntityOnGround(Entity* ENTITY);
+	bool TestIfEntityTouchBlockX(Entity* ENTITY);
+	bool TestIfEntityTouchBlockZ(Entity* ENTITY);
 	void MoveEntity(Entity* ENTITY, double x, double y, double z);
 	void DumpRenderQueuedData();
 	

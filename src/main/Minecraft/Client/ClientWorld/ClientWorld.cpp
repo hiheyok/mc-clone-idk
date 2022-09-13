@@ -104,7 +104,7 @@ void ClientWorld::AddChunkToRenderQueue(Chunk chunk) {
 
 void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> KeysInputs, glm::vec2 MouseMovement) {
 
-	double Distance = 15* delta; //Distance travel per unit of time
+	
 	double rad = 0.0174533; //deg to rad
 
 	//Process Rotation
@@ -126,49 +126,30 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 	
 	double accerlation = 35.0;
 	double friction = 2.0;
+	double Distance = 15 * delta;
 
-	/*if (player->VelocityX > 0) {
-		if (player->VelocityX - (friction * delta) < 0) {
-			player->VelocityX = 0;
-		}
-		else {
-			player->VelocityX -= (friction * delta);
-		}
+	if (!TestIfEntityOnGround(player)) {
+		Distance *= 0.5;
 	}
-
-	if (player->VelocityZ > 0) {
-		if (player->VelocityZ - (friction * delta) < 0) {
-			player->VelocityZ = 0;
-		}
-		else {
-			player->VelocityZ -= (friction * delta);
-		}
-	}
-
-	if (player->VelocityX < 0) {
-		if (player->VelocityX + (friction * delta) > 0) {
-			player->VelocityX = 0;
-		}
-		else {
-			player->VelocityX += (friction * delta);
-		}
-	}
-
-	if (player->VelocityZ < 0) {
-		if (player->VelocityZ + (friction * delta) > 0) {
-			player->VelocityZ = 0;
-		}
-		else {
-			player->VelocityZ += (friction * delta);
-		}
-	}*/
 
 	player->VelocityY -= accerlation * delta;
 	if (TestIfEntityOnGround(player)) {
 		player->VelocityX = player->VelocityX - ((player->VelocityX * delta) * (friction));
 		//player->VelocityY = player->VelocityY - ((player->VelocityY * delta) * (1 - friction));
 		player->VelocityZ = player->VelocityZ - ((player->VelocityZ * delta) * (friction));
-		player->VelocityY = 0;
+		if (player->VelocityY < -2.5) {
+			player->VelocityY = -(player->VelocityY) * 0.30;
+		}
+		else {
+			player->VelocityY = 0;
+			
+		}
+		
+	}
+	else {
+		player->VelocityX = player->VelocityX - ((player->VelocityX * delta) * (friction * 0.4));
+		//player->VelocityY = player->VelocityY - ((player->VelocityY * delta) * (1 - friction));
+		player->VelocityZ = player->VelocityZ - ((player->VelocityZ * delta) * (friction * 0.4));
 	}
 
 
@@ -293,15 +274,17 @@ void ClientWorld::MoveEntity(Entity* ENTITY, double x, double y, double z) {
 		getLogger()->LogDebug("Client World", "Global Pos: " + std::to_string(ENTITY->PosX) + ", " + std::to_string(ENTITY->PosY) + ", " + std::to_string(ENTITY->PosZ));*/
 		Chunk CHUNK = ChunkCache.get(getChunkID(cx,cy,cz));
 
+		double size = 0.5;
+
 		if (x > 0) {
-			if (CHUNK.checkblock(floor(lx + x + 1), ly, lz).id != AIR) {
+			if (CHUNK.checkblock(floor(lx + x + size), ly, lz).id != AIR) {
 			//	if (ENTITY->AABB.TestIntersect(lx + 1 - x, ly, lz)) {
 					collusion_x = true;
 			//	}
 			}
 		}
 		if (x < 0) {
-			if (CHUNK.checkblock(floor(lx -x - 1), ly, lz).id != AIR) {
+			if (CHUNK.checkblock(floor(lx -x - size), ly, lz).id != AIR) {
 			//	if (ENTITY->AABB.TestIntersect(lx - 1 + x, ly, lz)) {
 					collusion_x = true;
 			//	}
@@ -309,14 +292,14 @@ void ClientWorld::MoveEntity(Entity* ENTITY, double x, double y, double z) {
 		}
 
 		if (y > 0) {
-			if (CHUNK.checkblock(lx, floor(ly + y + 1.5), lz).id != AIR) {
+			if (CHUNK.checkblock(lx, floor(ly + y + size), lz).id != AIR) {
 			//	if (ENTITY->AABB.TestIntersect(lx, ly + 1 - y, lz)) {
 					collusion_y = true;
 			//	}
 			}
 		}
 		if (y < 0) {
-			if (CHUNK.checkblock(lx, floor(ly - y - 1.5), lz).id != AIR) {
+			if (CHUNK.checkblock(lx, floor(ly - y - size), lz).id != AIR) {
 			//	if (ENTITY->AABB.TestIntersect(lx, ly - 1 + y, lz)) {
 					collusion_y = true;
 			//	}
@@ -324,14 +307,14 @@ void ClientWorld::MoveEntity(Entity* ENTITY, double x, double y, double z) {
 		}
 
 		if (z > 0) {
-			if (CHUNK.checkblock(lx, ly, floor(lz + z + 1)).id != AIR) {
+			if (CHUNK.checkblock(lx, ly, floor(lz + z + size)).id != AIR) {
 			//	if (ENTITY->AABB.TestIntersect(lx, ly, lz + 1 - z)) {
 					collusion_z = true;
 			//	}
 			}
 		}
 		if (z < 0) {
-			if (CHUNK.checkblock(lx, ly, floor(lz - z - 1)).id != AIR) {
+			if (CHUNK.checkblock(lx, ly, floor(lz - z - size)).id != AIR) {
 			//	if (ENTITY->AABB.TestIntersect(lx, ly, lz - 1 + z)) {
 					collusion_z = true;
 			//	}
@@ -360,9 +343,47 @@ bool ClientWorld::TestIfEntityOnGround(Entity* ENTITY) {
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
 		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
-		if (CHUNK.checkblock(lx, floor(ly - 1.5), lz).id != AIR) {
+		if (CHUNK.checkblock(lx, floor(ly - 0.5), lz).id != AIR) {
 			return true;
 		}
 	}
 	return false;
 }
+
+bool ClientWorld::TestIfEntityTouchBlockX(Entity* ENTITY) {
+	int cx = floor(ENTITY->PosX / 16.0);
+	int cy = floor(ENTITY->PosY / 16.0);
+	int cz = floor(ENTITY->PosZ / 16.0);
+
+	double lx = floor(ENTITY->PosX - (double)(floor(ENTITY->PosX / 16.0) * 16));
+	double ly = floor(ENTITY->PosY - (double)(floor(ENTITY->PosY / 16.0) * 16));
+	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
+
+	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
+		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
+		if ((CHUNK.checkblock(floor(lx - 0.5), ly, lz).id != AIR) || (CHUNK.checkblock(floor(lx + 0.5), ly, lz).id != AIR)) {
+			return true;
+		}
+
+	}
+	return false;
+}
+
+bool ClientWorld::TestIfEntityTouchBlockZ(Entity* ENTITY) {
+	int cx = floor(ENTITY->PosX / 16.0);
+	int cy = floor(ENTITY->PosY / 16.0);
+	int cz = floor(ENTITY->PosZ / 16.0);
+
+	double lx = floor(ENTITY->PosX - (double)(floor(ENTITY->PosX / 16.0) * 16));
+	double ly = floor(ENTITY->PosY - (double)(floor(ENTITY->PosY / 16.0) * 16));
+	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
+
+	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
+		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
+		if ((CHUNK.checkblock(lx, ly, floor(lz - 0.5)).id != AIR) || (CHUNK.checkblock(lx, ly, floor(lz + 0.5)).id != AIR)) {
+			return true;
+		}
+	}
+	return false;
+}
+

@@ -41,7 +41,7 @@ int py1_ = 0;
 int nz1_ = 0;
 int pz1_ = 0;
 
-char lightCvalue_ = 12;
+char lightCvalue_ = 5;
 char lightMvalue_ = 15;
 
 int xDataBitOffset = 0;
@@ -790,66 +790,66 @@ void ChunkMesh::SaddSidenx(int x, int y, int z, ivec3 local_pos, char B_ID) {
 	SMesh->add(x, y, z, B_ID, a, b, a1, b1, nx);
 }
 void ChunkMesh::SaddSidepx(int x, int y, int z, ivec3 local_pos, char B_ID) {
-	int a = lightMvalue_;
-	int b = lightMvalue_;
-	int a1 = lightMvalue_;
-	int b1 = lightMvalue_;
+	int br = lightMvalue_;
+	int bl = lightMvalue_;
+	int tl = lightMvalue_;
+	int tr = lightMvalue_;
 	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] - 1, local_pos[2]).transparent()) {
-		a = lightCvalue_;
-		b = lightCvalue_;
+		br = lightCvalue_;
+		bl = lightCvalue_;
 	}
 	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] + 1, local_pos[2]).transparent()) {
-		a1 = lightCvalue_;
-		b1 = lightCvalue_;
+		tr = lightCvalue_;
+		tl = lightCvalue_;
 	}
 	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1], local_pos[2] + 1).transparent()) {
-		a1 = lightCvalue_;
-		b = lightCvalue_;
+		tl = lightCvalue_;
+		bl = lightCvalue_;
 	}
 	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1], local_pos[2] - 1).transparent()) {
-		b1 = lightCvalue_;
-		a = lightCvalue_;
+		br = lightCvalue_;
+		tr = lightCvalue_;
 	}
 	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] + 1, local_pos[2] + 1).transparent())
-		b1 = lightCvalue_;
+		tr = lightCvalue_;
 	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] + 1, local_pos[2] - 1).transparent())
-		a1 = lightCvalue_;
+		tl = lightCvalue_;
 	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] - 1, local_pos[2] - 1).transparent())
-		a = lightCvalue_;
+		bl = lightCvalue_;
 	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] - 1, local_pos[2] + 1).transparent())
-		b = lightCvalue_;
-	SMesh->add(x, y, z, B_ID, a, b, a1, b1, px);
+		br = lightCvalue_;
+	SMesh->add(x, y, z, B_ID, br, bl, tl, tr, px);
 }
 void ChunkMesh::SaddSidenz(int x, int y, int z, ivec3 local_pos, char B_ID) {
-	int a = lightMvalue_;
-	int b = lightMvalue_;
-	int a1 = lightMvalue_;
-	int b1 = lightMvalue_;
+	int br = lightMvalue_;
+	int bl = lightMvalue_;
+	int tl = lightMvalue_;
+	int tr = lightMvalue_;
 	if (!chunk->checkblock(local_pos[0], local_pos[1] - 1, local_pos[2] - 1).transparent()) {
-		a = lightCvalue_;
-		b = lightCvalue_;
+		br = lightCvalue_;
+		bl = lightCvalue_;
 	}
 	if (!chunk->checkblock(local_pos[0], local_pos[1] + 1, local_pos[2] - 1).transparent()) {
-		a1 = lightCvalue_;
-		b1 = lightCvalue_;
+		tr = lightCvalue_;
+		tl = lightCvalue_;
 	}
 	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1], local_pos[2] - 1).transparent()) {
-		a1 = lightCvalue_;
-		b = lightCvalue_;
+		tl = lightCvalue_;
+		bl = lightCvalue_;
 	}
 	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1], local_pos[2] - 1).transparent()) {
-		b1 = lightCvalue_;
-		a = lightCvalue_;
+		br = lightCvalue_;
+		tr = lightCvalue_;
 	}
 	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] + 1, local_pos[2] - 1).transparent())
-		b1 = lightCvalue_;
+		tl = lightCvalue_;
 	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] + 1, local_pos[2] - 1).transparent())
-		a1 = lightCvalue_;
+		tr = lightCvalue_;
 	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] - 1, local_pos[2] - 1).transparent())
-		a = lightCvalue_;
+		br = lightCvalue_;
 	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] - 1, local_pos[2] - 1).transparent())
-		b = lightCvalue_;
-	SMesh->add(x, y, z, B_ID, a, b, a1, b1, nz);
+		bl = lightCvalue_;
+	SMesh->add(x, y, z, B_ID, br, bl, tl, tr, nz); // (br,bf,tf,tr)
 }
 void ChunkMesh::SaddSidepz(int x, int y, int z, ivec3 local_pos, char B_ID) {
 	char a = lightMvalue_;
