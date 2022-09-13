@@ -195,6 +195,10 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 //	MoveEntity(player, 0, -Gravity * delta, 0);
 }
 
+glm::vec3 ClientWorld::GetPlayerPos() {
+	return glm::vec3(player->PosX,player->PosY,player->PosZ);
+}
+
 void ClientWorld::DumpRenderQueuedData() {
 	
 	std::unordered_map<CHUNK_ID, Chunk> Map = RenderChunkUpdateQueue.DumpData();

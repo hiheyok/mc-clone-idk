@@ -22,6 +22,8 @@ public:
 	void PrepareRenderer();
 	void Tick();
 
+	glm::vec3 GetPlayerPos();
+
 	double Gravity = 10.0;
 	double MouseSens = 0.25;
 
