@@ -324,14 +324,14 @@ void ClientWorld::MoveEntity(Entity* ENTITY, double x, double y, double z) {
 		}
 
 		if (y > 0) {
-			if (CHUNK.checkblock(lx, floor(ly + y + size), lz).id != AIR) {
+			if (CHUNK.checkblock(lx, floor(ly + y + size + 1), lz).id != AIR) {
 			//	if (ENTITY->AABB.TestIntersect(lx, ly + 1 - y, lz)) {
 					collusion_y = true;
 			//	}
 			}
 		}
 		if (y < 0) {
-			if (CHUNK.checkblock(lx, floor(ly - y - size), lz).id != AIR) {
+			if (CHUNK.checkblock(lx, floor(ly - y - size - 1), lz).id != AIR) {
 			//	if (ENTITY->AABB.TestIntersect(lx, ly - 1 + y, lz)) {
 					collusion_y = true;
 			//	}
@@ -375,7 +375,7 @@ bool ClientWorld::TestIfEntityOnGround(Entity* ENTITY) {
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
 		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
-		if (CHUNK.checkblock(lx, floor(ly - size), lz).id != AIR) {
+		if (CHUNK.checkblock(lx, floor(ly - size -1), lz).id != AIR) {
 			return true;
 		}
 	}

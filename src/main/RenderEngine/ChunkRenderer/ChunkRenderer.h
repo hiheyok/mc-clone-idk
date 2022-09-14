@@ -214,9 +214,10 @@ public:
 
 	void draw() {
 		glClearColor(0.46274509803f, 0.65882352941f,1.0f,1.0);
-	//	glEnable(GL_BLEND);
+		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_DEPTH_TEST);
+	//	glDepthFunc(GL_ALWAYS);
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_FRONT);
 
@@ -236,7 +237,7 @@ public:
 		glBindVertexArray(0);
 	//	
 		glDisable(GL_CULL_FACE);
-	//	glDisable(GL_BLEND);
+		glDisable(GL_BLEND);
 		glDisable(GL_DEPTH_TEST);
 	}
 
@@ -257,7 +258,7 @@ public:
 		SolidShader->setMat4("view", view);
 		SolidShader->setMat4("model", model);
 		SolidShader->setMat4("projection", projection);
-		SolidShader->setFloat("RenderDistance", (float)(RenderDistance * CHUNK_SIZE));
+		SolidShader->setFloat("RenderDistance", (float)(16 * 16));
 		SolidShader->setVec3("camPos", camera->Position);
 	}
 
@@ -352,7 +353,7 @@ public:
 
 	//Settings
 
-	int RenderDistance = 100;
+	int RenderDistance = 16;
 
 private:
 
