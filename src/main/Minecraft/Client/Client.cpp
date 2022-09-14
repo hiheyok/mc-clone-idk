@@ -82,8 +82,11 @@ void Client::Update() {
     GUI.addGUIresizedTexturewFont("FPS_HIGH", std::to_string((int)FPS_HIGH) + " FPS_HIGH", vec2(0.6f, 1.f), vec2(-1.2, 0.4), vec3(255, 0, 255), vec2(0, 66), vec2(199, 86), vec2(256, 256), true, 4);
     GUI.addToRenderQueue("FPS_HIGH");
     GUI.deleteFromRenderQueue("POS");
-    GUI.addGUIresizedTexturewFont("POS", "Pos " + std::to_string((int)cworld.GetPlayerPos().x) + " " + std::to_string((int)cworld.GetPlayerPos().y) + " " + std::to_string((int)cworld.GetPlayerPos().z), vec2(0.8f, 1.0f), vec2(-1.1, 0.2), vec3(255, 0, 255), vec2(0, 66), vec2(199, 86), vec2(256, 256), true, 4);
+    GUI.addGUIresizedTexturewFont("POS", "Pos " + std::to_string(cworld.GetPlayerPos().x) + " " + std::to_string(cworld.GetPlayerPos().y) + " " + std::to_string(cworld.GetPlayerPos().z), vec2(0.8f, 0.6f), vec2(-1.1, 0.2), vec3(255, 0, 255), vec2(0, 66), vec2(199, 86), vec2(256, 256), true, 4);
     GUI.addToRenderQueue("POS");
+    GUI.deleteFromRenderQueue("SPEED");
+    GUI.addGUIresizedTexturewFont("SPEED", "SPEED " + std::to_string(cworld.GetPlayerSpeed().x) + " " + std::to_string(cworld.GetPlayerSpeed().y) + " " + std::to_string(cworld.GetPlayerSpeed().z), vec2(0.8f, 0.6f), vec2(-1.1, 0.0), vec3(255, 0, 255), vec2(0, 66), vec2(199, 86), vec2(256, 256), true, 4);
+    GUI.addToRenderQueue("SPEED");
 
     GUI.prepareRenderer();
     

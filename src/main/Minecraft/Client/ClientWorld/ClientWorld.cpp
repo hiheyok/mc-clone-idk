@@ -104,7 +104,7 @@ void ClientWorld::AddChunkToRenderQueue(Chunk chunk) {
 
 void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> KeysInputs, glm::vec2 MouseMovement) {
 
-	
+	//lta = 1.0;
 	double rad = 0.0174533; //deg to rad
 
 	//Process Rotation
@@ -125,7 +125,7 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 		player->RotY -= 360.0f;
 	
 	double accerlation = 35.0;
-	double friction = 2.0;
+	double friction = 3.0;
 	double Distance = 15 * delta;
 
 	if (!TestIfEntityOnGround(player)) {
@@ -147,15 +147,38 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 		
 	}
 	else {
-		player->VelocityX = player->VelocityX - ((player->VelocityX * delta) * (friction * 0.4));
-		//player->VelocityY = player->VelocityY - ((player->VelocityY * delta) * (1 - friction));
-		player->VelocityZ = player->VelocityZ - ((player->VelocityZ * delta) * (friction * 0.4));
+		player->VelocityX = player->VelocityX - ((player->VelocityX * delta) * (friction * 0.35));
+		player->VelocityY = player->VelocityY - ((player->VelocityY * delta) * (friction * 0.175));
+		player->VelocityZ = player->VelocityZ - ((player->VelocityZ * delta) * (friction * 0.35));
 	}
 
+	if (player->VelocityX < 0) {
+		if (TestIfEntityTouchBlockXN(player)) {
+			player->VelocityX = player->VelocityX - ((player->VelocityX * delta) * (friction * 5));
+		}
+	}
+
+	if (player->VelocityZ < 0) {
+		if (TestIfEntityTouchBlockZN(player)) {
+			player->VelocityZ = player->VelocityZ - ((player->VelocityZ * delta) * (friction * 5));
+		}
+	}
+
+	if (player->VelocityX > 0) {
+		if (TestIfEntityTouchBlockXP(player)) {
+			player->VelocityX = player->VelocityX - ((player->VelocityX * delta) * (friction * 5));
+		}
+	}
+
+	if (player->VelocityZ > 0) {
+		if (TestIfEntityTouchBlockZP(player)) {
+			player->VelocityZ = player->VelocityZ - ((player->VelocityZ * delta) * (friction * 5));
+		}
+	}
 
 	//Process movemnet
 	if (KeysInputs.count('R') || KeysInputs.count('r')) {
-		player->SetPosition(0,500,0);
+		player->SetPosition(0,250,0);
 	}
 	if (KeysInputs.count('W') || KeysInputs.count('w')) {
 		player->VelocityX += Distance * cos(rad * player->RotY);
@@ -196,8 +219,13 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 }
 
 glm::vec3 ClientWorld::GetPlayerPos() {
-	return glm::vec3(player->PosX,player->PosY,player->PosZ);
+	return glm::vec3(player->PosX, player->PosY, player->PosZ);
 }
+
+glm::vec3 ClientWorld::GetPlayerSpeed() {
+	return glm::vec3(player->VelocityX, player->VelocityY, player->VelocityZ);
+}
+
 
 void ClientWorld::DumpRenderQueuedData() {
 	
@@ -258,7 +286,7 @@ void ClientWorld::ClientWorldMainLoop() {
 void ClientWorld::Tick() {
 	//MoveEntity(player, 0, -Gravity, 0);
 }
-
+double size = 1;
 void ClientWorld::MoveEntity(Entity* ENTITY, double x, double y, double z) {
 	int cx = floor(ENTITY->PosX / 16.0);
 	int cy = floor(ENTITY->PosY / 16.0);
@@ -278,7 +306,7 @@ void ClientWorld::MoveEntity(Entity* ENTITY, double x, double y, double z) {
 		getLogger()->LogDebug("Client World", "Global Pos: " + std::to_string(ENTITY->PosX) + ", " + std::to_string(ENTITY->PosY) + ", " + std::to_string(ENTITY->PosZ));*/
 		Chunk CHUNK = ChunkCache.get(getChunkID(cx,cy,cz));
 
-		double size = 0.5;
+		
 
 		if (x > 0) {
 			if (CHUNK.checkblock(floor(lx + x + size), ly, lz).id != AIR) {
@@ -347,14 +375,14 @@ bool ClientWorld::TestIfEntityOnGround(Entity* ENTITY) {
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
 		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
-		if (CHUNK.checkblock(lx, floor(ly - 0.5), lz).id != AIR) {
+		if (CHUNK.checkblock(lx, floor(ly - size), lz).id != AIR) {
 			return true;
 		}
 	}
 	return false;
 }
 
-bool ClientWorld::TestIfEntityTouchBlockX(Entity* ENTITY) {
+bool ClientWorld::TestIfEntityTouchBlockXP(Entity* ENTITY) {
 	int cx = floor(ENTITY->PosX / 16.0);
 	int cy = floor(ENTITY->PosY / 16.0);
 	int cz = floor(ENTITY->PosZ / 16.0);
@@ -365,7 +393,7 @@ bool ClientWorld::TestIfEntityTouchBlockX(Entity* ENTITY) {
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
 		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
-		if ((CHUNK.checkblock(floor(lx - 0.5), ly, lz).id != AIR) || (CHUNK.checkblock(floor(lx + 0.5), ly, lz).id != AIR)) {
+		if ((CHUNK.checkblock(floor(lx + size), ly, lz).id != AIR)) {
 			return true;
 		}
 
@@ -373,7 +401,7 @@ bool ClientWorld::TestIfEntityTouchBlockX(Entity* ENTITY) {
 	return false;
 }
 
-bool ClientWorld::TestIfEntityTouchBlockZ(Entity* ENTITY) {
+bool ClientWorld::TestIfEntityTouchBlockZP(Entity* ENTITY) {
 	int cx = floor(ENTITY->PosX / 16.0);
 	int cy = floor(ENTITY->PosY / 16.0);
 	int cz = floor(ENTITY->PosZ / 16.0);
@@ -384,7 +412,45 @@ bool ClientWorld::TestIfEntityTouchBlockZ(Entity* ENTITY) {
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
 		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
-		if ((CHUNK.checkblock(lx, ly, floor(lz - 0.5)).id != AIR) || (CHUNK.checkblock(lx, ly, floor(lz + 0.5)).id != AIR)) {
+		if ((CHUNK.checkblock(lx, ly, floor(lz + size)).id != AIR)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
+bool ClientWorld::TestIfEntityTouchBlockXN(Entity* ENTITY) {
+	int cx = floor(ENTITY->PosX / 16.0);
+	int cy = floor(ENTITY->PosY / 16.0);
+	int cz = floor(ENTITY->PosZ / 16.0);
+
+	double lx = floor(ENTITY->PosX - (double)(floor(ENTITY->PosX / 16.0) * 16));
+	double ly = floor(ENTITY->PosY - (double)(floor(ENTITY->PosY / 16.0) * 16));
+	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
+
+	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
+		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
+		if ((CHUNK.checkblock(floor(lx - size), ly, lz).id != AIR)) {
+			return true;
+		}
+
+	}
+	return false;
+}
+
+bool ClientWorld::TestIfEntityTouchBlockZN(Entity* ENTITY) {
+	int cx = floor(ENTITY->PosX / 16.0);
+	int cy = floor(ENTITY->PosY / 16.0);
+	int cz = floor(ENTITY->PosZ / 16.0);
+
+	double lx = floor(ENTITY->PosX - (double)(floor(ENTITY->PosX / 16.0) * 16));
+	double ly = floor(ENTITY->PosY - (double)(floor(ENTITY->PosY / 16.0) * 16));
+	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
+
+	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
+		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
+		if ((CHUNK.checkblock(lx, ly, floor(lz - size)).id != AIR)) {
 			return true;
 		}
 	}

@@ -23,6 +23,7 @@ public:
 	void Tick();
 
 	glm::vec3 GetPlayerPos();
+	glm::vec3 GetPlayerSpeed();
 
 	double Gravity = 10.0;
 	double MouseSens = 0.25;
@@ -30,8 +31,11 @@ public:
 private:
 	
 	bool TestIfEntityOnGround(Entity* ENTITY);
-	bool TestIfEntityTouchBlockX(Entity* ENTITY);
-	bool TestIfEntityTouchBlockZ(Entity* ENTITY);
+	bool TestIfEntityTouchBlockXP(Entity* ENTITY);
+	bool TestIfEntityTouchBlockZP(Entity* ENTITY);
+
+	bool TestIfEntityTouchBlockXN(Entity* ENTITY);
+	bool TestIfEntityTouchBlockZN(Entity* ENTITY);
 	void MoveEntity(Entity* ENTITY, double x, double y, double z);
 	void DumpRenderQueuedData();
 	
