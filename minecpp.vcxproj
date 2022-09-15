@@ -153,7 +153,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <IntelJCCErratum>true</IntelJCCErratum>
+      <IntelJCCErratum>false</IntelJCCErratum>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -213,6 +213,7 @@
     <ClInclude Include="src\main\Minecraft\Client\WorldMGR\WorldMGR.h" />
     <ClInclude Include="src\main\Minecraft\Core.h" />
     <ClInclude Include="src\main\Minecraft\Core\Registry.h" />
+    <ClInclude Include="src\main\Minecraft\World\AABB\AABB.h" />
     <ClInclude Include="src\main\Minecraft\World\Entity\Entities\Player.h" />
     <ClInclude Include="src\main\Minecraft\World\Entity\Entity.h" />
     <ClInclude Include="src\main\Minecraft\World\Entity\EntityType.h" />

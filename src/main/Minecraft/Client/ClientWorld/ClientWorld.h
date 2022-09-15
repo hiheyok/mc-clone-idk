@@ -31,6 +31,8 @@ public:
 private:
 	
 	bool TestIfEntityOnGround(Entity* ENTITY);
+	bool TestIfEntityTouchBlockYP(Entity* ENTITY);
+
 	bool TestIfEntityTouchBlockXP(Entity* ENTITY);
 	bool TestIfEntityTouchBlockZP(Entity* ENTITY);
 

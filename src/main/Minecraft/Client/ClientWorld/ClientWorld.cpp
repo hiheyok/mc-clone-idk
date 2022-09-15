@@ -13,7 +13,7 @@ void ClientWorld::Start(GLFWwindow* window_) {
 	ClientWorldThread = std::thread(&ClientWorld::ClientWorldMainLoop, this);
 	player = new Player();
 	player->Build();
-	player->PosY = 500;
+	player->PosY = 100;
 	TerrrainRenderer = new ChunkRenderer;
 	TerrrainRenderer->init(window_, &camera);
 }
@@ -176,9 +176,16 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 		}
 	}
 
+	if (player->VelocityY > 0) {
+		if (TestIfEntityTouchBlockYP(player)) {
+			player->VelocityY = player->VelocityY - ((player->VelocityY * delta) * (friction * accerlation));
+		}
+	}
+
+
 	//Process movemnet
 	if (KeysInputs.count('R') || KeysInputs.count('r')) {
-		player->SetPosition(0,250,0);
+		player->SetPosition(0,100,0);
 	}
 	if (KeysInputs.count('W') || KeysInputs.count('w')) {
 		player->VelocityX += Distance * cos(rad * player->RotY);
@@ -381,6 +388,25 @@ bool ClientWorld::TestIfEntityOnGround(Entity* ENTITY) {
 	}
 	return false;
 }
+
+bool ClientWorld::TestIfEntityTouchBlockYP(Entity* ENTITY) {
+	int cx = floor(ENTITY->PosX / 16.0);
+	int cy = floor(ENTITY->PosY / 16.0);
+	int cz = floor(ENTITY->PosZ / 16.0);
+
+	double lx = floor(ENTITY->PosX - (double)(floor(ENTITY->PosX / 16.0) * 16));
+	double ly = floor(ENTITY->PosY - (double)(floor(ENTITY->PosY / 16.0) * 16));
+	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
+
+	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
+		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
+		if (CHUNK.checkblock(lx, floor(ly + size + 1), lz).id != AIR) {
+			return true;
+		}
+	}
+	return false;
+}
+
 
 bool ClientWorld::TestIfEntityTouchBlockXP(Entity* ENTITY) {
 	int cx = floor(ENTITY->PosX / 16.0);
