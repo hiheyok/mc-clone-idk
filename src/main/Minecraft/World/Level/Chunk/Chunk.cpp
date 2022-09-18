@@ -8,6 +8,68 @@
 double TREE_RAND_VAL = 0.5;
 double TREE_RAND_VAL_RANGE = .01f;
 
+struct vector2 {
+	float x = 0;
+	float y = 0;
+	float angle = 0;
+	float length = 0;
+};
+
+vector2 subtractVec2(vector2 a, vector2 b) {
+	vector2 c;
+	c.x = a.x - b.x;
+	c.y = a.y - b.y;
+	return c;
+}
+
+
+float dotproduct(vector2 a, vector2 b) {
+	return (a.x * b.x) + (a.y * b.y);
+}
+
+float interpolate(float val) {
+	return 3 * pow(val, 2) - 2 * pow(val, 3);
+}
+
+float getNoise(vector2 pos) {
+	//gradient
+	vector2 tl, tr, bl, br;
+	tl.x = floor(pos.x);
+	tl.y = floor(pos.y) + 1.0f;
+
+	tr.x = floor(pos.x) + 1.0f;
+	tr.y = floor(pos.y) + 1.0f;
+
+	bl.x = floor(pos.x);
+	bl.y = floor(pos.y);
+
+	br.x = floor(pos.x) + 1.0f;
+	br.y = floor(pos.y);
+
+	vector2 gtl, gtr, gbl, gbr;
+	gtl = tl;
+	gtr = tr;
+	gbr = br;
+	gbl = bl;
+
+	gtl = subtractVec2(pos, gtl);
+	gtr = subtractVec2(pos, gtr);
+	gbl = subtractVec2(pos, gbl);
+	gbr = subtractVec2(pos, gbr);
+
+	float s = dotproduct(tl, gtl);
+	float t = dotproduct(tr, gtr);
+	float u = dotproduct(br, gbr);
+	float v = dotproduct(bl, gbl);
+
+	float a = interpolate(t - s);
+	float b = interpolate(v - u);
+
+	return interpolate(a - b);
+
+
+}
+
 void Chunk::gen_chunk(FastNoiseLite* noise) {
 
 	noise->SetFrequency(0.009f);
@@ -79,6 +141,8 @@ void Chunk::gen_chunk(FastNoiseLite* noise) {
 //	dumpMem(str.c_str());
 }
 
+#include "../../../../Utils/LogUtils.h"
+
 void Chunk::gen_chunkTerrain(FastNoiseLite* noise) {
 
 
@@ -94,30 +158,21 @@ void Chunk::gen_chunkTerrain(FastNoiseLite* noise) {
 	for (int x = 0 + cx; x < CHUNK_SIZE + cx; x++) {
 		for (int z = 0 + cz; z < CHUNK_SIZE + cz; z++) {
 
-			float h = (noise->GetNoise((float)x, (float)z, (float)SEED) + 1) * 0.5f;
-			float wideMap = ((noise->GetNoise((float)x / 10, (float)z / 10, (float)SEED) + 1) * 0.5f);
+			vector2 a;
+			a.x = x / 1000.f;
+			a.y = z / 1000.f;
+			float h = getNoise(a);
 
-			float h2 = ((noise->GetNoise((float)x, (float)z, (float)SEED))) * 10;
+			getLogger()->LogDebug("World", "Noise: " + std::to_string(h));
 
 			for (int y = 0 + cy; y < CHUNK_SIZE + cy; y++) {
 
-
-
-				float xn = noise->GetNoise((float)x * nscale , (float)y * nscale + h2, (float)z * nscale ) * amplified * 3;
-
-				float HEIGHT_MAP = (xn + y) * h;
 				
-				if (100 >= HEIGHT_MAP && 17 <= HEIGHT_MAP) {
-					if (y < 33) {
-						addblock(x, y, z, WATER);
-					}
+				if (y < h) {
+					addblock(x,y,z, STONE);
 				}
-				if (17 >= HEIGHT_MAP && 16 <= HEIGHT_MAP) {
-					addblock(x, y, z, GRASS);
-				}
-				if (16 >= HEIGHT_MAP && -100 <= HEIGHT_MAP) {
-					addblock(x, y, z, DIRT);
-				}
+
+
 			}
 		}
 	}

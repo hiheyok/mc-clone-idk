@@ -258,7 +258,7 @@ public:
 		SolidShader->setMat4("view", view);
 		SolidShader->setMat4("model", model);
 		SolidShader->setMat4("projection", projection);
-		SolidShader->setFloat("RenderDistance", (float)(16 * 16));
+		SolidShader->setFloat("RenderDistance", (float)(RenderDistance * 16));
 		SolidShader->setVec3("camPos", camera->Position);
 	}
 
@@ -353,7 +353,7 @@ public:
 
 	//Settings
 
-	int RenderDistance = 16;
+	int RenderDistance = 32;
 
 private:
 

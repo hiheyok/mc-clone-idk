@@ -33,13 +33,6 @@ using namespace glm;
 
 bool enableBlockShading_ = true;
 
-int nx1_ = 0;
-int px1_ = 0;
-int ny1_ = 0;
-int py1_ = 0;
-int nz1_ = 0;
-int pz1_ = 0;
-
 char lightCvalue_ = 10;
 char lightMvalue_ = 15;
 

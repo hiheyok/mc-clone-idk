@@ -20,6 +20,10 @@ void Client::Initialize() {
     TestWorld.StartGenThreads(16);
 
     cworld.Start(getWindow());
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
     DisableCursor();
 
     TestWorld.JoinWorld("hiheyok", &cworld);

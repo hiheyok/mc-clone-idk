@@ -110,6 +110,14 @@ public:
 
 	bool checkBlockTransparency(unsigned char type);
 
+	void clearChunk() {
+		Block block;
+		block.id = AIR;
+		for (int i = 0; i < 16 * 16 * 16; i++) {
+			data[i] = block;
+		}
+	}
+
 	void setNeighborPY(Chunk* chunk) {
 		neighbors[0] = chunk;
 	}

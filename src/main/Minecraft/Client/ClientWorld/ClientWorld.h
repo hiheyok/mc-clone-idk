@@ -21,6 +21,7 @@ public:
 	void Render();
 	void PrepareRenderer();
 	void Tick();
+	void AddMeshWorker();
 
 	glm::vec3 GetPlayerPos();
 	glm::vec3 GetPlayerSpeed();
@@ -43,17 +44,19 @@ private:
 	
 	void AddChunkToRenderQueue(Chunk chunk);
 	void UpdateChunks();
+	void MesherWorker();
 
 	ChunkRenderer* TerrrainRenderer = nullptr;
 	Entity* player = nullptr;
 	Camera camera;
 
 	AsyncDeque<Chunk> ChunkAddQueue;
+	AsyncDeque<glm::ivec3> ChunkMeshQueue;
 //	AsyncDeque<???> BlockUpdates; //Work on later
 	AsyncHashMapClass<CHUNK_ID, Chunk> ChunkCache;
-	AsyncHashMapClass<CHUNK_ID, Chunk> RenderChunkUpdateQueue;
 
 	bool stop = false;
 
+	std::deque<std::thread> MeshWorkers;
 	std::thread ClientWorldThread;
 };

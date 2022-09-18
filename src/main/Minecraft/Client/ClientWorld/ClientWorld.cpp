@@ -13,7 +13,7 @@ void ClientWorld::Start(GLFWwindow* window_) {
 	ClientWorldThread = std::thread(&ClientWorld::ClientWorldMainLoop, this);
 	player = new Player();
 	player->Build();
-	player->PosY = 100;
+	player->PosY = 128;
 	TerrrainRenderer = new ChunkRenderer;
 	TerrrainRenderer->init(window_, &camera);
 }
@@ -34,71 +34,34 @@ void ClientWorld::UpdateChunks() {
 		if (ChunkCache.count(getChunkID(x, y + 1, z))) {
 			ChunkCache.RunObjFunction(getChunkID(x, y + 1, z), &Chunk::setNeighborNY, ChunkCache.getAddress(ChunkID));
 			ChunkCache.RunObjFunction(ChunkID, &Chunk::setNeighborPY, ChunkCache.getAddress(getChunkID(x, y + 1, z)));
-			AddChunkToRenderQueue(ChunkCache.get(getChunkID(x, y + 1, z)));
+			ChunkMeshQueue.emplace_back(glm::vec3(x, y + 1, z));
 		}
 		if (ChunkCache.count(getChunkID(x, y - 1, z))) {
 			ChunkCache.RunObjFunction(getChunkID(x, y - 1, z), &Chunk::setNeighborPY, ChunkCache.getAddress(ChunkID));
 			ChunkCache.RunObjFunction(ChunkID, &Chunk::setNeighborNY, ChunkCache.getAddress(getChunkID(x, y - 1, z)));
-			AddChunkToRenderQueue(ChunkCache.get(getChunkID(x, y - 1, z)));
+			ChunkMeshQueue.emplace_back(glm::vec3(x, y - 1, z));
 		}
 		if (ChunkCache.count(getChunkID(x + 1, y, z))) {
 			ChunkCache.RunObjFunction(getChunkID(x + 1, y, z), &Chunk::setNeighborNX, ChunkCache.getAddress(ChunkID));
 			ChunkCache.RunObjFunction(ChunkID, &Chunk::setNeighborPX, ChunkCache.getAddress(getChunkID(x + 1, y, z)));
-			AddChunkToRenderQueue(ChunkCache.get(getChunkID(x + 1, y, z)));
+			ChunkMeshQueue.emplace_back(glm::vec3(x + 1, y, z));
 		}
 		if (ChunkCache.count(getChunkID(x - 1, y, z))) {
 			ChunkCache.RunObjFunction(getChunkID(x - 1, y, z), &Chunk::setNeighborPX, ChunkCache.getAddress(ChunkID));
 			ChunkCache.RunObjFunction(ChunkID, &Chunk::setNeighborNX, ChunkCache.getAddress(getChunkID(x - 1, y, z)));
-			AddChunkToRenderQueue(ChunkCache.get(getChunkID(x - 1, y, z)));
+			ChunkMeshQueue.emplace_back(glm::vec3(x - 1, y, z));
 		}
 		if (ChunkCache.count(getChunkID(x, y, z + 1))) {
 			ChunkCache.RunObjFunction(getChunkID(x, y, z + 1), &Chunk::setNeighborNZ, ChunkCache.getAddress(ChunkID));
 			ChunkCache.RunObjFunction(ChunkID, &Chunk::setNeighborPZ, ChunkCache.getAddress(getChunkID(x, y, z + 1)));
-			AddChunkToRenderQueue(ChunkCache.get(getChunkID(x, y, z + 1)));
+			ChunkMeshQueue.emplace_back(glm::vec3(x, y, z + 1));
 		}
 		if (ChunkCache.count(getChunkID(x, y, z - 1))) {
 			ChunkCache.RunObjFunction(getChunkID(x, y, z - 1), &Chunk::setNeighborPZ, ChunkCache.getAddress(ChunkID));
 			ChunkCache.RunObjFunction(ChunkID, &Chunk::setNeighborNZ, ChunkCache.getAddress(getChunkID(x, y, z - 1)));
-			AddChunkToRenderQueue(ChunkCache.get(getChunkID(x, y, z - 1)));
+			ChunkMeshQueue.emplace_back(glm::vec3(x, y, z - 1));
 		}
-		AddChunkToRenderQueue(chunk);
-	}
-}
-
-void ClientWorld::AddChunkToRenderQueue(Chunk chunk) {
-
-	chunk.clearNeighbors();
-
-	int x = chunk.pos.x;
-	int y = chunk.pos.y;
-	int z = chunk.pos.z;
-
-	CHUNK_ID ChunkID = getChunkID(x, y, z);
-	RenderChunkUpdateQueue.insert(ChunkID, chunk); // Copy Chunk To Loaded Cache
-	RenderChunkUpdateQueue.RunObjFunction(ChunkID, &Chunk::clearNeighbors);
-	if (RenderChunkUpdateQueue.count(getChunkID(x, y + 1, z))) {
-		RenderChunkUpdateQueue.RunObjFunction(getChunkID(x, y + 1, z), &Chunk::setNeighborNY, RenderChunkUpdateQueue.getAddress(ChunkID));
-		RenderChunkUpdateQueue.RunObjFunction(ChunkID, &Chunk::setNeighborPY, RenderChunkUpdateQueue.getAddress(getChunkID(x, y + 1, z)));
-	}
-	if (RenderChunkUpdateQueue.count(getChunkID(x, y - 1, z))) {
-		RenderChunkUpdateQueue.RunObjFunction(getChunkID(x, y - 1, z), &Chunk::setNeighborPY, RenderChunkUpdateQueue.getAddress(ChunkID));
-		RenderChunkUpdateQueue.RunObjFunction(ChunkID, &Chunk::setNeighborNY, RenderChunkUpdateQueue.getAddress(getChunkID(x, y - 1, z)));
-	}
-	if (RenderChunkUpdateQueue.count(getChunkID(x + 1, y, z))) {
-		RenderChunkUpdateQueue.RunObjFunction(getChunkID(x + 1, y, z), &Chunk::setNeighborNX, RenderChunkUpdateQueue.getAddress(ChunkID));
-		RenderChunkUpdateQueue.RunObjFunction(ChunkID, &Chunk::setNeighborPX, RenderChunkUpdateQueue.getAddress(getChunkID(x + 1, y, z)));
-	}
-	if (RenderChunkUpdateQueue.count(getChunkID(x - 1, y, z))) {
-		RenderChunkUpdateQueue.RunObjFunction(getChunkID(x - 1, y, z), &Chunk::setNeighborPX, RenderChunkUpdateQueue.getAddress(ChunkID));
-		RenderChunkUpdateQueue.RunObjFunction(ChunkID, &Chunk::setNeighborNX, RenderChunkUpdateQueue.getAddress(getChunkID(x - 1, y, z)));
-	}
-	if (RenderChunkUpdateQueue.count(getChunkID(x, y, z + 1))) {
-		RenderChunkUpdateQueue.RunObjFunction(getChunkID(x, y, z + 1), &Chunk::setNeighborNZ, RenderChunkUpdateQueue.getAddress(ChunkID));
-		RenderChunkUpdateQueue.RunObjFunction(ChunkID, &Chunk::setNeighborPZ, RenderChunkUpdateQueue.getAddress(getChunkID(x, y, z + 1)));
-	}
-	if (RenderChunkUpdateQueue.count(getChunkID(x, y, z - 1))) {
-		RenderChunkUpdateQueue.RunObjFunction(getChunkID(x, y, z - 1), &Chunk::setNeighborPZ, RenderChunkUpdateQueue.getAddress(ChunkID));
-		RenderChunkUpdateQueue.RunObjFunction(ChunkID, &Chunk::setNeighborNZ, RenderChunkUpdateQueue.getAddress(getChunkID(x, y, z - 1)));
+		ChunkMeshQueue.emplace_back(glm::vec3(x, y, z));
 	}
 }
 
@@ -185,7 +148,7 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 
 	//Process movemnet
 	if (KeysInputs.count('R') || KeysInputs.count('r')) {
-		player->SetPosition(0,100,0);
+		player->SetPosition(0,128,0);
 	}
 	if (KeysInputs.count('W') || KeysInputs.count('w')) {
 		player->VelocityX += Distance * cos(rad * player->RotY);
@@ -233,29 +196,76 @@ glm::vec3 ClientWorld::GetPlayerSpeed() {
 	return glm::vec3(player->VelocityX, player->VelocityY, player->VelocityZ);
 }
 
+void ClientWorld::MesherWorker() {
+	ChunkMesh Mesher;
+	
+	Chunk PX, NX, PY, NY, PZ, NZ;
 
-void ClientWorld::DumpRenderQueuedData() {
-	
-	std::unordered_map<CHUNK_ID, Chunk> Map = RenderChunkUpdateQueue.DumpData();
-	RenderChunkUpdateQueue.clear();
-	
-	for (auto& chunk : Map) {
-		if (!chunk.second.isEmpty()) {
-			ChunkMesh mesh;
-			mesh.chunk = &chunk.second;
-			mesh.SmartGreedyMeshing();
-			ChunkVerticesData Vertices;
-			Vertices.SolidVertices = mesh.vertices;
-			Vertices.TransparentVertices = mesh.transparentVertices;
-			Vertices.x = chunk.second.pos.x;
-			Vertices.y = chunk.second.pos.y;
-			Vertices.z = chunk.second.pos.z;
-			TerrrainRenderer->AddChunkQueue(Vertices);
+	Chunk chunk;
+
+	while (!stop) {
+		while (ChunkMeshQueue.empty()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(12)); 
 		}
-	}
 
-	Map.clear();
+		PX.clearChunk();
+		NX.clearChunk();
+		PY.clearChunk();
+		NY.clearChunk();
+		PZ.clearChunk();
+		NZ.clearChunk();
+		chunk.clearChunk();
+
+		glm::ivec3 ChunkPos = ChunkMeshQueue.pop_get_front();
+
+
+		chunk = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z)));
+
+		chunk.clearNeighbors();
+		chunk.setNeighborNX(&NX);
+		chunk.setNeighborPX(&PX);
+		chunk.setNeighborNY(&NY);
+		chunk.setNeighborPY(&PY);
+		chunk.setNeighborNZ(&NZ);
+		chunk.setNeighborPZ(&PZ);
+
+		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x - 1, ChunkPos.y, ChunkPos.z)))) {
+			NX = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x - 1, ChunkPos.y, ChunkPos.z)));
+		}
+		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x + 1, ChunkPos.y, ChunkPos.z)))) {
+			PX = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x + 1, ChunkPos.y, ChunkPos.z)));
+		}
+		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y - 1, ChunkPos.z)))) {
+			NY = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y - 1, ChunkPos.z)));
+		}
+		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y + 1, ChunkPos.z)))) {
+			PY = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y + 1, ChunkPos.z)));
+		}
+		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z - 1)))) {
+			NZ = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z - 1)));
+		}
+		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z + 1)))) {
+			PZ = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z + 1)));
+		}
+
+		Mesher.chunk = &chunk;
+		Mesher.SmartGreedyMeshing();
+		ChunkVerticesData MeshData;
+		MeshData.x = ChunkPos.x;
+		MeshData.y = ChunkPos.y;
+		MeshData.z = ChunkPos.z;
+		MeshData.SolidVertices = Mesher.vertices;
+		MeshData.TransparentVertices = Mesher.transparentVertices;
+		Mesher.delete_();
+		TerrrainRenderer->AddChunkQueue(MeshData);
+		
+	}
 }
+
+void ClientWorld::AddMeshWorker() {
+	MeshWorkers.push_back(std::thread(&ClientWorld::MesherWorker, this));
+}
+
 
 void ClientWorld::Render() {
 	TerrrainRenderer->draw();
@@ -277,9 +287,6 @@ void ClientWorld::ClientWorldMainLoop() {
 		
 		//Process all chunks update / additions first
 		UpdateChunks();
-
-		//dump data to renderer
-		DumpRenderQueuedData(); // switch to main thread later
 
 		Tick();
 
