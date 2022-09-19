@@ -149,6 +149,8 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 	//Process movemnet
 	if (KeysInputs.count('R') || KeysInputs.count('r')) {
 		player->SetPosition(0,128,0);
+		player->RotY = 20;
+		player->RotZ = 0;
 	}
 	if (KeysInputs.count('W') || KeysInputs.count('w')) {
 		player->VelocityX += Distance * cos(rad * player->RotY);
@@ -175,6 +177,13 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 	}
 	if (KeysInputs.count(0)) {
 		player->VelocityY = 0;
+	}
+
+	if (KeysInputs.count('G') || KeysInputs.count('g')) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	else {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 	
 	
@@ -208,6 +217,8 @@ void ClientWorld::MesherWorker() {
 			std::this_thread::sleep_for(std::chrono::milliseconds(12)); 
 		}
 
+		glm::ivec3 ChunkPos = ChunkMeshQueue.pop_get_front();
+
 		PX.clearChunk();
 		NX.clearChunk();
 		PY.clearChunk();
@@ -215,9 +226,6 @@ void ClientWorld::MesherWorker() {
 		PZ.clearChunk();
 		NZ.clearChunk();
 		chunk.clearChunk();
-
-		glm::ivec3 ChunkPos = ChunkMeshQueue.pop_get_front();
-
 
 		chunk = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z)));
 
@@ -268,6 +276,7 @@ void ClientWorld::AddMeshWorker() {
 
 
 void ClientWorld::Render() {
+	
 	TerrrainRenderer->draw();
 }
 

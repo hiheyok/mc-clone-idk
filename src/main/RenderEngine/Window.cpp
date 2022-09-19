@@ -151,6 +151,15 @@ void Window::UpdateWindowName(std::string name) {
     glfwSetWindowTitle(window, name.c_str());
 }
 
+void Window::renderLines() {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
+
+
+void Window::renderSolid() {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
 void Window::resize_window(int x, int y) {
     glViewport(0, 0, x, y);
     sizex = x;
