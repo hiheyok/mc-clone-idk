@@ -29,7 +29,7 @@ void main()
 
 
 
-	float depth = distance(camPos, poss) / RenderDistance;
+	float depth = distance(camPos, poss) / RenderDistance; //a
 
 	depth = depth * depth;
 	depth = 1 - depth;

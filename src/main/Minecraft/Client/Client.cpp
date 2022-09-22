@@ -24,6 +24,18 @@ void Client::Initialize() {
     cworld.AddMeshWorker();
     cworld.AddMeshWorker();
     cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
     DisableCursor();
 
     TestWorld.JoinWorld("hiheyok", &cworld);

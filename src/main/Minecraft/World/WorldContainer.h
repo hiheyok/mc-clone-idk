@@ -61,7 +61,7 @@ protected:
 private:
     void WorldGenerator();
 
-    int TickingDistance = 32;
+    int TickingDistance = 64;
 
     AsyncHashMapClass<CHUNK_ID, Chunk> ChunkMapStore;
     AsyncHashMapNonClass<CHUNK_ID, bool> ChunkProcessing;

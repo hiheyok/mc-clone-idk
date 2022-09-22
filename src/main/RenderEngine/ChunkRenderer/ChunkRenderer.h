@@ -52,7 +52,7 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, IBO);
-		glBufferData(GL_DRAW_INDIRECT_BUFFER, GPUBufferSizeTransparent / 500, nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_DRAW_INDIRECT_BUFFER, GPUBufferSizeSolid / 500, nullptr, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -267,7 +267,14 @@ public:
 	}
 
 	void DumpQueuedDataToGPU() {
+
+		int i = 0;
+
 		while (!MeshDataQueued.empty()) {
+			i++;
+			if (i > 500) {
+				break;
+			}
 			ChunkVerticesData chunk = MeshDataQueued.pop_get_front();
 
 			if (MeshList.count(getChunkID(chunk.x, chunk.y, chunk.z))) {
@@ -353,7 +360,7 @@ public:
 
 	//Settings
 
-	int RenderDistance = 16;
+	int RenderDistance = 64;
 
 private:
 
@@ -378,9 +385,9 @@ private:
 
 	size_t GPUMemoryUsage = 0;
 
-	size_t GPUBufferSizeSolid = 800000000;
-	size_t GPUBufferSizeTransparent = 250000000;
-	size_t GPUSSBOMAXSIZE = 5000000;
+	size_t GPUBufferSizeSolid = 1600000000;
+	size_t GPUBufferSizeTransparent = 120000000;
+	size_t GPUSSBOMAXSIZE = 10000000;
 
 	GLFWwindow* window = nullptr;
 	Camera* camera = nullptr;

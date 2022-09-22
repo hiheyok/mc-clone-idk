@@ -70,6 +70,10 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 	//lta = 1.0;
 	double rad = 0.0174533; //deg to rad
 
+	if (delta > 0.5) {
+		delta = 0.5;
+	}
+
 	//Process Rotation
 	MouseMovement.x *= (float)MouseSens;
 	MouseMovement.y *= -(float)MouseSens;
@@ -167,6 +171,25 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 	if (KeysInputs.count('D') || KeysInputs.count('d')) {
 		player->VelocityX += Distance * cos(rad * (player->RotY + 90));
 		player->VelocityZ += Distance * sin(rad * (player->RotY + 90));
+	}
+
+	if (KeysInputs.count('F') || KeysInputs.count('f')) {
+		int sx = 0, sy = 0, sz = 0;
+
+		printf("X Velocity: ");
+
+		scanf("%d", &sx);
+
+		printf("Y Velocity: ");
+
+		scanf("%d", &sy);
+		printf("Z Velocity: ");
+
+		scanf("%d", &sz);
+
+		player->VelocityX = sx;
+		player->VelocityY = sy;
+		player->VelocityZ = sz;
 	}
 	
 	if (KeysInputs.count(' ')) {
