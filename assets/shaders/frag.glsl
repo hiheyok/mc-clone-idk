@@ -27,9 +27,9 @@ void main()
 {
 	vec3 skyColor = vec3(0.46274509803f, 0.65882352941f,1.0f);
 
+	vec3 posvec = poss - camPos;
 
-
-	float depth = distance(camPos, poss) / RenderDistance; //a
+	float depth = dot(posvec, posvec) / pow(RenderDistance,2);
 
 	depth = depth * depth;
 	depth = 1 - depth;
