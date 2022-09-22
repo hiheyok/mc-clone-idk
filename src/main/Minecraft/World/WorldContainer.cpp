@@ -192,3 +192,19 @@ void WorldContainer::AddEntity(Entity Entity) {
 	EntityList.insert(Entity.EntityID, Entity);
 }
 
+void WorldContainer::WorldStats() {
+	int p0 = 0;
+	int p1 = 1;
+
+	int cps = 0;
+
+	while (true) {
+
+		p0 = ChunkMapStore.size();
+		timerSleepNotPrecise(500);
+		p0 = ChunkMapStore.size() - p0;
+		if (p0 != 0) {
+			getLogger()->LogInfo("World", "Chunk Gen Rate: " + std::to_string(p0 * 2));
+		}
+	}
+}

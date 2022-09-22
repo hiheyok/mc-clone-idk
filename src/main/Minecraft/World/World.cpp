@@ -17,6 +17,7 @@ void World::Initialize() {
 	}
 	getLogger()->LogInfo("World", "Initialized World");
 	WorldMainThread = std::thread(&World::WorldLoop, this);
+	WorldStatsThread = std::thread(&World::WorldStats, this);
 }
 
 void World::WorldLoop() {

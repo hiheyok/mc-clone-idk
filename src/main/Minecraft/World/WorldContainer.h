@@ -45,6 +45,8 @@ protected:
     void AddWorldGenWorker();
     void DeleteWorldGenWorker();
 
+    void WorldStats();
+
     void DoQueuedTasks();
     void SaveWorld(); //dump loaded data to store map
 
@@ -52,7 +54,7 @@ protected:
     void UpdatePlayerPosition(int Player_ID, int x, int y, int z);
 
     AsyncDeque<glm::ivec3> ChunkLoadQueue;
-
+    std::thread WorldStatsThread;
     AsyncHashMapNonClass<long long int, std::string> PlayerList;
     AsyncHashMapNonClass<long long int, ClientWorld*> PlayerAddress;
     AsyncHashMapClass<long long int, Entity> EntityList;
@@ -69,6 +71,8 @@ private:
     AsyncDeque<glm::ivec3> ChunkGenQueue;
 
     std::deque<std::thread> WorldGenWorkers;
+
+    
 
     FastNoiseLite noise;
 };
