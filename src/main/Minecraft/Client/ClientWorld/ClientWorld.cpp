@@ -176,16 +176,9 @@ void ClientWorld::UpdatePlayer(double delta, std::unordered_map<char, bool> Keys
 	if (KeysInputs.count('F') || KeysInputs.count('f')) {
 		int sx = 0, sy = 0, sz = 0;
 
-		printf("X Velocity: ");
+		printf("Velocity (x,y,z): ");
 
-		scanf("%d", &sx);
-
-		printf("Y Velocity: ");
-
-		scanf("%d", &sy);
-		printf("Z Velocity: ");
-
-		scanf("%d", &sz);
+		scanf("%d %d %d", &sx, &sy, &sz);
 
 		player->VelocityX = sx;
 		player->VelocityY = sy;
