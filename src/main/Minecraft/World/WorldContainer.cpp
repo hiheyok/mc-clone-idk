@@ -201,10 +201,10 @@ void WorldContainer::WorldStats() {
 	while (true) {
 
 		p0 = ChunkMapStore.size();
-		timerSleepNotPrecise(500);
+		timerSleepNotPrecise(1000);
 		p0 = ChunkMapStore.size() - p0;
 		if (p0 != 0) {
-			getLogger()->LogInfo("World", "Chunk Gen Rate: " + std::to_string(p0 * 2));
+			getLogger()->LogInfo("World", "Chunk Gen Rate: " + std::to_string(p0));
 		}
 	}
 }

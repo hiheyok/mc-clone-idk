@@ -2,62 +2,64 @@
 
 #include <deque>
 #include <unordered_map>
+#include <concurrent_unordered_map.h>
+#include <concurrent_priority_queue.h>
 #include <vector>
 #include <list>
 #include <mutex>
 
 template <typename Hasher, typename Object> class AsyncHashMapClass {
-public:std::unordered_map<Hasher, Object> HashMap;
+public:concurrency::concurrent_unordered_map<Hasher, Object> HashMap;
 
 	  bool count(Hasher Hash) {
 		  bool out = false;
-		  Mut.lock();
+	//	  Mut.lock();
 		  out = HashMap.count(Hash);
-		  Mut.unlock();
+	//	  Mut.unlock();
 		  return out;
 	  }
 
 	  bool empty() {
 		  bool IsEmpty = false;
-		  Mut.lock();
+	//	  Mut.lock();
 		  IsEmpty = HashMap.empty();
-		  Mut.unlock();
+	//	  Mut.unlock();
 		  return IsEmpty;
 	  }
 
 	  void erase(Hasher Hash) {
 		  Mut.lock();
-		  HashMap.erase(Hash);
+		  HashMap.unsafe_erase(Hash);
 		  Mut.unlock();
 	  }
 
 	  void clear() {
-		  Mut.lock();
+	//	  Mut.lock();
 		  HashMap.clear();
-		  Mut.unlock();
+	//	  Mut.unlock();
 	  }
 
 	  size_t size() {
 		  size_t size_ = 0;
-		  Mut.lock();
+	//	  Mut.lock();
 		  size_ = HashMap.size();
-		  Mut.unlock();
+	//	  Mut.unlock();
 		  return size_;
 	  }
 
 	  std::unordered_map<Hasher, Object> DumpData() {
 		  std::unordered_map<Hasher, Object> Map;
-		  Mut.lock();
+	//	  Mut.lock();
 		  Map = HashMap;
-		  Mut.unlock();
+	//	  Mut.unlock();
 		  return Map;
 	  }
 
 	  Object get(Hasher Hash) {
 		  Object Obj;
-		  Mut.lock();
+	//	  Mut.lock();
 		  Obj = HashMap[Hash];
-		  Mut.unlock();
+	//	  Mut.unlock();
 		  return Obj;
 	  }
 
@@ -66,27 +68,27 @@ public:std::unordered_map<Hasher, Object> HashMap;
 	  }
 
 	  template <typename Val, class... Args> void RunObjFunction(Hasher Hash, Val Object::* Function, Args... args) {
-		  Mut.lock();
+		//  Mut.lock();
 		  (&HashMap[Hash]->*Function)(args...);
-		  Mut.unlock();
-	  }
+		//  Mut.unlock();
+	  }//
 
 	  template <typename Val, class... Args> void RunObjFunctionReturn(Hasher Hash, Val Object::* Function,Val* ReturnAddress, Args... args) {
-		  Mut.lock();
+		//  Mut.lock();
 		  *ReturnAddress = (&HashMap[Hash]->*Function)(args...);
-		  Mut.unlock();
+		//  Mut.unlock();
 	  }
 
 	  template <typename Val> void ChangeObjMember(Hasher Hash, Val Object::* Member, Val Value) {
-		  Mut.lock();
+		//  Mut.lock();
 		  HashMap[Hash].*Member = Value;
-		  Mut.unlock();
+		//  Mut.unlock();
 	  }
 
 	  void insert(Hasher Hash, Object Obj) {
-		  Mut.lock();
+		//  Mut.lock();
 		  HashMap[Hash] = Obj;
-		  Mut.unlock();
+		//  Mut.unlock();
 	  }
 
 private:
@@ -161,7 +163,7 @@ private:
 };
 
 template <typename Object> class AsyncDeque {
-public:std::deque<Object> Deque;
+public:Concurrency::concurrent_priority_queue<Object> Deque;
 	size_t size() {
 		size_t size = 0;
 		
