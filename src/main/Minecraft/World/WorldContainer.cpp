@@ -8,6 +8,10 @@
 #include "../../utils/Clock.h"
 #include "../../utils/LogUtils.h"
 
+void WorldContainer::Initialize() {
+
+}
+
 void WorldContainer::LoadChunk(int x, int y, int z) {
 	CHUNK_ID ChunkID = getChunkID(x, y, z);
 
@@ -38,7 +42,19 @@ void WorldContainer::LoadChunk(int x, int y, int z) {
 			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z - 1), &Chunk::setNeighborPZ,ChunkMapLoaded.getAddress(ChunkID));
 			ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::setNeighborNZ,ChunkMapLoaded.getAddress(getChunkID(x, y, z - 1)));
 		}
-		ClientChunkToUpdate.insert(ChunkID, ChunkMapLoaded.get(ChunkID));
+
+		Concurrency::concurrent_unordered_map<long long int, std::string> PLAYERS = PlayerList.DumpData();
+
+		for (auto& players : PLAYERS) {
+			Entity Player = EntityList.get(players.first);
+			long long int PlayerID = Player.EntityID;
+
+			if (FindDistanceNoSqrt(Player.PosX * 0.0625, Player.PosX * 0.0625, Player.PosX * 0.0625, x,y,z)  < TickingDistance * TickingDistance) {
+				ClientChunkToUpdate[PlayerID].insert(ChunkID);
+			}
+
+		}
+		
 		return;
 	}
 	else {
@@ -139,6 +155,15 @@ Chunk WorldContainer::ReadChunkMapLoaded(int x, int y, int z) {
 }
 
 
+Chunk WorldContainer::ReadChunkMapStore(long long int id) {
+	return ChunkMapStore.get(id);
+}
+
+Chunk WorldContainer::ReadChunkMapLoaded(long long int id) {
+	return ChunkMapLoaded.get(id);
+}
+
+
 void WorldContainer::UpdatePlayerPosition(int Player_ID, int x, int y, int z) {
 
 	EntityList.ChangeObjMember(Player_ID, &Entity::PosX, (double)x);
@@ -156,6 +181,8 @@ void WorldContainer::JoinWorld(std::string name, ClientWorld* ClientAddress) {
 	PLAYER.EntityID = getID();
 	PlayerList.insert(PLAYER.EntityID, name);
 	PlayerAddress.insert(PLAYER.EntityID, ClientAddress);
+	Concurrency::concurrent_unordered_set<long long int> ChunkIDCache;
+	ClientChunkToUpdate[PLAYER.EntityID] = ChunkIDCache;
 	AddEntity(PLAYER);
 
 	int cx = (int)(PLAYER.PosX / 16.0f);

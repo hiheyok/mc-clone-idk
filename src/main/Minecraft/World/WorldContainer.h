@@ -37,6 +37,9 @@ protected:
     Chunk ReadChunkMapStore(int x, int y, int z);
     Chunk ReadChunkMapLoaded(int x, int y, int z);
 
+    Chunk ReadChunkMapStore(long long int id);
+    Chunk ReadChunkMapLoaded(long long int id);
+
     void UnloadChunk(int x, int y, int z);
 
     bool CheckChunkIsStored(int x, int y, int z);
@@ -46,6 +49,7 @@ protected:
     void DeleteWorldGenWorker();
 
     void WorldStats();
+    void Initialize();
 
     void DoQueuedTasks();
     void SaveWorld(); //dump loaded data to store map
@@ -59,11 +63,11 @@ protected:
     AsyncHashMapNonClass<long long int, ClientWorld*> PlayerAddress;
     AsyncHashMapClass<long long int, Entity> EntityList;
 
-    AsyncHashMapClass<long long int, Chunk> ClientChunkToUpdate;
+    Concurrency::concurrent_unordered_map<long long int, Concurrency::concurrent_unordered_set<long long int> > ClientChunkToUpdate;
 private:
     void WorldGenerator();
 
-    int TickingDistance = 48;
+    int TickingDistance = 32;
 
     AsyncHashMapClass<CHUNK_ID, Chunk> ChunkMapStore;
     AsyncHashMapNonClass<CHUNK_ID, bool> ChunkProcessing;

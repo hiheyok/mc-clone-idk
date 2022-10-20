@@ -7,11 +7,9 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
-
-double FindDistance(int x, int y, int z, int x1, int y1, int z1);
+double FindDistanceNoSqrt(double x, double y, double z, double x1, double y1, double z1);
 double FindDistance(int x, int y, int x1, int y1);
 
-double FindDistanceNoSqrt(int x, int y, int z, int x1, int y1, int z1);
 double FindDistanceNoSqrt(int x, int y, int x1, int y1);
 
 double FindDistance(glm::ivec3 pos0, glm::ivec3 pos1);

@@ -38,11 +38,14 @@ void World::WorldLoop() {
 
 void World::SendChunkDataToClient() {
 	for (const auto& Client : PlayerAddress.HashMap) {
-		for (const auto& chunk : ClientChunkToUpdate.HashMap) {
-			Client.second->AddChunkServer(chunk.second);
-			
+		if (ClientChunkToUpdate.count(Client.first)) {
+			if (ClientChunkToUpdate[Client.first].size() != 0) {
+				for (const auto& chunk : ClientChunkToUpdate[Client.first]) {
+					Client.second->AddChunkServer(ReadChunkMapLoaded(chunk));
+				}
+				ClientChunkToUpdate[Client.first].clear();
+			}
 		}
 	}
 	//getLogger()->LogDebug("World", "Size_: " + std::to_string(ClientChunkToUpdate.size()));
-	ClientChunkToUpdate.clear();
 }

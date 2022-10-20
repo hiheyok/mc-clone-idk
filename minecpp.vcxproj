@@ -219,6 +219,7 @@
     <ClInclude Include="src\main\Minecraft\World\Entity\EntityType.h" />
     <ClInclude Include="src\main\Minecraft\World\Level\Block\Block.h" />
     <ClInclude Include="src\main\Minecraft\World\Level\Block\Blocks.h" />
+    <ClInclude Include="src\main\Minecraft\World\Level\WorldGen\Noise\Perlin.h" />
     <ClInclude Include="src\main\RenderEngine\ChunkRenderer\Mesh\Mesher.h" />
     <ClInclude Include="src\main\Minecraft\World\Level\Chunk\Chunk.h" />
     <ClInclude Include="src\main\Minecraft\World\World.h" />
