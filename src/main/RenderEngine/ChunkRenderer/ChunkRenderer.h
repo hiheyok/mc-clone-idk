@@ -72,19 +72,46 @@ public:
 	}
 
 	void _DeleteChunk(long long int ChunkID) {
-		for (int i = 0; i < ChunkRenderListSolid.size(); i++) {
-			if (getChunkID(ChunkRenderListSolid[i].x, ChunkRenderListSolid[i].y, ChunkRenderListSolid[i].z) == ChunkID) {
-				GPUMemoryUsage -= ChunkRenderListSolid[i].size;
-				MeshList[ChunkID] = false;
-				MeshList.erase(ChunkID);
-				ChunkRenderListSolid.erase(ChunkRenderListSolid.begin() + i);
-				ChunkRenderListSolidOffsetLookup.erase(ChunkID);
-				break;
-			}
+		if (ChunkRenderListSolidOffsetLookup.count(ChunkID)) {
+			int index = GetRenderSolidList(ChunkRenderListSolidOffsetLookup[ChunkID]);
+			GPUMemoryUsage -= ChunkRenderListSolid[index].size;
+			MeshList[ChunkID] = false;
+			MeshList.erase(ChunkID);
+			ChunkRenderListSolid.erase(ChunkRenderListSolid.begin() + index);
+			ChunkRenderListSolidOffsetLookup.erase(ChunkID);
 		}
 	}
 
-	
+	int GetRenderSolidList(size_t offset) {
+		//binary search thing
+
+		size_t low = 0;
+		size_t high = ChunkRenderListSolid.size() - 1;
+
+		while (true) {
+			int mid = (low + high) * 0.5;
+			if (offset == ChunkRenderListSolid[mid].offset) {
+				return mid;
+			} else if (offset > ChunkRenderListSolid[mid].offset) {
+				low = mid + 1;
+			}
+			else {
+				high = mid - 1;
+			}
+			if (low == high) {
+				break;
+			}
+		}
+
+		if (offset == ChunkRenderListSolid[high].offset) {
+			return high;
+		}
+
+		return -1;
+
+	}
+
+
 
 	void _AddChunk(ChunkVerticesData data) {
 
@@ -121,7 +148,7 @@ public:
 				insertData(VBO, GL_ARRAY_BUFFER, renderdata.offset, &data.SolidVertices);
 				ChunkRenderListSolid.emplace_back(renderdata);
 				MeshList[ChunkID] = true;
-				ChunkRenderListSolidOffsetLookup[ChunkID] = ChunkRenderListSolid.size() - 1;
+				ChunkRenderListSolidOffsetLookup[ChunkID] = renderdata.offset;
 				UpdateDrawCommands = true;
 			}
 			else {
@@ -134,7 +161,7 @@ public:
 						insertData(VBO, GL_ARRAY_BUFFER, renderdata.offset, &data.SolidVertices);
 						ChunkRenderListSolid.insert(ChunkRenderListSolid.begin() + i + 1, renderdata);
 						MeshList[ChunkID] = true;
-						ChunkRenderListSolidOffsetLookup[ChunkID] = i;
+						ChunkRenderListSolidOffsetLookup[ChunkID] = renderdata.offset;
 						added = true;
 						UpdateDrawCommands = true;
 						break;
@@ -160,7 +187,7 @@ public:
 		for (int i = 0; i < ChunkRenderListSolid.size(); i++) {
 			ChunkRenderDataBufferAddress data = ChunkRenderListSolid[(ChunkRenderListSolid.size() - 1) - i];
 
-			if (FindDistanceNoSqrt(data.x, data.y, data.z, Pos.x, Pos.y, Pos.z) < pow(RenderDistance,2)) {//if (!(data.x + -Pos.x > RenderDistance || data.y + -Pos.y > RenderDistance || data.z + -Pos.z > RenderDistance || data.x + -Pos.x < -RenderDistance || data.y + -Pos.y < -RenderDistance || data.z + -Pos.z < -RenderDistance)) {//if (FindDistance(data.second.x, data.second.y, data.second.z, (int)x12 / CHUNK_SIZE, (int)y12 / CHUNK_SIZE, (int)z12 / CHUNK_SIZE) <= renderDistance) {
+			if (FindDistanceNoSqrt(data.x, data.y, data.z, Pos.x, Pos.y, Pos.z) < pow(RenderDistance, 2)) {//if (!(data.x + -Pos.x > RenderDistance || data.y + -Pos.y > RenderDistance || data.z + -Pos.z > RenderDistance || data.x + -Pos.x < -RenderDistance || data.y + -Pos.y < -RenderDistance || data.z + -Pos.z < -RenderDistance)) {//if (FindDistance(data.second.x, data.second.y, data.second.z, (int)x12 / CHUNK_SIZE, (int)y12 / CHUNK_SIZE, (int)z12 / CHUNK_SIZE) <= renderDistance) {
 				if (fr.SphereInFrustum((float)data.x * 16, (float)data.y * 16, (float)data.z * 16, (float)32)) {
 					DrawArraysIndirectCommand cmd;
 					cmd.count = (unsigned int)data.size / (sizeof(unsigned int) * 2);
@@ -182,7 +209,7 @@ public:
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, IBO);
-		glBufferSubData(GL_DRAW_INDIRECT_BUFFER,0, DrawArraysIndirectCommandListSolid.size() * sizeof(DrawArraysIndirectCommand), DrawArraysIndirectCommandListSolid.data());
+		glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, DrawArraysIndirectCommandListSolid.size() * sizeof(DrawArraysIndirectCommand), DrawArraysIndirectCommandListSolid.data());
 		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 	}
 
@@ -193,11 +220,11 @@ public:
 	}
 
 	void draw() {
-		glClearColor(0.46274509803f, 0.65882352941f,1.0f,1.0);
+		glClearColor(0.46274509803f, 0.65882352941f, 1.0f, 1.0);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_DEPTH_TEST);
-	//	glDepthFunc(GL_ALWAYS);
+		//	glDepthFunc(GL_ALWAYS);
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_FRONT);
 
@@ -208,14 +235,14 @@ public:
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, SSBO);
 		SolidShader->use();
 		//getLogger()->LogDebug("Renderer", std::to_string(DrawArraysIndirectCommandListSolid.size()));
-		glMultiDrawArraysIndirect(GL_TRIANGLES, (GLvoid*)0, (GLsizei)DrawArraysIndirectCommandListSolid.size(),0);
-		
+		glMultiDrawArraysIndirect(GL_TRIANGLES, (GLvoid*)0, (GLsizei)DrawArraysIndirectCommandListSolid.size(), 0);
+
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, 0);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 		glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
-	//	
+		//	
 		glDisable(GL_CULL_FACE);
 		glDisable(GL_BLEND);
 		glDisable(GL_DEPTH_TEST);
@@ -229,7 +256,7 @@ public:
 
 		camera->screenRes = glm::vec2(width, height);
 		glm::mat4 view = camera->GetViewMatrix();
-		
+
 		int x = width;
 		int y = height;
 		glm::mat4 projection = glm::perspective(glm::radians(camera->FOV), (float)x / (float)y, 0.1f, 1000000.0f);
@@ -243,7 +270,7 @@ public:
 	}
 
 	void AddChunkQueue(ChunkVerticesData chunk) {
-		MeshDataQueued.push_back(chunk);
+		MeshDataQueued.push(chunk);
 	}
 
 	void DumpQueuedDataToGPU() {
@@ -255,16 +282,17 @@ public:
 			if (i > 500) {
 				break;
 			}
-			ChunkVerticesData chunk = MeshDataQueued.pop_get_front();
+			ChunkVerticesData chunk;
+			if (MeshDataQueued.try_pop(chunk)) {
 
-			if (MeshList.count(getChunkID(chunk.x, chunk.y, chunk.z))) {
-				_DeleteChunk(getChunkID(chunk.x, chunk.y, chunk.z));
-				_AddChunk(chunk);
+				if (MeshList.count(getChunkID(chunk.x, chunk.y, chunk.z))) {
+					_DeleteChunk(getChunkID(chunk.x, chunk.y, chunk.z));
+					_AddChunk(chunk);
+				}
+				else {
+					_AddChunk(chunk);
+				}
 			}
-			else {
-				_AddChunk(chunk);
-			}
-			
 		}
 	}
 
@@ -344,6 +372,8 @@ public:
 
 private:
 
+	static int FastFloor(double f) { return f >= 0 ? (int)f : (int)f - 1; }
+
 	bool UpdateDrawCommands = false;
 
 	std::vector<glm::vec3> SpreadCache;
@@ -373,10 +403,10 @@ private:
 	Camera* camera = nullptr;
 	CFrustum fr;
 
-	AsyncDeque<ChunkVerticesData> MeshDataQueued;
+	concurrency::concurrent_queue<ChunkVerticesData> MeshDataQueued;
 
-	std::unordered_map<long long int, size_t> ChunkRenderListSolidOffsetLookup;
-	std::unordered_map<long long int, size_t> ChunkRenderListTransparentOffsetCache;
+	std::unordered_map<long long int, int> ChunkRenderListSolidOffsetLookup;
+	std::unordered_map<long long int, int> ChunkRenderListTransparentOffsetCache;
 
 	std::vector<ChunkRenderDataBufferAddress> ChunkRenderListSolid;
 	std::vector<DrawArraysIndirectCommand> DrawArraysIndirectCommandListSolid;

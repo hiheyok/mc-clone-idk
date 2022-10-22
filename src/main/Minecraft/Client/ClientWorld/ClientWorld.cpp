@@ -235,7 +235,7 @@ void ClientWorld::MesherWorker() {
 
 		glm::ivec3 ChunkPos = ChunkMeshQueue.pop_get_front();
 
-		PX.clearChunk();
+		/*PX.clearChunk();
 		NX.clearChunk();
 		PY.clearChunk();
 		NY.clearChunk();
@@ -270,9 +270,9 @@ void ClientWorld::MesherWorker() {
 		}
 		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z + 1)))) {
 			PZ = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z + 1))];
-		}
+		}*/
 
-		Mesher.chunk = &chunk;
+		Mesher.chunk = &ChunkCache[getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z))];
 		Mesher.SmartGreedyMeshing();
 		ChunkVerticesData MeshData;
 		MeshData.x = ChunkPos.x;

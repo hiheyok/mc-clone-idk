@@ -41,7 +41,7 @@ void LogUtils::MainLogger() {
 				Mutex.unlock();
 			}
 			else {
-				timerSleep(0.05);
+				timerSleepNotPrecise(10);
 			}
 		}
 	}

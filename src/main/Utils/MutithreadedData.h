@@ -66,14 +66,11 @@ public:Concurrency::concurrent_unordered_map<Hasher, Object> HashMap;
 		  Mut.lock();
 		  HashMap.unsafe_erase(Hash);
 		  Mut.unlock();
-
-		  MEM_USAGE -= sizeof(Object);
 	  }
 
 	  void clear() {
 		  HashMap.clear();
 
-		  MEM_USAGE = 0;
 	  }
 
 	  size_t size() {
