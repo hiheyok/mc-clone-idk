@@ -26,10 +26,12 @@ public:concurrency::concurrent_unordered_map<Hasher, Object> HashMap;
 		  Mut.lock();
 		  HashMap.unsafe_erase(Hash);
 		  Mut.unlock();
+		  MEM_USAGE -= sizeof(Object);
 	  }
 
 	  void clear() {
 		  HashMap.clear();
+		  MEM_USAGE == 0;
 	  }
 
 	  size_t size() {
@@ -40,40 +42,13 @@ public:concurrency::concurrent_unordered_map<Hasher, Object> HashMap;
 		  return HashMap;
 	  }
 
-	  Object get(Hasher Hash) {
+	  Object& operator[](Hasher Hash) {
 		  return HashMap[Hash];
-	  }
-
-	  Object* getAddress(Hasher Hash) {
-		  return &HashMap[Hash];
-	  }
-
-	  template <typename Val, class... Args> void RunObjFunction(Hasher Hash, Val Object::* Function, Args... args) {
-		  Mut.lock();
-		  (&HashMap[Hash]->*Function)(args...);
-		  Mut.unlock();
-	  }
-
-	  template <typename Val, class... Args> void RunObjFunctionReturn(Hasher Hash, Val Object::* Function, Val* ReturnAddress, Args... args) {
-		  Mut.lock();
-		  *ReturnAddress = (&HashMap[Hash]->*Function)(args...);
-		  Mut.unlock();
-	  }
-
-	  template <typename Val> void ChangeObjMember(Hasher Hash, Val Object::* Member, Val Value) {
-		  Mut.lock();
-		  HashMap[Hash].*Member = Value;
-		  Mut.unlock();
-	  }
-
-	  void insert(Hasher Hash, Object Obj) {
-		  Mut.lock();
-		  HashMap[Hash] = Obj;
-		  Mut.unlock();
 	  }
 
 private:
 	std::mutex Mut;
+	size_t MEM_USAGE = 0;
 };
 
 template <typename Hasher, typename Object> class AsyncHashMapNonClass {
@@ -91,10 +66,14 @@ public:Concurrency::concurrent_unordered_map<Hasher, Object> HashMap;
 		  Mut.lock();
 		  HashMap.unsafe_erase(Hash);
 		  Mut.unlock();
+
+		  MEM_USAGE -= sizeof(Object);
 	  }
 
 	  void clear() {
 		  HashMap.clear();
+
+		  MEM_USAGE = 0;
 	  }
 
 	  size_t size() {
@@ -105,22 +84,13 @@ public:Concurrency::concurrent_unordered_map<Hasher, Object> HashMap;
 		  return HashMap;
 	  }
 
-	  Object get(Hasher Hash) {
+	  Object& operator[](Hasher Hash) {
 		  return HashMap[Hash];
-	  }
-
-	  Object* getAddress(Hasher Hash) {
-		  return &HashMap[Hash];
-	  }
-
-	  void insert(Hasher Hash, Object Obj) {
-		  Mut.lock();
-		  HashMap[Hash] = Obj;
-		  Mut.unlock();
 	  }
 
 private:
 	std::mutex Mut;
+	size_t MEM_USAGE = 0;
 };
 
 template <typename Object> class AsyncDeque {

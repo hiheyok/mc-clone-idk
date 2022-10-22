@@ -16,37 +16,37 @@ void WorldContainer::LoadChunk(int x, int y, int z) {
 	CHUNK_ID ChunkID = getChunkID(x, y, z);
 
 	if (CheckChunkIsStored(x,y,z)) { // Check is chunk is stored
-		ChunkMapLoaded.insert(ChunkID, ChunkMapStore.get(ChunkID)); // Copy Chunk To Loaded Cache
-		ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::clearNeighbors);
+		ChunkMapLoaded[ChunkID] = ChunkMapStore[ChunkID]; // Copy Chunk To Loaded Cache
+		ChunkMapLoaded[ChunkID].clearNeighbors();
 		if (ChunkMapLoaded.count(getChunkID(x, y + 1, z))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y + 1, z), &Chunk::setNeighborNY, ChunkMapLoaded.getAddress(ChunkID));
-			ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::setNeighborPY,ChunkMapLoaded.getAddress(getChunkID(x, y + 1, z)));
+			ChunkMapLoaded[getChunkID(x, y + 1, z)].setNeighborNY(&ChunkMapLoaded[ChunkID]);
+			ChunkMapLoaded[ChunkID].setNeighborPY(&ChunkMapLoaded[getChunkID(x, y + 1, z)]);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y - 1, z))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y - 1, z), &Chunk::setNeighborPY,ChunkMapLoaded.getAddress(ChunkID));
-			ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::setNeighborNY,ChunkMapLoaded.getAddress(getChunkID(x, y - 1, z)));
+			ChunkMapLoaded[getChunkID(x, y - 1, z)].setNeighborPY(&ChunkMapLoaded[ChunkID]);
+			ChunkMapLoaded[ChunkID].setNeighborNY(&ChunkMapLoaded[getChunkID(x, y - 1, z)]);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x + 1, y, z))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x + 1, y, z), &Chunk::setNeighborNX,ChunkMapLoaded.getAddress(ChunkID));
-			ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::setNeighborPX,ChunkMapLoaded.getAddress(getChunkID(x + 1, y, z)));
+			ChunkMapLoaded[getChunkID(x + 1, y, z)].setNeighborNX(&ChunkMapLoaded[ChunkID]);
+			ChunkMapLoaded[ChunkID].setNeighborPX(&ChunkMapLoaded[getChunkID(x + 1, y, z)]);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x - 1, y, z))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x - 1, y, z), &Chunk::setNeighborPX,ChunkMapLoaded.getAddress(ChunkID));
-			ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::setNeighborNX,ChunkMapLoaded.getAddress(getChunkID(x - 1, y, z)));
+			ChunkMapLoaded[getChunkID(x - 1, y, z)].setNeighborPX(&ChunkMapLoaded[ChunkID]);
+			ChunkMapLoaded[ChunkID].setNeighborNX(&ChunkMapLoaded[getChunkID(x - 1, y, z)]);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y, z + 1))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z + 1), &Chunk::setNeighborNZ,ChunkMapLoaded.getAddress(ChunkID));
-			ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::setNeighborPZ,ChunkMapLoaded.getAddress(getChunkID(x, y, z + 1)));
+			ChunkMapLoaded[getChunkID(x, y, z + 1)].setNeighborNZ(&ChunkMapLoaded[ChunkID]);
+			ChunkMapLoaded[ChunkID].setNeighborPZ(&ChunkMapLoaded[getChunkID(x, y, z + 1)]);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y, z - 1))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z - 1), &Chunk::setNeighborPZ,ChunkMapLoaded.getAddress(ChunkID));
-			ChunkMapLoaded.RunObjFunction(ChunkID, &Chunk::setNeighborNZ,ChunkMapLoaded.getAddress(getChunkID(x, y, z - 1)));
+			ChunkMapLoaded[getChunkID(x, y, z - 1)].setNeighborPZ(&ChunkMapLoaded[ChunkID]);
+			ChunkMapLoaded[ChunkID].setNeighborNZ(&ChunkMapLoaded[getChunkID(x, y, z - 1)]);
 		}
 
 		Concurrency::concurrent_unordered_map<long long int, std::string> PLAYERS = PlayerList.DumpData();
 
 		for (auto& players : PLAYERS) {
-			Entity Player = EntityList.get(players.first);
+			Entity Player = EntityList[players.first];
 			long long int PlayerID = Player.EntityID;
 
 			if (FindDistanceNoSqrt(Player.PosX * 0.0625, Player.PosX * 0.0625, Player.PosX * 0.0625, x,y,z)  < TickingDistance * TickingDistance) {
@@ -60,7 +60,7 @@ void WorldContainer::LoadChunk(int x, int y, int z) {
 	else {
 		if (!ChunkProcessing.count(getChunkID(x, y, z))) {
 			ChunkGenQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to gen queue
-			ChunkProcessing.insert(getChunkID(x, y, z), true);
+			ChunkProcessing[getChunkID(x, y, z)] = true;
 		}
 		ChunkLoadQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to load queue
 		return;
@@ -81,22 +81,22 @@ void WorldContainer::UnloadChunk(int x, int y, int z) {
 	if (CheckChunkIsLoaded(x, y, z)) { // Check is chunk is loaded
 		ChunkMapLoaded.erase(getChunkID(x, y, z));
 		if (ChunkMapLoaded.count(getChunkID(x, y + 1, z))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y + 1, z), &Chunk::setNeighborNY, nullptr);
+			ChunkMapLoaded[getChunkID(x, y + 1, z)].setNeighborNY(nullptr);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y - 1, z))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y - 1, z), &Chunk::setNeighborPY,nullptr);
+			ChunkMapLoaded[getChunkID(x, y - 1, z)].setNeighborPY(nullptr);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x + 1, y, z))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x + 1, y, z), &Chunk::setNeighborNX,nullptr);
+			ChunkMapLoaded[getChunkID(x + 1, y, z)].setNeighborNX(nullptr);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x - 1, y, z))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x - 1, y, z), &Chunk::setNeighborPX,nullptr);
+			ChunkMapLoaded[getChunkID(x - 1, y, z)].setNeighborPX(nullptr);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y, z + 1))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z + 1), &Chunk::setNeighborNZ,nullptr);
+			ChunkMapLoaded[getChunkID(x, y, z + 1)].setNeighborNZ(nullptr);
 		}
 		if (ChunkMapLoaded.count(getChunkID(x, y, z - 1))) {
-			ChunkMapLoaded.RunObjFunction(getChunkID(x, y, z - 1), &Chunk::setNeighborPZ,nullptr);
+			ChunkMapLoaded[getChunkID(x, y, z - 1)].setNeighborPZ(nullptr);
 		}
 	}
 }
@@ -143,32 +143,32 @@ void WorldContainer::WorldGenerator() {
 }
 
 void WorldContainer::WriteChunkMapStore(Chunk chunk) {
-	ChunkMapStore.insert(getChunkID(chunk.pos), chunk);
+	ChunkMapStore[getChunkID(chunk.pos)] = chunk;
 }
 
-Chunk WorldContainer::ReadChunkMapStore(int x, int y, int z) {
-	return ChunkMapStore.get(getChunkID(x, y, z));
+Chunk& WorldContainer::ReadChunkMapStore(int x, int y, int z) {
+	return ChunkMapStore[getChunkID(x, y, z)];
 }
 
-Chunk WorldContainer::ReadChunkMapLoaded(int x, int y, int z) {
-	return ChunkMapLoaded.get(getChunkID(x, y, z));
+Chunk& WorldContainer::ReadChunkMapLoaded(int x, int y, int z) {
+	return ChunkMapLoaded[getChunkID(x, y, z)];
 }
 
 
-Chunk WorldContainer::ReadChunkMapStore(long long int id) {
-	return ChunkMapStore.get(id);
+Chunk& WorldContainer::ReadChunkMapStore(long long int id) {
+	return ChunkMapStore[id];
 }
 
-Chunk WorldContainer::ReadChunkMapLoaded(long long int id) {
-	return ChunkMapLoaded.get(id);
+Chunk& WorldContainer::ReadChunkMapLoaded(long long int id) {
+	return ChunkMapLoaded[id];
 }
 
 
 void WorldContainer::UpdatePlayerPosition(int Player_ID, int x, int y, int z) {
 
-	EntityList.ChangeObjMember(Player_ID, &Entity::PosX, (double)x);
-	EntityList.ChangeObjMember(Player_ID, &Entity::PosY, (double)y);
-	EntityList.ChangeObjMember(Player_ID, &Entity::PosZ, (double)z);
+	EntityList[Player_ID].PosX = (double)x;
+	EntityList[Player_ID].PosY = (double)y;
+	EntityList[Player_ID].PosZ = (double)z;
 
 }
 
@@ -179,8 +179,8 @@ void WorldContainer::JoinWorld(std::string name, ClientWorld* ClientAddress) {
 	PLAYER.PosY = 0;
 	PLAYER.PosZ = 0;
 	PLAYER.EntityID = getID();
-	PlayerList.insert(PLAYER.EntityID, name);
-	PlayerAddress.insert(PLAYER.EntityID, ClientAddress);
+	PlayerList[PLAYER.EntityID] = name;
+	PlayerAddress[PLAYER.EntityID] = ClientAddress;
 	Concurrency::concurrent_unordered_set<long long int> ChunkIDCache;
 	ClientChunkToUpdate[PLAYER.EntityID] = ChunkIDCache;
 	AddEntity(PLAYER);
@@ -205,7 +205,7 @@ void WorldContainer::JoinWorld(std::string name, ClientWorld* ClientAddress) {
 				else {
 					if (!ChunkProcessing.count(getChunkID(x, y, z))) {
 						ChunkGenQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to gen queue
-						ChunkProcessing.insert(getChunkID(x, y, z), true);
+						ChunkProcessing[getChunkID(x, y, z)] = true;
 					}
 					ChunkLoadQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to load queue
 				}
@@ -216,7 +216,7 @@ void WorldContainer::JoinWorld(std::string name, ClientWorld* ClientAddress) {
 }
 
 void WorldContainer::AddEntity(Entity Entity) {
-	EntityList.insert(Entity.EntityID, Entity);
+	EntityList[Entity.EntityID] = Entity;
 }
 
 void WorldContainer::WorldStats() {

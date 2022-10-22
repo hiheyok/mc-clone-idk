@@ -1,6 +1,8 @@
 #include "Client.h"
 #include "../World/World.h"
-
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 
 #define EVENT_NULL 0x0000
 #define EVENT_START_INTEGRATED_SERVER 0x0001 //start single player world
@@ -17,7 +19,7 @@ void Client::Initialize() {
 
     
     TestWorld.Initialize();
-    TestWorld.StartGenThreads(16);
+    TestWorld.StartGenThreads(8);
 
     cworld.Start(getWindow());
     cworld.AddMeshWorker();
@@ -28,14 +30,7 @@ void Client::Initialize() {
     cworld.AddMeshWorker();
     cworld.AddMeshWorker();
     cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
+    
     DisableCursor();
 
     TestWorld.JoinWorld("hiheyok", &cworld);
@@ -73,8 +68,14 @@ void Client::ClientLoop() {
             FPS_LOW = (int)(1 / frametime);
         if (FPS_HIGH < (1 / frametime))
             FPS_HIGH = (int(1 / frametime));
+
+        if (TestForKeyInputs(GLFW_KEY_ESCAPE)) {
+            _CrtDumpMemoryLeaks();
+            return;
+        }
         
 	}
+    
 }
 
 void Client::Update() {

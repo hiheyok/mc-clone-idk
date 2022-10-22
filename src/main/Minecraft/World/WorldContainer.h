@@ -34,11 +34,11 @@ protected:
     void LoadChunk(int x, int y, int z);
 
     void WriteChunkMapStore(Chunk chunk);
-    Chunk ReadChunkMapStore(int x, int y, int z);
-    Chunk ReadChunkMapLoaded(int x, int y, int z);
+    Chunk& ReadChunkMapStore(int x, int y, int z);
+    Chunk& ReadChunkMapLoaded(int x, int y, int z);
 
-    Chunk ReadChunkMapStore(long long int id);
-    Chunk ReadChunkMapLoaded(long long int id);
+    Chunk& ReadChunkMapStore(long long int id);
+    Chunk& ReadChunkMapLoaded(long long int id);
 
     void UnloadChunk(int x, int y, int z);
 

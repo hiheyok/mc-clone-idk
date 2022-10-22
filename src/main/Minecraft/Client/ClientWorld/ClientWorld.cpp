@@ -28,37 +28,37 @@ void ClientWorld::UpdateChunks() {
 		int z = chunk.pos.z;
 
 		CHUNK_ID ChunkID = getChunkID(x, y, z);
-		ChunkCache.insert(ChunkID, chunk); // Copy Chunk To Loaded Cache
+		ChunkCache[ChunkID] = chunk; // Copy Chunk To Loaded Cache
 		
-		ChunkCache.RunObjFunction(ChunkID, &Chunk::clearNeighbors);
+		ChunkCache[ChunkID].clearNeighbors();
 		if (ChunkCache.count(getChunkID(x, y + 1, z))) {
-			ChunkCache.RunObjFunction(getChunkID(x, y + 1, z), &Chunk::setNeighborNY, ChunkCache.getAddress(ChunkID));
-			ChunkCache.RunObjFunction(ChunkID, &Chunk::setNeighborPY, ChunkCache.getAddress(getChunkID(x, y + 1, z)));
+			ChunkCache[(x, y + 1, z)].setNeighborNY(&ChunkCache[ChunkID]);
+			ChunkCache[ChunkID].setNeighborPY(&ChunkCache[getChunkID(x, y + 1, z)]);
 			ChunkMeshQueue.emplace_back(glm::vec3(x, y + 1, z));
 		}
 		if (ChunkCache.count(getChunkID(x, y - 1, z))) {
-			ChunkCache.RunObjFunction(getChunkID(x, y - 1, z), &Chunk::setNeighborPY, ChunkCache.getAddress(ChunkID));
-			ChunkCache.RunObjFunction(ChunkID, &Chunk::setNeighborNY, ChunkCache.getAddress(getChunkID(x, y - 1, z)));
+			ChunkCache[getChunkID(x, y - 1, z)].setNeighborPY(&ChunkCache[ChunkID]);
+			ChunkCache[ChunkID].setNeighborNY(&ChunkCache[getChunkID(x, y - 1, z)]);
 			ChunkMeshQueue.emplace_back(glm::vec3(x, y - 1, z));
 		}
 		if (ChunkCache.count(getChunkID(x + 1, y, z))) {
-			ChunkCache.RunObjFunction(getChunkID(x + 1, y, z), &Chunk::setNeighborNX, ChunkCache.getAddress(ChunkID));
-			ChunkCache.RunObjFunction(ChunkID, &Chunk::setNeighborPX, ChunkCache.getAddress(getChunkID(x + 1, y, z)));
+			ChunkCache[getChunkID(x + 1, y, z)].setNeighborNX(&ChunkCache[ChunkID]);
+			ChunkCache[ChunkID].setNeighborPX(&ChunkCache[getChunkID(x + 1, y, z)]);
 			ChunkMeshQueue.emplace_back(glm::vec3(x + 1, y, z));
 		}
 		if (ChunkCache.count(getChunkID(x - 1, y, z))) {
-			ChunkCache.RunObjFunction(getChunkID(x - 1, y, z), &Chunk::setNeighborPX, ChunkCache.getAddress(ChunkID));
-			ChunkCache.RunObjFunction(ChunkID, &Chunk::setNeighborNX, ChunkCache.getAddress(getChunkID(x - 1, y, z)));
+			ChunkCache[getChunkID(x - 1, y, z)].setNeighborPX(&ChunkCache[ChunkID]);
+			ChunkCache[ChunkID].setNeighborNX(&ChunkCache[getChunkID(x - 1, y, z)]);
 			ChunkMeshQueue.emplace_back(glm::vec3(x - 1, y, z));
 		}
 		if (ChunkCache.count(getChunkID(x, y, z + 1))) {
-			ChunkCache.RunObjFunction(getChunkID(x, y, z + 1), &Chunk::setNeighborNZ, ChunkCache.getAddress(ChunkID));
-			ChunkCache.RunObjFunction(ChunkID, &Chunk::setNeighborPZ, ChunkCache.getAddress(getChunkID(x, y, z + 1)));
+			ChunkCache[getChunkID(x, y, z + 1)].setNeighborNZ(&ChunkCache[ChunkID]);
+			ChunkCache[ChunkID].setNeighborPZ(&ChunkCache[getChunkID(x, y, z + 1)]);
 			ChunkMeshQueue.emplace_back(glm::vec3(x, y, z + 1));
 		}
 		if (ChunkCache.count(getChunkID(x, y, z - 1))) {
-			ChunkCache.RunObjFunction(getChunkID(x, y, z - 1), &Chunk::setNeighborPZ, ChunkCache.getAddress(ChunkID));
-			ChunkCache.RunObjFunction(ChunkID, &Chunk::setNeighborNZ, ChunkCache.getAddress(getChunkID(x, y, z - 1)));
+			ChunkCache[getChunkID(x, y, z - 1)].setNeighborPZ(&ChunkCache[ChunkID]);
+			ChunkCache[ChunkID].setNeighborNZ(&ChunkCache[getChunkID(x, y, z - 1)]);
 			ChunkMeshQueue.emplace_back(glm::vec3(x, y, z - 1));
 		}
 		ChunkMeshQueue.emplace_back(glm::vec3(x, y, z));
@@ -243,7 +243,7 @@ void ClientWorld::MesherWorker() {
 		NZ.clearChunk();
 		chunk.clearChunk();
 
-		chunk = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z)));
+		chunk = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z))];
 
 		chunk.clearNeighbors();
 		chunk.setNeighborNX(&NX);
@@ -254,22 +254,22 @@ void ClientWorld::MesherWorker() {
 		chunk.setNeighborPZ(&PZ);
 
 		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x - 1, ChunkPos.y, ChunkPos.z)))) {
-			NX = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x - 1, ChunkPos.y, ChunkPos.z)));
+			NX = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x - 1, ChunkPos.y, ChunkPos.z))];
 		}
 		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x + 1, ChunkPos.y, ChunkPos.z)))) {
-			PX = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x + 1, ChunkPos.y, ChunkPos.z)));
+			PX = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x + 1, ChunkPos.y, ChunkPos.z))];
 		}
 		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y - 1, ChunkPos.z)))) {
-			NY = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y - 1, ChunkPos.z)));
+			NY = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y - 1, ChunkPos.z))];
 		}
 		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y + 1, ChunkPos.z)))) {
-			PY = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y + 1, ChunkPos.z)));
+			PY = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y + 1, ChunkPos.z))];
 		}
 		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z - 1)))) {
-			NZ = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z - 1)));
+			NZ = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z - 1))];
 		}
 		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z + 1)))) {
-			PZ = ChunkCache.get(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z + 1)));
+			PZ = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z + 1))];
 		}
 
 		Mesher.chunk = &chunk;
@@ -343,7 +343,7 @@ void ClientWorld::MoveEntity(Entity* ENTITY, double x, double y, double z) {
 		/*getLogger()->LogDebug("Client World", "Chunk: " + std::to_string(cx) + ", " + std::to_string(cy) + ", " + std::to_string(cz));
 		getLogger()->LogDebug("Client World", "Local Pos: " + std::to_string(lx) + ", " + std::to_string(ly) + ", " + std::to_string(lz));
 		getLogger()->LogDebug("Client World", "Global Pos: " + std::to_string(ENTITY->PosX) + ", " + std::to_string(ENTITY->PosY) + ", " + std::to_string(ENTITY->PosZ));*/
-		Chunk CHUNK = ChunkCache.get(getChunkID(cx,cy,cz));
+		Chunk CHUNK = ChunkCache[getChunkID(cx,cy,cz)];
 
 		
 
@@ -413,7 +413,7 @@ bool ClientWorld::TestIfEntityOnGround(Entity* ENTITY) {
 	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
-		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
+		Chunk CHUNK = ChunkCache[getChunkID(cx, cy, cz)];
 		if (CHUNK.checkblock(lx, floor(ly - size -1), lz).id != AIR) {
 			return true;
 		}
@@ -431,7 +431,7 @@ bool ClientWorld::TestIfEntityTouchBlockYP(Entity* ENTITY) {
 	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
-		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
+		Chunk CHUNK = ChunkCache[getChunkID(cx, cy, cz)];
 		if (CHUNK.checkblock(lx, floor(ly + size + 1), lz).id != AIR) {
 			return true;
 		}
@@ -450,7 +450,7 @@ bool ClientWorld::TestIfEntityTouchBlockXP(Entity* ENTITY) {
 	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
-		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
+		Chunk CHUNK = ChunkCache[getChunkID(cx, cy, cz)];
 		if ((CHUNK.checkblock(floor(lx + size), ly, lz).id != AIR)) {
 			return true;
 		}
@@ -469,7 +469,7 @@ bool ClientWorld::TestIfEntityTouchBlockZP(Entity* ENTITY) {
 	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
-		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
+		Chunk CHUNK = ChunkCache[getChunkID(cx, cy, cz)];
 		if ((CHUNK.checkblock(lx, ly, floor(lz + size)).id != AIR)) {
 			return true;
 		}
@@ -488,7 +488,7 @@ bool ClientWorld::TestIfEntityTouchBlockXN(Entity* ENTITY) {
 	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
-		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
+		Chunk CHUNK = ChunkCache[getChunkID(cx, cy, cz)];
 		if ((CHUNK.checkblock(floor(lx - size), ly, lz).id != AIR)) {
 			return true;
 		}
@@ -507,7 +507,7 @@ bool ClientWorld::TestIfEntityTouchBlockZN(Entity* ENTITY) {
 	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
-		Chunk CHUNK = ChunkCache.get(getChunkID(cx, cy, cz));
+		Chunk CHUNK = ChunkCache[getChunkID(cx, cy, cz)];
 		if ((CHUNK.checkblock(lx, ly, floor(lz - size)).id != AIR)) {
 			return true;
 		}
