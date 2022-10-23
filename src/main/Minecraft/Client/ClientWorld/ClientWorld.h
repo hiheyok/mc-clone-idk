@@ -1,5 +1,10 @@
 #pragma once
-
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#ifdef _DEBUG
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
 #include "../../World/Level/Chunk/Chunk.h"
 #include "../../../Utils/MutithreadedData.h"
 
@@ -51,12 +56,15 @@ private:
 	Camera camera;
 
 	AsyncDeque<Chunk> ChunkAddQueue;
-	AsyncDeque<glm::ivec3> ChunkMeshQueue;
+	Concurrency::concurrent_priority_queue<long long int> ChunkMeshQueue;
 //	AsyncDeque<???> BlockUpdates; //Work on later
-	AsyncHashMapClass<CHUNK_ID, Chunk> ChunkCache;
+	AsyncHashMap<CHUNK_ID, Chunk> ChunkCache;
 
 	bool stop = false;
 
 	std::deque<std::thread> MeshWorkers;
 	std::thread ClientWorldThread;
+
+	template <typename NUM>
+	static int FastFloor(NUM f) { return f >= 0 ? (int)f : (int)f - 1; }
 };

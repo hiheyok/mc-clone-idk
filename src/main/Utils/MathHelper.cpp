@@ -2,7 +2,7 @@
 #include <gl/glew.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
-
+#define _CRTDBG_MAP_ALLOC
 using namespace glm;
 
 double toRadians(double x)
@@ -46,19 +46,49 @@ double FindDistance(vec2 pos0, vec2 pos1) {
 	return sqrt(pow((double)pos0.x - pos1.x, 2) + pow((double)pos0.y - pos1.y, 2));
 }
 
-long long int getChunkID(int x, int y, int z) {
-	return ((long long int)x * 1000000000000) + ((long long int)y * 1000000) + (long long int)z;
+long long unsigned int getChunkID(int x, int y, int z) {
+	long long unsigned int sx = (((1u << 1) - 1u) & (x >> 31));
+	long long unsigned int sy = (((1u << 1) - 1u) & (y >> 31));
+	long long unsigned int sz = (((1u << 1) - 1u) & (z >> 31));
+	long long unsigned int ax = (long long unsigned int)abs(x);
+	long long unsigned int ay = (long long unsigned int)abs(y);
+	long long unsigned int az = (long long unsigned int)abs(z);
+
+	return 0LLU | ax << 0 | ay << 16 | az << 32 | sx << 61 | sy << 62 | sz << 63;
+}
+long long unsigned int getChunkID(glm::ivec3 vec) {
+	long long unsigned int sx = (((1u << 1) - 1u) & (vec.x >> 31));
+	long long unsigned int sy = (((1u << 1) - 1u) & (vec.y >> 31));
+	long long unsigned int sz = (((1u << 1) - 1u) & (vec.z >> 31));
+	long long unsigned int ax = (long long unsigned int)abs(vec.x);
+	long long unsigned int ay = (long long unsigned int)abs(vec.y);
+	long long unsigned int az = (long long unsigned int)abs(vec.z);
+
+	return 0LLU | ax << 0 | ay << 16 | az << 32 | sx << 61 | sy << 62 | sz << 63;
 }
 
-long long int getChunkID(glm::ivec3 vec) {
-	return ((long long int)vec.x * 1000000000000) + ((long long int)vec.y * 1000000) + (long long int)vec.z;
-}
+glm::ivec3 ChunkIDToPOS(long long unsigned int n) {
 
-glm::ivec3 IntToIVec3(long long int n) {
-
-	int lz = n % 1000000;
-	int lx = n / (1000000000000.0);
-	int ly = (n % (1000000000000)) / 1000000;
-
-	return glm::vec3(lx,ly,lz);
+	int x = 0;
+	int y = 0;
+	int z = 0;
+	if (((uint)(((1u << 1) - 1u) & (n >> 61)) << 31)) {
+		x = -(int)(((1LLU << 16) - 1u) & (n >> 0LLU));
+	}
+	else {
+		x = (int)(((1LLU << 16) - 1u) & (n >> 0LLU));
+	}
+	if (((uint)(((1u << 1) - 1u) & (n >> 62)) << 31)) {
+		y = -(int)(((1LLU << 16) - 1u) & (n >> 16LLU));
+	}
+	else {
+		y = (int)(((1LLU << 16) - 1u) & (n >> 16LLU));
+	}
+	if (((uint)(((1u << 1) - 1u) & (n >> 63)) << 31)) {
+		z = -(int)(((1LLU << 16) - 1u) & (n >> 32LLU));
+	}
+	else {
+		z = (int)(((1LLU << 16) - 1u) & (n >> 32LLU));
+	}
+	return glm::vec3(x,y,z);
 }

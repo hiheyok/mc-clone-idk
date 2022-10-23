@@ -1,6 +1,6 @@
 #ifndef CHUNK_R_H_
 #define CHUNK_R_H_
-
+#define _CRTDBG_MAP_ALLOC
 #include "Mesh/Mesher.h"
 
 #include "../Camera/camera.h"
@@ -73,7 +73,7 @@ public:
 
 	void _DeleteChunk(long long int ChunkID) {
 		if (ChunkRenderListSolidOffsetLookup.count(ChunkID)) {
-			int index = GetRenderSolidList(ChunkRenderListSolidOffsetLookup[ChunkID]);
+			size_t index = GetRenderSolidList(ChunkRenderListSolidOffsetLookup[ChunkID]);
 			GPUMemoryUsage -= ChunkRenderListSolid[index].size;
 			MeshList[ChunkID] = false;
 			MeshList.erase(ChunkID);
@@ -82,14 +82,14 @@ public:
 		}
 	}
 
-	int GetRenderSolidList(size_t offset) {
+	size_t GetRenderSolidList(size_t offset) {
 		//binary search thing
 
 		size_t low = 0;
 		size_t high = ChunkRenderListSolid.size() - 1;
 
 		while (true) {
-			int mid = (low + high) * 0.5;
+			size_t mid = (size_t)((low + high) * 0.5);
 			if (offset == ChunkRenderListSolid[mid].offset) {
 				return mid;
 			} else if (offset > ChunkRenderListSolid[mid].offset) {
@@ -405,8 +405,8 @@ private:
 
 	concurrency::concurrent_queue<ChunkVerticesData> MeshDataQueued;
 
-	std::unordered_map<long long int, int> ChunkRenderListSolidOffsetLookup;
-	std::unordered_map<long long int, int> ChunkRenderListTransparentOffsetCache;
+	std::unordered_map<long long int, size_t> ChunkRenderListSolidOffsetLookup;
+	std::unordered_map<long long int, size_t> ChunkRenderListTransparentOffsetCache;
 
 	std::vector<ChunkRenderDataBufferAddress> ChunkRenderListSolid;
 	std::vector<DrawArraysIndirectCommand> DrawArraysIndirectCommandListSolid;

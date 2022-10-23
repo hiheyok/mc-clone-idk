@@ -1,9 +1,14 @@
 #pragma once
-
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#ifdef _DEBUG
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
 class AABB_BOX {
-	double x;
-	double y;
-	double z;
+	double x = 0.0;
+	double y = 0.0;
+	double z = 0.0;
 
 	double y_size = 0;
 	double x_size = 0;

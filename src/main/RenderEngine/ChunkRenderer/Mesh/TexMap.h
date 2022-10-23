@@ -1,7 +1,7 @@
 #pragma once
 #ifndef BLOCK_ATLAS_H
 #define BLOCK_ATLAS_H
-
+#define _CRTDBG_MAP_ALLOC
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 #include <vector>

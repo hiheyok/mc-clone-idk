@@ -6,7 +6,7 @@
 #include "Utils/LogUtils.h"
 #include "Minecraft/Core.h"
 #include "Minecraft/Client/Client.h"
-
+#define _CRTDBG_MAP_ALLOC
 int main(void) {
 
 	LogUtils* Logger = getLogger();

@@ -5,7 +5,7 @@
 #include <thread>
 #include <math.h>
 #include <chrono>
-
+#define _CRTDBG_MAP_ALLOC
 using namespace std;
 using namespace chrono;
 

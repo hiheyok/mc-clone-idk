@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 
-
+#define _CRTDBG_MAP_ALLOC
 
 using namespace std;
 
@@ -56,10 +56,9 @@ void APIENTRY Window::glDebugOutput(GLenum source, GLenum type, unsigned int id,
     }
 
     str.seekg(0, ios::end);
-    int size = str.tellg();
 
 
-    if (size != 0) {
+    if (str.str().size() != 0) {
         getLogger()->LogError("OpenGL", str.str());
     }
 
@@ -144,8 +143,8 @@ void Window::mouse_callback(double xpos, double ypos) {
     cursormovementx = xpos - cursorx;
     cursormovementy = ypos - cursory;
 
-    cursorx = xpos;
-    cursory = ypos;
+    cursorx = (int)xpos;
+    cursory = (int)ypos;
 
 }
 

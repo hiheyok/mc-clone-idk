@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <glm/vec3.hpp>
 #include <unordered_map>
+#include <unordered_set>
 #include <string>
 #include <deque>
 #include <mutex>
@@ -14,7 +15,12 @@
 #include <chrono>
 #include <queue>
 
-
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#ifdef _DEBUG
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
 
 class WorldContainer {
 public:
@@ -28,12 +34,12 @@ public:
     void JoinWorld(std::string PlayerName, ClientWorld* PlayerAddress);
     void LeaveWorld();
 
-    AsyncHashMapClass<CHUNK_ID, Chunk> ChunkMapLoaded;
+    AsyncHashMap<CHUNK_ID, Chunk> ChunkMapLoaded;
 protected:
 
     void LoadChunk(int x, int y, int z);
 
-    void WriteChunkMapStore(Chunk chunk);
+    void WriteChunkMapStore(Chunk& chunk);
     Chunk& ReadChunkMapStore(int x, int y, int z);
     Chunk& ReadChunkMapLoaded(int x, int y, int z);
 
@@ -59,20 +65,22 @@ protected:
 
     AsyncDeque<glm::ivec3> ChunkLoadQueue;
     std::thread WorldStatsThread;
-    AsyncHashMapNonClass<long long int, std::string> PlayerList;
-    AsyncHashMapNonClass<long long int, ClientWorld*> PlayerAddress;
-    AsyncHashMapClass<long long int, Entity> EntityList;
+    AsyncHashMap<long long int, std::string> PlayerList;
+    AsyncHashMap<long long int, ClientWorld*> PlayerAddress;
+    AsyncHashMap<long long int, Entity> EntityList;
 
-    Concurrency::concurrent_unordered_map<long long int, Concurrency::concurrent_unordered_set<long long int> > ClientChunkToUpdate;
+    Concurrency::concurrent_unordered_map<long long int, Concurrency::concurrent_unordered_set<CHUNK_ID> > ClientChunkToUpdate;
 private:
+
+    void AddChunkToGenQueue(int x, int y, int z);
     void WorldGenerator();
 
     int TickingDistance = 32;
 
-    AsyncHashMapClass<CHUNK_ID, Chunk> ChunkMapStore;
-    AsyncHashMapNonClass<CHUNK_ID, bool> ChunkProcessing;
-
-    AsyncDeque<glm::ivec3> ChunkGenQueue;
+    AsyncHashMap<CHUNK_ID, Chunk> ChunkMapStore;
+    std::unordered_set<CHUNK_ID> ChunkProcessing;
+    std::mutex mut;
+    concurrency::concurrent_priority_queue<CHUNK_ID> ChunkGenQueue;
 
     std::deque<std::thread> WorldGenWorkers;
 

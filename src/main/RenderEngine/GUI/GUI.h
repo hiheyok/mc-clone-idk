@@ -1,7 +1,7 @@
 #pragma once
 #ifndef IGUI_H
 #define IGUI_H
-
+#define _CRTDBG_MAP_ALLOC
 #include <unordered_map>
 #include "../OpenGL/Shader/Shader.h"
 #include "../OpenGL/Texture/Texture.h"
@@ -33,14 +33,14 @@ struct GUI_Data {
 };
 
 struct LETTER {
-	vec2 p0, p1, p2, p3 = vec2(0.0f,0.0f);
-	vec2 t0, t1, t2, t3 = vec2(0.0f, 0.0f);
+	vec2 p0 = vec2(0.0f, 0.0f), p1 = vec2(0.0f, 0.0f), p2 = vec2(0.0f, 0.0f), p3 = vec2(0.0f,0.0f);
+	vec2 t0 = vec2(0.0f, 0.0f), t1 = vec2(0.0f, 0.0f), t2 = vec2(0.0f, 0.0f), t3 = vec2(0.0f, 0.0f);
 };
 
 struct string_rendering_data {
 	std::vector<LETTER> string;
-	float letterSize;
-	vec3 color;
+	float letterSize = 0.f;
+	vec3 color = vec3(0.f,0.f,0.f);
 	bool render = false;
 };
 
@@ -108,7 +108,9 @@ private:
 
 	unsigned int VBO[16]{}, VAO[16]{}, EBO[16]{}, size[16]{};
 
-	unsigned int fontVBO, fontVAO, fontEBO, fontsize;
+	unsigned int fontVBO, fontVAO, fontEBO;
+
+	size_t fontsize;
 
 	std::unordered_map<std::string, GUI_Data> data;
 	std::unordered_map<std::string, string_rendering_data> gui_string;

@@ -9,7 +9,7 @@
 //		$Description:	Demonstrates checking if shapes are in view		 //
 //																		 //
 //***********************************************************************//
-
+#define _CRTDBG_MAP_ALLOC
 #include "../camera/camera.h"
 #include "frustum.h"
 #include <tgmath.h>

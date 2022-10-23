@@ -8,7 +8,7 @@
 #include <iostream>
 #include "../../../Utils/stb_image.h"
 #include "../../../Utils/LogUtils.h"
-
+#define _CRTDBG_MAP_ALLOC
 class Texture {
 public:
     void init(char const* path)

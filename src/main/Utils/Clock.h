@@ -1,6 +1,6 @@
 #ifndef CLOCK_H_
 #define CLOCK_H_
-
+#define _CRTDBG_MAP_ALLOC
 void precisePause(double nanoseconds);
 void timerSleep(double seconds);
 void timerSleepNotPrecise(int milliseconds);

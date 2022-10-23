@@ -1,5 +1,10 @@
 #include "Chunk.h"
-
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#ifdef _DEBUG
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
 #include "../../../../utils/MathHelper.h"
 
 #include <gl/glew.h>
@@ -325,11 +330,11 @@ void Chunk::gen_chunkMinecraft(FastNoiseLite* noise) {
 
 	for (int x = cx; x < CHUNK_SIZE + cx; x++) {
 		for (int z = cz; z < CHUNK_SIZE + cz; z++) {
-			float continental = anoise(noise, x, z, 1, 5);
+			float continental = anoise(noise, x, z, 1, 20);
 			float cny = continentialNoiseHeight(continental);
 			for (int y = 0 + cy; y < CHUNK_SIZE + cy; y++) {
 
-				float density = anoise(noise, x, y, z, 8, 3);
+				float density = anoise(noise, x, y, z, 8, 250);
 
 				density = density + 1;
 				density = density * 0.5f;
@@ -350,8 +355,8 @@ int Chunk::continentialNoiseHeight(float n) {
 	n = n + 1;
 	n = n * 0.5f;
 
-	glm::vec2 s1;
-	glm::vec2 s2;
+	glm::vec2 s1(0.f,0.f);
+	glm::vec2 s2(0.f,0.f);
 
 	for (int i = 0; i < continentialMapSample.size(); i++) {
 		if (continentialMapSample[i].x < n && continentialMapSample[i + 1].x > n) {
@@ -361,8 +366,8 @@ int Chunk::continentialNoiseHeight(float n) {
 		}
 	}
 
-	float m0 = (n - (s2.x + s1.x) * 0.5f) / (s1.x - s2.x);
-	float m1 = (1 - cos((m0 - 0.5) * 3.141592f)) * 0.5f;
+	float m0 = (float)((n - (s2.x + s1.x) * 0.5f) / (s1.x - s2.x));
+	float m1 = (float)(1 - cos((m0 - 0.5) * 3.141592f)) * 0.5f;
 
 
 	float f = s1.y + (s2.y - s1.y) * m1;

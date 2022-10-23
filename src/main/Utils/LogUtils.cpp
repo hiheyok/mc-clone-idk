@@ -2,7 +2,7 @@
 #include <iomanip>
 #include "LogUtils.h"
 #include "Clock.h"
-
+#define _CRTDBG_MAP_ALLOC
 using namespace std;
 
 LogUtils Logger;

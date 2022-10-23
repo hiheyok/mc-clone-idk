@@ -1,5 +1,5 @@
 #include "../camera/camera.h"
-
+#define _CRTDBG_MAP_ALLOC
 class CFrustum {
 
 public:

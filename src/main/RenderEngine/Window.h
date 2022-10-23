@@ -5,7 +5,7 @@
 #include <glm/vec2.hpp>
 #include "../utils/LogUtils.h"
 #include <vector>
-
+#define _CRTDBG_MAP_ALLOC
 
 class Window {
 public:
@@ -46,7 +46,7 @@ private:
 	int cursorlastx = 0;
 	int cursorlasty = 0;
 
-	LogUtils* Logger;
-	GLFWwindow* window;
+	LogUtils* Logger  = nullptr;
+	GLFWwindow* window = nullptr;
 	bool init = false;
 };

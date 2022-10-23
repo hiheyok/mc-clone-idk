@@ -1,7 +1,7 @@
 #ifndef CHUNK_H_
 #define CHUNK_H_
 
-typedef long long int CHUNK_ID;
+typedef long long unsigned int CHUNK_ID;
 
 constexpr auto CHUNK_SIZE = 16;
 constexpr auto SEED = 3453454;

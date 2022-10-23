@@ -1,5 +1,5 @@
 #include "Buffer.h"
-
+#define _CRTDBG_MAP_ALLOC
 unsigned int Buffer::GetID() {
 	return BufferID;
 }

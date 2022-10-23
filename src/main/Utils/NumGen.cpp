@@ -1,7 +1,7 @@
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
-
+#define _CRTDBG_MAP_ALLOC
 #include "NumGen.h"
 
 long long unsigned int count = 0;
@@ -10,9 +10,9 @@ long long int getRandomNumber() {
 
     count++;
 
-    srand((unsigned)time(NULL) + count);
+    srand((long long unsigned int)time(NULL) + count);
 
-    return (float)rand() / RAND_MAX;
+    return (long long int)((float)rand() / (float)RAND_MAX);
 }
 
 long long unsigned int ID_VAL = 0;

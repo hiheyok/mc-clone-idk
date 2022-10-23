@@ -1,7 +1,7 @@
 #pragma once
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
-
+#define _CRTDBG_MAP_ALLOC
 #include <vector>
 
 class Buffer {

@@ -1,5 +1,10 @@
 #include "World.h"
-
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#ifdef _DEBUG
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
 void World::StartGenThreads(int amount) {
 	for (int i = 0; i < amount; i++) {
 		AddWorldGenWorker();
@@ -45,6 +50,7 @@ void World::SendChunkDataToClient() {
 				}
 				ClientChunkToUpdate[Client.first].clear();
 			}
+		//	getLogger()->LogDebug("World", "Size_: " + std::to_string(ClientChunkToUpdate.size()));
 		}
 	}
 	//getLogger()->LogDebug("World", "Size_: " + std::to_string(ClientChunkToUpdate.size()));

@@ -1,7 +1,6 @@
 #ifndef MESH_H_2
 #define MESH_H_2
-
-
+#define _CRTDBG_MAP_ALLOC
 
 
 #include "../../../Minecraft/World/Level/Chunk/Chunk.h"

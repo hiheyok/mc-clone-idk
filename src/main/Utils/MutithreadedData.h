@@ -1,5 +1,5 @@
 #pragma once
-
+#define _CRTDBG_MAP_ALLOC
 #include <deque>
 #include <unordered_map>
 #include <concurrent_unordered_map.h>
@@ -11,7 +11,7 @@
 #include <list>
 #include <mutex>
 
-template <typename Hasher, typename Object> class AsyncHashMapClass {
+template <typename Hasher, typename Object> class AsyncHashMap {
 public:concurrency::concurrent_unordered_map<Hasher, Object> HashMap;
 
 	  bool count(Hasher Hash) {
@@ -51,44 +51,6 @@ private:
 	size_t MEM_USAGE = 0;
 };
 
-template <typename Hasher, typename Object> class AsyncHashMapNonClass {
-public:Concurrency::concurrent_unordered_map<Hasher, Object> HashMap;
-
-	  bool count(Hasher Hash) {
-		  return HashMap.count(Hash);
-	  }
-
-	  bool empty() {
-		  return HashMap.empty();
-	  }
-
-	  void erase(Hasher Hash) {
-		  Mut.lock();
-		  HashMap.unsafe_erase(Hash);
-		  Mut.unlock();
-	  }
-
-	  void clear() {
-		  HashMap.clear();
-
-	  }
-
-	  size_t size() {
-		  return HashMap.size();
-	  }
-
-	  concurrency::concurrent_unordered_map<Hasher, Object> DumpData() {
-		  return HashMap;
-	  }
-
-	  Object& operator[](Hasher Hash) {
-		  return HashMap[Hash];
-	  }
-
-private:
-	std::mutex Mut;
-	size_t MEM_USAGE = 0;
-};
 
 template <typename Object> class AsyncDeque {
 public:std::deque<Object> Deque;

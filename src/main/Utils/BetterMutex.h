@@ -1,6 +1,6 @@
 #pragma once
 #include <atomic>
-
+#define _CRTDBG_MAP_ALLOC
 class atomicmutex {
     std::atomic<bool> flag{ false };
 

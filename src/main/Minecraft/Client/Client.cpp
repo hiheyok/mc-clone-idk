@@ -1,8 +1,10 @@
 #include "Client.h"
 #include "../World/World.h"
+
+#include<iostream>
 #define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
 #include <crtdbg.h>
+#include <stdlib.h>
 
 #define EVENT_NULL 0x0000
 #define EVENT_START_INTEGRATED_SERVER 0x0001 //start single player world
@@ -19,9 +21,33 @@ void Client::Initialize() {
 
     
     TestWorld.Initialize();
-    TestWorld.StartGenThreads(8);
+    TestWorld.StartGenThreads(32);
 
     cworld.Start(getWindow());
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
+    cworld.AddMeshWorker();
     cworld.AddMeshWorker();
     cworld.AddMeshWorker();
     cworld.AddMeshWorker();
@@ -60,7 +86,7 @@ void Client::ClientLoop() {
         
         Update();
         Render();
-		Refresh();
+        Refresh();
        
         frametime = (std::chrono::high_resolution_clock::now() - time1).count() / 1000000000.0;
 

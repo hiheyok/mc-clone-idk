@@ -9,7 +9,7 @@
 #include "../../../Minecraft/World/Level/Chunk/Chunk.h"
 #include "TexMap.h"
 #include "Mesher.h"
-
+#define _CRTDBG_MAP_ALLOC
 #define px 0x00
 #define py 0x01
 #define pz 0x02

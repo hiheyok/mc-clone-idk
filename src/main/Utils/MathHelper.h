@@ -1,7 +1,7 @@
 #pragma once
 #ifndef MATH_HELP_H_
 #define MATH_HELP_H_
-
+#define _CRTDBG_MAP_ALLOC
 #define DEGTORAD 0.017453
 
 #include <glm/vec2.hpp>
@@ -20,8 +20,10 @@ double FindDistance(glm::vec2 pos0, glm::vec2 pos1);
 
 template <typename T> double FindDistance(T x, T x1);
 
-long long int getChunkID(int x, int y, int z);
-long long int getChunkID(glm::ivec3 vec);
+long long unsigned int getChunkID(int x, int y, int z);
+long long unsigned int getChunkID(glm::ivec3 vec);
+
+glm::ivec3 ChunkIDToPOS(long long unsigned int n);
 
 //glm::ivec3 IntToIVec3(int n);
 #endif

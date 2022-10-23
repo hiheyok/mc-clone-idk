@@ -1,3 +1,9 @@
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#ifdef _DEBUG
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
 #include "ClientWorld.h"
 #include "../../../Utils/Clock.h"
 #include "../../../Utils/LogUtils.h"
@@ -34,34 +40,34 @@ void ClientWorld::UpdateChunks() {
 		if (ChunkCache.count(getChunkID(x, y + 1, z))) {
 			ChunkCache[(x, y + 1, z)].setNeighborNY(&ChunkCache[ChunkID]);
 			ChunkCache[ChunkID].setNeighborPY(&ChunkCache[getChunkID(x, y + 1, z)]);
-			ChunkMeshQueue.emplace_back(glm::vec3(x, y + 1, z));
+			ChunkMeshQueue.push(getChunkID(x, y + 1, z));
 		}
 		if (ChunkCache.count(getChunkID(x, y - 1, z))) {
 			ChunkCache[getChunkID(x, y - 1, z)].setNeighborPY(&ChunkCache[ChunkID]);
 			ChunkCache[ChunkID].setNeighborNY(&ChunkCache[getChunkID(x, y - 1, z)]);
-			ChunkMeshQueue.emplace_back(glm::vec3(x, y - 1, z));
+			ChunkMeshQueue.push(getChunkID(x, y - 1, z));
 		}
 		if (ChunkCache.count(getChunkID(x + 1, y, z))) {
 			ChunkCache[getChunkID(x + 1, y, z)].setNeighborNX(&ChunkCache[ChunkID]);
 			ChunkCache[ChunkID].setNeighborPX(&ChunkCache[getChunkID(x + 1, y, z)]);
-			ChunkMeshQueue.emplace_back(glm::vec3(x + 1, y, z));
+			ChunkMeshQueue.push(getChunkID(x + 1, y, z));
 		}
 		if (ChunkCache.count(getChunkID(x - 1, y, z))) {
 			ChunkCache[getChunkID(x - 1, y, z)].setNeighborPX(&ChunkCache[ChunkID]);
 			ChunkCache[ChunkID].setNeighborNX(&ChunkCache[getChunkID(x - 1, y, z)]);
-			ChunkMeshQueue.emplace_back(glm::vec3(x - 1, y, z));
+			ChunkMeshQueue.push(getChunkID(x - 1, y, z));
 		}
 		if (ChunkCache.count(getChunkID(x, y, z + 1))) {
 			ChunkCache[getChunkID(x, y, z + 1)].setNeighborNZ(&ChunkCache[ChunkID]);
 			ChunkCache[ChunkID].setNeighborPZ(&ChunkCache[getChunkID(x, y, z + 1)]);
-			ChunkMeshQueue.emplace_back(glm::vec3(x, y, z + 1));
+			ChunkMeshQueue.push(getChunkID(x, y, z + 1));
 		}
 		if (ChunkCache.count(getChunkID(x, y, z - 1))) {
 			ChunkCache[getChunkID(x, y, z - 1)].setNeighborPZ(&ChunkCache[ChunkID]);
 			ChunkCache[ChunkID].setNeighborNZ(&ChunkCache[getChunkID(x, y, z - 1)]);
-			ChunkMeshQueue.emplace_back(glm::vec3(x, y, z - 1));
+			ChunkMeshQueue.push(getChunkID(x, y, z - 1));
 		}
-		ChunkMeshQueue.emplace_back(glm::vec3(x, y, z));
+		ChunkMeshQueue.push(getChunkID(x, y, z));
 	}
 }
 
@@ -227,62 +233,26 @@ void ClientWorld::MesherWorker() {
 	Chunk PX, NX, PY, NY, PZ, NZ;
 
 	Chunk chunk;
-
+	long long int ChunkID = 0;
 	while (!stop) {
 		while (ChunkMeshQueue.empty()) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(12)); 
 		}
+		if (ChunkMeshQueue.size() != 0) {
+			if (ChunkMeshQueue.try_pop(ChunkID)) {
 
-		glm::ivec3 ChunkPos = ChunkMeshQueue.pop_get_front();
-
-		/*PX.clearChunk();
-		NX.clearChunk();
-		PY.clearChunk();
-		NY.clearChunk();
-		PZ.clearChunk();
-		NZ.clearChunk();
-		chunk.clearChunk();
-
-		chunk = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z))];
-
-		chunk.clearNeighbors();
-		chunk.setNeighborNX(&NX);
-		chunk.setNeighborPX(&PX);
-		chunk.setNeighborNY(&NY);
-		chunk.setNeighborPY(&PY);
-		chunk.setNeighborNZ(&NZ);
-		chunk.setNeighborPZ(&PZ);
-
-		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x - 1, ChunkPos.y, ChunkPos.z)))) {
-			NX = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x - 1, ChunkPos.y, ChunkPos.z))];
+				Mesher.chunk = &ChunkCache[ChunkID];
+				Mesher.SmartGreedyMeshing();
+				ChunkVerticesData MeshData;
+				MeshData.x = Mesher.chunk->pos.x;
+				MeshData.y = Mesher.chunk->pos.y;
+				MeshData.z = Mesher.chunk->pos.z;
+				MeshData.SolidVertices = Mesher.vertices;
+				MeshData.TransparentVertices = Mesher.transparentVertices;
+				Mesher.delete_();
+				TerrrainRenderer->AddChunkQueue(MeshData);
+			}
 		}
-		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x + 1, ChunkPos.y, ChunkPos.z)))) {
-			PX = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x + 1, ChunkPos.y, ChunkPos.z))];
-		}
-		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y - 1, ChunkPos.z)))) {
-			NY = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y - 1, ChunkPos.z))];
-		}
-		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y + 1, ChunkPos.z)))) {
-			PY = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y + 1, ChunkPos.z))];
-		}
-		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z - 1)))) {
-			NZ = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z - 1))];
-		}
-		if (ChunkCache.count(getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z + 1)))) {
-			PZ = ChunkCache[getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z + 1))];
-		}*/
-
-		Mesher.chunk = &ChunkCache[getChunkID(glm::ivec3(ChunkPos.x, ChunkPos.y, ChunkPos.z))];
-		Mesher.SmartGreedyMeshing();
-		ChunkVerticesData MeshData;
-		MeshData.x = ChunkPos.x;
-		MeshData.y = ChunkPos.y;
-		MeshData.z = ChunkPos.z;
-		MeshData.SolidVertices = Mesher.vertices;
-		MeshData.TransparentVertices = Mesher.transparentVertices;
-		Mesher.delete_();
-		TerrrainRenderer->AddChunkQueue(MeshData);
-		
 	}
 }
 
@@ -327,13 +297,13 @@ void ClientWorld::Tick() {
 }
 double size = 1;
 void ClientWorld::MoveEntity(Entity* ENTITY, double x, double y, double z) {
-	int cx = floor(ENTITY->PosX / 16.0);
-	int cy = floor(ENTITY->PosY / 16.0);
-	int cz = floor(ENTITY->PosZ / 16.0);
+	int cx = FastFloor(ENTITY->PosX * 0.0625);
+	int cy = FastFloor(ENTITY->PosY * 0.0625);
+	int cz = FastFloor(ENTITY->PosZ * 0.0625);
 
-	double lx = floor(ENTITY->PosX - (double)(floor(ENTITY->PosX / 16.0) * 16));
-	double ly = floor(ENTITY->PosY - (double)(floor(ENTITY->PosY / 16.0) * 16));
-	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
+	int lx = FastFloor(ENTITY->PosX - (FastFloor(ENTITY->PosX * 0.0625) * 16));
+	int ly = FastFloor(ENTITY->PosY - (FastFloor(ENTITY->PosY * 0.0625) * 16));
+	int lz = FastFloor(ENTITY->PosZ - (FastFloor(ENTITY->PosZ * 0.0625) * 16));
 
 	bool collusion_x = false;
 	bool collusion_y = false;
@@ -348,14 +318,14 @@ void ClientWorld::MoveEntity(Entity* ENTITY, double x, double y, double z) {
 		
 
 		if (x > 0) {
-			if (CHUNK.checkblock(floor(lx + x + size), ly, lz).id != AIR) {
+			if (CHUNK.checkblock(FastFloor(lx + x + size), ly, lz).id != AIR) {
 			//	if (ENTITY->AABB.TestIntersect(lx + 1 - x, ly, lz)) {
 					collusion_x = true;
 			//	}
 			}
 		}
 		if (x < 0) {
-			if (CHUNK.checkblock(floor(lx -x - size), ly, lz).id != AIR) {
+			if (CHUNK.checkblock(FastFloor(lx -x - size), ly, lz).id != AIR) {
 			//	if (ENTITY->AABB.TestIntersect(lx - 1 + x, ly, lz)) {
 					collusion_x = true;
 			//	}
@@ -363,14 +333,14 @@ void ClientWorld::MoveEntity(Entity* ENTITY, double x, double y, double z) {
 		}
 
 		if (y > 0) {
-			if (CHUNK.checkblock(lx, floor(ly + y + size + 1), lz).id != AIR) {
+			if (CHUNK.checkblock(lx, FastFloor(ly + y + size + 1), lz).id != AIR) {
 			//	if (ENTITY->AABB.TestIntersect(lx, ly + 1 - y, lz)) {
 					collusion_y = true;
 			//	}
 			}
 		}
 		if (y < 0) {
-			if (CHUNK.checkblock(lx, floor(ly - y - size - 1), lz).id != AIR) {
+			if (CHUNK.checkblock(lx, FastFloor(ly - y - size - 1), lz).id != AIR) {
 			//	if (ENTITY->AABB.TestIntersect(lx, ly - 1 + y, lz)) {
 					collusion_y = true;
 			//	}
@@ -378,14 +348,14 @@ void ClientWorld::MoveEntity(Entity* ENTITY, double x, double y, double z) {
 		}
 
 		if (z > 0) {
-			if (CHUNK.checkblock(lx, ly, floor(lz + z + size)).id != AIR) {
+			if (CHUNK.checkblock(lx, ly, FastFloor(lz + z + size)).id != AIR) {
 			//	if (ENTITY->AABB.TestIntersect(lx, ly, lz + 1 - z)) {
 					collusion_z = true;
 			//	}
 			}
 		}
 		if (z < 0) {
-			if (CHUNK.checkblock(lx, ly, floor(lz - z - size)).id != AIR) {
+			if (CHUNK.checkblock(lx, ly, FastFloor(lz - z - size)).id != AIR) {
 			//	if (ENTITY->AABB.TestIntersect(lx, ly, lz - 1 + z)) {
 					collusion_z = true;
 			//	}
@@ -404,17 +374,17 @@ void ClientWorld::MoveEntity(Entity* ENTITY, double x, double y, double z) {
 }
 
 bool ClientWorld::TestIfEntityOnGround(Entity* ENTITY) {
-	int cx = floor(ENTITY->PosX / 16.0);
-	int cy = floor(ENTITY->PosY / 16.0);
-	int cz = floor(ENTITY->PosZ / 16.0);
+	int cx = FastFloor(ENTITY->PosX * 0.0625);
+	int cy = FastFloor(ENTITY->PosY * 0.0625);
+	int cz = FastFloor(ENTITY->PosZ * 0.0625);
 
-	double lx = floor(ENTITY->PosX - (double)(floor(ENTITY->PosX / 16.0) * 16));
-	double ly = floor(ENTITY->PosY - (double)(floor(ENTITY->PosY / 16.0) * 16));
-	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
+	int lx = FastFloor(ENTITY->PosX - (FastFloor(ENTITY->PosX * 0.0625) * 16));
+	int ly = FastFloor(ENTITY->PosY - (FastFloor(ENTITY->PosY * 0.0625) * 16));
+	int lz = FastFloor(ENTITY->PosZ - (FastFloor(ENTITY->PosZ * 0.0625) * 16));
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
 		Chunk CHUNK = ChunkCache[getChunkID(cx, cy, cz)];
-		if (CHUNK.checkblock(lx, floor(ly - size -1), lz).id != AIR) {
+		if (CHUNK.checkblock(lx, FastFloor(ly - size -1), lz).id != AIR) {
 			return true;
 		}
 	}
@@ -422,17 +392,17 @@ bool ClientWorld::TestIfEntityOnGround(Entity* ENTITY) {
 }
 
 bool ClientWorld::TestIfEntityTouchBlockYP(Entity* ENTITY) {
-	int cx = floor(ENTITY->PosX / 16.0);
-	int cy = floor(ENTITY->PosY / 16.0);
-	int cz = floor(ENTITY->PosZ / 16.0);
+	int cx = FastFloor(ENTITY->PosX * 0.0625);
+	int cy = FastFloor(ENTITY->PosY * 0.0625);
+	int cz = FastFloor(ENTITY->PosZ * 0.0625);
 
-	double lx = floor(ENTITY->PosX - (double)(floor(ENTITY->PosX / 16.0) * 16));
-	double ly = floor(ENTITY->PosY - (double)(floor(ENTITY->PosY / 16.0) * 16));
-	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
+	int lx = FastFloor(ENTITY->PosX - (FastFloor(ENTITY->PosX * 0.0625) * 16));
+	int ly = FastFloor(ENTITY->PosY - (FastFloor(ENTITY->PosY * 0.0625) * 16));
+	int lz = FastFloor(ENTITY->PosZ - (FastFloor(ENTITY->PosZ * 0.0625) * 16));
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
 		Chunk CHUNK = ChunkCache[getChunkID(cx, cy, cz)];
-		if (CHUNK.checkblock(lx, floor(ly + size + 1), lz).id != AIR) {
+		if (CHUNK.checkblock(lx, FastFloor(ly + size + 1), lz).id != AIR) {
 			return true;
 		}
 	}
@@ -441,17 +411,17 @@ bool ClientWorld::TestIfEntityTouchBlockYP(Entity* ENTITY) {
 
 
 bool ClientWorld::TestIfEntityTouchBlockXP(Entity* ENTITY) {
-	int cx = floor(ENTITY->PosX / 16.0);
-	int cy = floor(ENTITY->PosY / 16.0);
-	int cz = floor(ENTITY->PosZ / 16.0);
+	int cx = FastFloor(ENTITY->PosX * 0.0625);
+	int cy = FastFloor(ENTITY->PosY * 0.0625);
+	int cz = FastFloor(ENTITY->PosZ * 0.0625);
 
-	double lx = floor(ENTITY->PosX - (double)(floor(ENTITY->PosX / 16.0) * 16));
-	double ly = floor(ENTITY->PosY - (double)(floor(ENTITY->PosY / 16.0) * 16));
-	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
+	int lx = FastFloor(ENTITY->PosX - (FastFloor(ENTITY->PosX * 0.0625) * 16));
+	int ly = FastFloor(ENTITY->PosY - (FastFloor(ENTITY->PosY * 0.0625) * 16));
+	int lz = FastFloor(ENTITY->PosZ - (FastFloor(ENTITY->PosZ * 0.0625) * 16));
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
 		Chunk CHUNK = ChunkCache[getChunkID(cx, cy, cz)];
-		if ((CHUNK.checkblock(floor(lx + size), ly, lz).id != AIR)) {
+		if ((CHUNK.checkblock(FastFloor(lx + size), ly, lz).id != AIR)) {
 			return true;
 		}
 
@@ -460,17 +430,17 @@ bool ClientWorld::TestIfEntityTouchBlockXP(Entity* ENTITY) {
 }
 
 bool ClientWorld::TestIfEntityTouchBlockZP(Entity* ENTITY) {
-	int cx = floor(ENTITY->PosX / 16.0);
-	int cy = floor(ENTITY->PosY / 16.0);
-	int cz = floor(ENTITY->PosZ / 16.0);
+	int cx = FastFloor(ENTITY->PosX * 0.0625);
+	int cy = FastFloor(ENTITY->PosY * 0.0625);
+	int cz = FastFloor(ENTITY->PosZ * 0.0625);
 
-	double lx = floor(ENTITY->PosX - (double)(floor(ENTITY->PosX / 16.0) * 16));
-	double ly = floor(ENTITY->PosY - (double)(floor(ENTITY->PosY / 16.0) * 16));
-	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
+	int lx = FastFloor(ENTITY->PosX - (FastFloor(ENTITY->PosX * 0.0625) * 16));
+	int ly = FastFloor(ENTITY->PosY - (FastFloor(ENTITY->PosY * 0.0625) * 16));
+	int lz = FastFloor(ENTITY->PosZ - (FastFloor(ENTITY->PosZ * 0.0625) * 16));
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
 		Chunk CHUNK = ChunkCache[getChunkID(cx, cy, cz)];
-		if ((CHUNK.checkblock(lx, ly, floor(lz + size)).id != AIR)) {
+		if ((CHUNK.checkblock(lx, ly, FastFloor(lz + size)).id != AIR)) {
 			return true;
 		}
 	}
@@ -479,17 +449,17 @@ bool ClientWorld::TestIfEntityTouchBlockZP(Entity* ENTITY) {
 
 
 bool ClientWorld::TestIfEntityTouchBlockXN(Entity* ENTITY) {
-	int cx = floor(ENTITY->PosX / 16.0);
-	int cy = floor(ENTITY->PosY / 16.0);
-	int cz = floor(ENTITY->PosZ / 16.0);
+	int cx = FastFloor(ENTITY->PosX * 0.0625);
+	int cy = FastFloor(ENTITY->PosY * 0.0625);
+	int cz = FastFloor(ENTITY->PosZ * 0.0625);
 
-	double lx = floor(ENTITY->PosX - (double)(floor(ENTITY->PosX / 16.0) * 16));
-	double ly = floor(ENTITY->PosY - (double)(floor(ENTITY->PosY / 16.0) * 16));
-	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
+	int lx = FastFloor(ENTITY->PosX - (FastFloor(ENTITY->PosX * 0.0625) * 16));
+	int ly = FastFloor(ENTITY->PosY - (FastFloor(ENTITY->PosY * 0.0625) * 16));
+	int lz = FastFloor(ENTITY->PosZ - (FastFloor(ENTITY->PosZ * 0.0625) * 16));
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
 		Chunk CHUNK = ChunkCache[getChunkID(cx, cy, cz)];
-		if ((CHUNK.checkblock(floor(lx - size), ly, lz).id != AIR)) {
+		if ((CHUNK.checkblock(FastFloor(lx - size), ly, lz).id != AIR)) {
 			return true;
 		}
 
@@ -498,17 +468,17 @@ bool ClientWorld::TestIfEntityTouchBlockXN(Entity* ENTITY) {
 }
 
 bool ClientWorld::TestIfEntityTouchBlockZN(Entity* ENTITY) {
-	int cx = floor(ENTITY->PosX / 16.0);
-	int cy = floor(ENTITY->PosY / 16.0);
-	int cz = floor(ENTITY->PosZ / 16.0);
+	int cx = FastFloor(ENTITY->PosX * 0.0625);
+	int cy = FastFloor(ENTITY->PosY * 0.0625);
+	int cz = FastFloor(ENTITY->PosZ * 0.0625);
 
-	double lx = floor(ENTITY->PosX - (double)(floor(ENTITY->PosX / 16.0) * 16));
-	double ly = floor(ENTITY->PosY - (double)(floor(ENTITY->PosY / 16.0) * 16));
-	double lz = floor(ENTITY->PosZ - (double)(floor(ENTITY->PosZ / 16.0) * 16));
+	int lx = FastFloor(ENTITY->PosX - (FastFloor(ENTITY->PosX * 0.0625) * 16));
+	int ly = FastFloor(ENTITY->PosY - (FastFloor(ENTITY->PosY * 0.0625) * 16));
+	int lz = FastFloor(ENTITY->PosZ - (FastFloor(ENTITY->PosZ * 0.0625) * 16));
 
 	if (ChunkCache.count(getChunkID(cx, cy, cz))) {
 		Chunk CHUNK = ChunkCache[getChunkID(cx, cy, cz)];
-		if ((CHUNK.checkblock(lx, ly, floor(lz - size)).id != AIR)) {
+		if ((CHUNK.checkblock(lx, ly, FastFloor(lz - size)).id != AIR)) {
 			return true;
 		}
 	}

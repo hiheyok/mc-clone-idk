@@ -1,5 +1,5 @@
 #pragma once
-
+#define _CRTDBG_MAP_ALLOC
 #include "World/World.h"
 
 class MinePlusPLus {

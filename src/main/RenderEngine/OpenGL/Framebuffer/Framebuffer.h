@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include "../shader/shader.h"
 #include "../../../Utils/LogUtils.h"
-
+#define _CRTDBG_MAP_ALLOC
 class TexturedFrameBuffer {
 public:
 

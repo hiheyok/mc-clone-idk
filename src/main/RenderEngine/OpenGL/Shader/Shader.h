@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <string>
 #include "../../../Utils/LogUtils.h"
-
+#define _CRTDBG_MAP_ALLOC
 
 class Shader
 {

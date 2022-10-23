@@ -7,7 +7,12 @@
 #include "../../utils/MathHelper.h"
 #include "../../utils/Clock.h"
 #include "../../utils/LogUtils.h"
-
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#ifdef _DEBUG
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
 void WorldContainer::Initialize() {
 
 }
@@ -58,15 +63,25 @@ void WorldContainer::LoadChunk(int x, int y, int z) {
 		return;
 	}
 	else {
+		mut.lock();
 		if (!ChunkProcessing.count(getChunkID(x, y, z))) {
-			ChunkGenQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to gen queue
-			ChunkProcessing[getChunkID(x, y, z)] = true;
+			ChunkProcessing.insert(getChunkID(x, y, z));
+			mut.unlock();
+			ChunkGenQueue.push(getChunkID(x, y, z)); // Add chunk to gen queue
 		}
+		else {
+			mut.unlock();
+		}
+		
 		ChunkLoadQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to load queue
 		return;
 	}
 	
 	
+}
+
+void WorldContainer::AddChunkToGenQueue(int x, int y, int z) {
+
 }
 
 void WorldContainer::DoQueuedTasks() {
@@ -124,25 +139,29 @@ void WorldContainer::WorldGenerator() {
 
 	getLogger()->LogInfo("World", "Started World Gen Thread");
 
-	glm::ivec3 ChunkPos;
+	long long unsigned ChunkID = 0;
 	
 	while (true) {
 		while (ChunkGenQueue.empty()) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(12)); //testt
 		}
 
-		ChunkPos = ChunkGenQueue.pop_get_front();
+		if (ChunkGenQueue.try_pop(ChunkID)) {
+			Chunk chunk;
+			chunk.pos = ChunkIDToPOS(ChunkID);
+			chunk.gen_chunk(&noise);
+			//chunk.gen_chunkFlat();
+			WriteChunkMapStore(chunk);
+			mut.lock();
+			ChunkProcessing.erase(ChunkID);
+			mut.unlock();
+		}
 		
-		Chunk chunk;
-		chunk.pos = ChunkPos;
-		chunk.gen_chunk(&noise);
-		WriteChunkMapStore(chunk);
 		
-		ChunkProcessing.erase(getChunkID(ChunkPos));
 	}
 }
 
-void WorldContainer::WriteChunkMapStore(Chunk chunk) {
+void WorldContainer::WriteChunkMapStore(Chunk& chunk) {
 	ChunkMapStore[getChunkID(chunk.pos)] = chunk;
 }
 
@@ -181,7 +200,7 @@ void WorldContainer::JoinWorld(std::string name, ClientWorld* ClientAddress) {
 	PLAYER.EntityID = getID();
 	PlayerList[PLAYER.EntityID] = name;
 	PlayerAddress[PLAYER.EntityID] = ClientAddress;
-	Concurrency::concurrent_unordered_set<long long int> ChunkIDCache;
+	Concurrency::concurrent_unordered_set<CHUNK_ID> ChunkIDCache;
 	ClientChunkToUpdate[PLAYER.EntityID] = ChunkIDCache;
 	AddEntity(PLAYER);
 
@@ -203,10 +222,16 @@ void WorldContainer::JoinWorld(std::string name, ClientWorld* ClientAddress) {
 					}
 				}
 				else {
+					mut.lock();
 					if (!ChunkProcessing.count(getChunkID(x, y, z))) {
-						ChunkGenQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to gen queue
-						ChunkProcessing[getChunkID(x, y, z)] = true;
+						ChunkProcessing.insert(getChunkID(x, y, z));
+						mut.unlock();
+						ChunkGenQueue.push(getChunkID(x, y, z)); // Add chunk to gen queue
 					}
+					else {
+						mut.unlock();
+					}
+					
 					ChunkLoadQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to load queue
 				}
 			}
@@ -220,10 +245,8 @@ void WorldContainer::AddEntity(Entity Entity) {
 }
 
 void WorldContainer::WorldStats() {
-	int p0 = 0;
-	int p1 = 1;
-
-	int cps = 0;
+	size_t p0 = 0;
+	size_t p1 = 1;
 
 	while (true) {
 
