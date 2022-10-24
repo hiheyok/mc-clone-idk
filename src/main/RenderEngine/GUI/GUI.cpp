@@ -372,6 +372,11 @@ vec4 IGUI::getCharTextCoords(const char letter) {
 	if (letter == '9')
 		return getPixelCoordsOffset(vec2(128, 128), vec2(72, 24), vec2(5, 7));
 
+	if (letter == '-')
+		return getPixelCoordsOffset(vec2(128, 128), vec2(104,16), vec2(5, 7));
+	if (letter == '.')
+		return getPixelCoordsOffset(vec2(128, 128), vec2(110,16), vec2(5, 7));
+
 	return vec4();
 
 

@@ -90,6 +90,10 @@ void Client::ClientLoop() {
        
         frametime = (std::chrono::high_resolution_clock::now() - time1).count() / 1000000000.0;
 
+        if (frametime > 0.5) {
+            getLogger()->LogWarn("Client","High Frame Time: " + std::to_string(frametime));
+        }
+
         if (FPS_LOW > (1 / frametime))
             FPS_LOW = (int)(1 / frametime);
         if (FPS_HIGH < (1 / frametime))

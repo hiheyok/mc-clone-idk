@@ -249,12 +249,12 @@ void WorldContainer::WorldStats() {
 	size_t p1 = 1;
 
 	while (true) {
-
+		auto t0 = std::chrono::high_resolution_clock::now();
 		p0 = ChunkMapStore.size();
 		timerSleepNotPrecise(1000);
 		p0 = ChunkMapStore.size() - p0;
 		if (p0 != 0) {
-			getLogger()->LogInfo("World", "Chunk Gen Rate: " + std::to_string(p0));
+			getLogger()->LogInfo("World", "Chunk Gen Rate: " + std::to_string(p0 / ((std::chrono::high_resolution_clock::now() - t0).count() / 1000000000)));
 		}
 	}
 }
