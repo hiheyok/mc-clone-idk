@@ -55,10 +55,12 @@ private:
 	Entity* player = nullptr;
 	Camera camera;
 
-	AsyncDeque<Chunk> ChunkAddQueue;
+	concurrency::concurrent_queue<Chunk> ChunkAddQueue;
 	Concurrency::concurrent_priority_queue<long long int> ChunkMeshQueue;
 //	AsyncDeque<???> BlockUpdates; //Work on later
 	AsyncHashMap<CHUNK_ID, Chunk> ChunkCache;
+
+	long long unsigned CPU_TIME = 0;
 
 	bool stop = false;
 

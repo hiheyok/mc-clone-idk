@@ -92,7 +92,8 @@ public:
 			size_t mid = (size_t)((low + high) * 0.5);
 			if (offset == ChunkRenderListSolid[mid].offset) {
 				return mid;
-			} else if (offset > ChunkRenderListSolid[mid].offset) {
+			}
+			else if (offset > ChunkRenderListSolid[mid].offset) {
 				low = mid + 1;
 			}
 			else {
@@ -269,22 +270,32 @@ public:
 		SolidShader->setVec3("camPos", camera->Position);
 	}
 
-	void AddChunkQueue(ChunkVerticesData chunk) {
-		MeshDataQueued.push(chunk);
+	void AddChunkQueue(ChunkVerticesData& chunk) {
+		mut.lock();
+		MeshDataQueue[getChunkID(chunk.x, chunk.y, chunk.z)] = chunk;
+		mut.unlock();
 	}
 
 	void DumpQueuedDataToGPU() {
 
 		int i = 0;
-
-		while (!MeshDataQueued.empty()) {
-			i++;
-			if (i > 500) {
+		ChunkVerticesData chunk;
+		bool stop = false;
+		while (!MeshDataQueue.empty()) {
+			
+			if (stop)
 				break;
-			}
-			ChunkVerticesData chunk;
-			if (MeshDataQueued.try_pop(chunk)) {
-
+			for (const auto& chunk_ : MeshDataQueue) {
+				i++;
+				if (i > 250) {
+					stop = true;
+				}
+				if (stop)
+					break;
+				mut.lock();
+				chunk = chunk_.second;
+				MeshDataQueue.unsafe_erase(chunk_.first);
+				mut.unlock();
 				if (MeshList.count(getChunkID(chunk.x, chunk.y, chunk.z))) {
 					_DeleteChunk(getChunkID(chunk.x, chunk.y, chunk.z));
 					_AddChunk(chunk);
@@ -293,6 +304,7 @@ public:
 					_AddChunk(chunk);
 				}
 			}
+		
 		}
 	}
 
@@ -403,7 +415,8 @@ private:
 	Camera* camera = nullptr;
 	CFrustum fr;
 
-	concurrency::concurrent_queue<ChunkVerticesData> MeshDataQueued;
+	concurrency::concurrent_unordered_map<CHUNK_ID, ChunkVerticesData> MeshDataQueue;
+	std::mutex mut;
 
 	std::unordered_map<long long int, size_t> ChunkRenderListSolidOffsetLookup;
 	std::unordered_map<long long int, size_t> ChunkRenderListTransparentOffsetCache;

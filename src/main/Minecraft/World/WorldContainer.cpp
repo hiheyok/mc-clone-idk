@@ -48,9 +48,9 @@ void WorldContainer::LoadChunk(int x, int y, int z) {
 			ChunkMapLoaded[ChunkID].setNeighborNZ(&ChunkMapLoaded[getChunkID(x, y, z - 1)]);
 		}
 
-		Concurrency::concurrent_unordered_map<long long int, std::string> PLAYERS = PlayerList.DumpData();
+	//	Concurrency::concurrent_unordered_map<long long int, std::string> PLAYERS = PlayerList.DumpData();
 
-		for (auto& players : PLAYERS) {
+		for (const auto& players : PlayerList.HashMap) {
 			Entity Player = EntityList[players.first];
 			long long int PlayerID = Player.EntityID;
 
@@ -174,11 +174,11 @@ Chunk& WorldContainer::ReadChunkMapLoaded(int x, int y, int z) {
 }
 
 
-Chunk& WorldContainer::ReadChunkMapStore(long long int id) {
+Chunk& WorldContainer::ReadChunkMapStore(CHUNK_ID id) {
 	return ChunkMapStore[id];
 }
 
-Chunk& WorldContainer::ReadChunkMapLoaded(long long int id) {
+Chunk& WorldContainer::ReadChunkMapLoaded(CHUNK_ID id) {
 	return ChunkMapLoaded[id];
 }
 

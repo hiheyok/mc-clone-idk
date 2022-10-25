@@ -5,6 +5,7 @@
 #include <concurrent_unordered_map.h>
 #include <concurrent_unordered_set.h>
 #include <concurrent_priority_queue.h>
+#include <concurrent_vector.h>
 #include <concurrent_queue.h>
 
 #include <vector>
@@ -26,7 +27,6 @@ public:concurrency::concurrent_unordered_map<Hasher, Object> HashMap;
 		  Mut.lock();
 		  HashMap.unsafe_erase(Hash);
 		  Mut.unlock();
-		  MEM_USAGE -= sizeof(Object);
 	  }
 
 	  void clear() {

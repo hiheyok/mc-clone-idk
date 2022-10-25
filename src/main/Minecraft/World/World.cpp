@@ -53,5 +53,4 @@ void World::SendChunkDataToClient() {
 		//	getLogger()->LogDebug("World", "Size_: " + std::to_string(ClientChunkToUpdate.size()));
 		}
 	}
-	//getLogger()->LogDebug("World", "Size_: " + std::to_string(ClientChunkToUpdate.size()));
 }

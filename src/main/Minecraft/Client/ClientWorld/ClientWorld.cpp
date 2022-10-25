@@ -10,8 +10,9 @@
 #include "../../../Utils/MathHelper.h"
 
 void ClientWorld::AddChunkServer(Chunk chunk) {
-	ChunkAddQueue.push_back(chunk);
-	
+	auto t0 = std::chrono::high_resolution_clock::now();
+	ChunkAddQueue.push(chunk);
+//	CPU_TIME += (std::chrono::high_resolution_clock::now() - t0).count();
 	
 }
 
@@ -26,48 +27,51 @@ void ClientWorld::Start(GLFWwindow* window_) {
 
 void ClientWorld::UpdateChunks() {
 	while (!ChunkAddQueue.empty()) {
-		
-		Chunk chunk = ChunkAddQueue.pop_get_front();
+		auto t0 = std::chrono::high_resolution_clock::now();
+		Chunk chunk;
+		if (ChunkAddQueue.try_pop(chunk)) {
 
-		int x = chunk.pos.x;
-		int y = chunk.pos.y;
-		int z = chunk.pos.z;
+			int x = chunk.pos.x;
+			int y = chunk.pos.y;
+			int z = chunk.pos.z;
 
-		CHUNK_ID ChunkID = getChunkID(x, y, z);
-		ChunkCache[ChunkID] = chunk; // Copy Chunk To Loaded Cache
-		
-		ChunkCache[ChunkID].clearNeighbors();
-		if (ChunkCache.count(getChunkID(x, y + 1, z))) {
-			ChunkCache[(x, y + 1, z)].setNeighborNY(&ChunkCache[ChunkID]);
-			ChunkCache[ChunkID].setNeighborPY(&ChunkCache[getChunkID(x, y + 1, z)]);
-			ChunkMeshQueue.push(getChunkID(x, y + 1, z));
+			CHUNK_ID ChunkID = getChunkID(x, y, z);
+			ChunkCache[ChunkID] = chunk; // Copy Chunk To Loaded Cache
+
+			ChunkCache[ChunkID].clearNeighbors();
+			if (ChunkCache.count(getChunkID(x, y + 1, z))) {
+				ChunkCache[(x, y + 1, z)].setNeighborNY(&ChunkCache[ChunkID]);
+				ChunkCache[ChunkID].setNeighborPY(&ChunkCache[getChunkID(x, y + 1, z)]);
+				ChunkMeshQueue.push(getChunkID(x, y + 1, z));
+			}
+			if (ChunkCache.count(getChunkID(x, y - 1, z))) {
+				ChunkCache[getChunkID(x, y - 1, z)].setNeighborPY(&ChunkCache[ChunkID]);
+				ChunkCache[ChunkID].setNeighborNY(&ChunkCache[getChunkID(x, y - 1, z)]);
+				ChunkMeshQueue.push(getChunkID(x, y - 1, z));
+			}
+			if (ChunkCache.count(getChunkID(x + 1, y, z))) {
+				ChunkCache[getChunkID(x + 1, y, z)].setNeighborNX(&ChunkCache[ChunkID]);
+				ChunkCache[ChunkID].setNeighborPX(&ChunkCache[getChunkID(x + 1, y, z)]);
+				ChunkMeshQueue.push(getChunkID(x + 1, y, z));
+			}
+			if (ChunkCache.count(getChunkID(x - 1, y, z))) {
+				ChunkCache[getChunkID(x - 1, y, z)].setNeighborPX(&ChunkCache[ChunkID]);
+				ChunkCache[ChunkID].setNeighborNX(&ChunkCache[getChunkID(x - 1, y, z)]);
+				ChunkMeshQueue.push(getChunkID(x - 1, y, z));
+			}
+			if (ChunkCache.count(getChunkID(x, y, z + 1))) {
+				ChunkCache[getChunkID(x, y, z + 1)].setNeighborNZ(&ChunkCache[ChunkID]);
+				ChunkCache[ChunkID].setNeighborPZ(&ChunkCache[getChunkID(x, y, z + 1)]);
+				ChunkMeshQueue.push(getChunkID(x, y, z + 1));
+			}
+			if (ChunkCache.count(getChunkID(x, y, z - 1))) {
+				ChunkCache[getChunkID(x, y, z - 1)].setNeighborPZ(&ChunkCache[ChunkID]);
+				ChunkCache[ChunkID].setNeighborNZ(&ChunkCache[getChunkID(x, y, z - 1)]);
+				ChunkMeshQueue.push(getChunkID(x, y, z - 1));
+			}
+			ChunkMeshQueue.push(getChunkID(x, y, z));
 		}
-		if (ChunkCache.count(getChunkID(x, y - 1, z))) {
-			ChunkCache[getChunkID(x, y - 1, z)].setNeighborPY(&ChunkCache[ChunkID]);
-			ChunkCache[ChunkID].setNeighborNY(&ChunkCache[getChunkID(x, y - 1, z)]);
-			ChunkMeshQueue.push(getChunkID(x, y - 1, z));
-		}
-		if (ChunkCache.count(getChunkID(x + 1, y, z))) {
-			ChunkCache[getChunkID(x + 1, y, z)].setNeighborNX(&ChunkCache[ChunkID]);
-			ChunkCache[ChunkID].setNeighborPX(&ChunkCache[getChunkID(x + 1, y, z)]);
-			ChunkMeshQueue.push(getChunkID(x + 1, y, z));
-		}
-		if (ChunkCache.count(getChunkID(x - 1, y, z))) {
-			ChunkCache[getChunkID(x - 1, y, z)].setNeighborPX(&ChunkCache[ChunkID]);
-			ChunkCache[ChunkID].setNeighborNX(&ChunkCache[getChunkID(x - 1, y, z)]);
-			ChunkMeshQueue.push(getChunkID(x - 1, y, z));
-		}
-		if (ChunkCache.count(getChunkID(x, y, z + 1))) {
-			ChunkCache[getChunkID(x, y, z + 1)].setNeighborNZ(&ChunkCache[ChunkID]);
-			ChunkCache[ChunkID].setNeighborPZ(&ChunkCache[getChunkID(x, y, z + 1)]);
-			ChunkMeshQueue.push(getChunkID(x, y, z + 1));
-		}
-		if (ChunkCache.count(getChunkID(x, y, z - 1))) {
-			ChunkCache[getChunkID(x, y, z - 1)].setNeighborPZ(&ChunkCache[ChunkID]);
-			ChunkCache[ChunkID].setNeighborNZ(&ChunkCache[getChunkID(x, y, z - 1)]);
-			ChunkMeshQueue.push(getChunkID(x, y, z - 1));
-		}
-		ChunkMeshQueue.push(getChunkID(x, y, z));
+	//	CPU_TIME += (std::chrono::high_resolution_clock::now() - t0).count();
 	}
 }
 
@@ -238,21 +242,29 @@ void ClientWorld::MesherWorker() {
 		while (ChunkMeshQueue.empty()) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(12)); 
 		}
+		
 		if (ChunkMeshQueue.size() != 0) {
 			if (ChunkMeshQueue.try_pop(ChunkID)) {
 
 				Mesher.chunk = &ChunkCache[ChunkID];
-				Mesher.SmartGreedyMeshing();
-				ChunkVerticesData MeshData;
-				MeshData.x = Mesher.chunk->pos.x;
-				MeshData.y = Mesher.chunk->pos.y;
-				MeshData.z = Mesher.chunk->pos.z;
-				MeshData.SolidVertices = Mesher.vertices;
-				MeshData.TransparentVertices = Mesher.transparentVertices;
-				Mesher.delete_();
-				TerrrainRenderer->AddChunkQueue(MeshData);
+				if (!Mesher.chunk->isEmpty()) {
+					Mesher.SmartGreedyMeshing();
+
+					ChunkVerticesData MeshData;
+					MeshData.x = Mesher.chunk->pos.x;
+					MeshData.y = Mesher.chunk->pos.y;
+					MeshData.z = Mesher.chunk->pos.z;
+					MeshData.SolidVertices = Mesher.vertices;
+					MeshData.TransparentVertices = Mesher.transparentVertices;
+					Mesher.delete_();
+					auto t0 = std::chrono::high_resolution_clock::now();
+					TerrrainRenderer->AddChunkQueue(MeshData);
+					CPU_TIME += (std::chrono::high_resolution_clock::now() - t0).count();
+				}
+				
 			}
 		}
+		
 	}
 }
 
@@ -288,7 +300,7 @@ void ClientWorld::ClientWorldMainLoop() {
 		double time1 = ((std::chrono::high_resolution_clock::now() - time0).count() / 1000000000.0);
 		if (time1 < (1.0 / (double)TPS))
 			timerSleepNotPrecise(((1.0 / (double)TPS) - time1)*1000);
-	//	getLogger()->LogDebug("Client Tick", std::to_string(1000000000.0 / (std::chrono::high_resolution_clock::now() - time0).count()));
+		getLogger()->LogDebug("Client", std::to_string(CPU_TIME / 1000000) + " ms");
 	}
 }
 

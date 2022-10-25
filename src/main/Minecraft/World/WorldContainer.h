@@ -43,8 +43,8 @@ protected:
     Chunk& ReadChunkMapStore(int x, int y, int z);
     Chunk& ReadChunkMapLoaded(int x, int y, int z);
 
-    Chunk& ReadChunkMapStore(long long int id);
-    Chunk& ReadChunkMapLoaded(long long int id);
+    Chunk& ReadChunkMapStore(CHUNK_ID id);
+    Chunk& ReadChunkMapLoaded(CHUNK_ID id);
 
     void UnloadChunk(int x, int y, int z);
 
