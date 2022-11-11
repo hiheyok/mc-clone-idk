@@ -17,8 +17,11 @@ void WorldContainer::Initialize() {
 
 }
 
-void WorldContainer::LoadChunk(int x, int y, int z) {
-	CHUNK_ID ChunkID = getChunkID(x, y, z);
+void WorldContainer::LoadChunk(CHUNK_ID ChunkID) {
+	int x = ChunkIDToPOS(ChunkID).x;
+	int y = ChunkIDToPOS(ChunkID).y;
+	int z = ChunkIDToPOS(ChunkID).z;
+
 
 	if (CheckChunkIsStored(x,y,z)) { // Check is chunk is stored
 		ChunkMapLoaded[ChunkID] = ChunkMapStore[ChunkID]; // Copy Chunk To Loaded Cache
@@ -73,7 +76,7 @@ void WorldContainer::LoadChunk(int x, int y, int z) {
 			mut.unlock();
 		}
 		
-		ChunkLoadQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to load queue
+		ChunkLoadQueue.push(ChunkID); // Add chunk to load queue
 		return;
 	}
 	
@@ -85,9 +88,22 @@ void WorldContainer::AddChunkToGenQueue(int x, int y, int z) {
 }
 
 void WorldContainer::DoQueuedTasks() {
+	int i = 0;
+	long long unsigned int ChunkID = 0;
 	while (!ChunkLoadQueue.empty()) {
-		LoadChunk(ChunkLoadQueue.front().x, ChunkLoadQueue.front().y, ChunkLoadQueue.front().z);
-		ChunkLoadQueue.pop_front();
+		if (i > QUEUED_TASKS_RATE) {
+			break;
+		}
+		else {
+			if (ChunkLoadQueue.try_pop(ChunkID)) {
+				LoadChunk(ChunkID);
+			}
+			i++;
+		
+			
+		}
+			
+		
 
 	}
 }
@@ -211,6 +227,7 @@ void WorldContainer::JoinWorld(std::string name, ClientWorld* ClientAddress) {
 	for (int x = -TickingDistance + cx; x < TickingDistance + cx; x++) {
 		for (int y = 0 + cy; y < 16 + cy; y++) {
 			for (int z = -TickingDistance + cz; z < TickingDistance + cz; z++) {
+				CHUNK_ID ChunkID = getChunkID(x, y, z);
 				if (CheckChunkIsStored(x,y,z)) {
 					if (CheckChunkIsLoaded(x, y, z)) {
 						ClientAddress->AddChunkServer(ReadChunkMapLoaded(x, y, z));
@@ -218,21 +235,21 @@ void WorldContainer::JoinWorld(std::string name, ClientWorld* ClientAddress) {
 					else {
 						ClientAddress->AddChunkServer(ReadChunkMapStore(x, y, z));
 
-						LoadChunk(x,y,z);
+						LoadChunk(ChunkID);
 					}
 				}
 				else {
 					mut.lock();
-					if (!ChunkProcessing.count(getChunkID(x, y, z))) {
-						ChunkProcessing.insert(getChunkID(x, y, z));
+					if (!ChunkProcessing.count(ChunkID)) {
+						ChunkProcessing.insert(ChunkID);
 						mut.unlock();
-						ChunkGenQueue.push(getChunkID(x, y, z)); // Add chunk to gen queue
+						ChunkGenQueue.push(ChunkID); // Add chunk to gen queue
 					}
 					else {
 						mut.unlock();
 					}
 					
-					ChunkLoadQueue.emplace_back(glm::vec3(x, y, z)); // Add chunk to load queue
+					ChunkLoadQueue.push(ChunkID); // Add chunk to load queue
 				}
 			}
 		}

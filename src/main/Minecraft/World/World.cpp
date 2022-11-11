@@ -16,7 +16,7 @@ void World::Initialize() {
 	for (int x = -SpawnChunksSize; x < SpawnChunksSize; x++) {
 		for (int y = 0; y < 16; y++) {
 			for (int z = -SpawnChunksSize; z < SpawnChunksSize; z++) {
-				LoadChunk(x, y, z);
+				LoadChunk(getChunkID(x, y, z));
 			}
 		}
 	}
@@ -36,7 +36,7 @@ void World::WorldLoop() {
 		double time1 = ((std::chrono::high_resolution_clock::now() - time0).count() / 1000000000.0);
 		if (time1 < (1.0 / (double)TPS))
 			timerSleepNotPrecise(((1.0 / (double)TPS) - time1)*1000);
-		//getLogger()->LogDebug("World Tick", std::to_string(1000000000.0 / (std::chrono::high_resolution_clock::now() - time0).count()));
+		getLogger()->LogDebug("World Tick", std::to_string(1000000000.0 / (std::chrono::high_resolution_clock::now() - time0).count()));
 		
 	}
 }

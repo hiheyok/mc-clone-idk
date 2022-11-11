@@ -37,9 +37,11 @@ public:
     AsyncHashMap<CHUNK_ID, Chunk> ChunkMapLoaded;
 protected:
 
-    void LoadChunk(int x, int y, int z);
+    void LoadChunk(CHUNK_ID ChunkID);
 
     void WriteChunkMapStore(Chunk& chunk);
+    void WriteChunkMapLoad(Chunk& chunk);
+
     Chunk& ReadChunkMapStore(int x, int y, int z);
     Chunk& ReadChunkMapLoaded(int x, int y, int z);
 
@@ -63,7 +65,7 @@ protected:
     void AddEntity(Entity Entity);
     void UpdatePlayerPosition(int Player_ID, int x, int y, int z);
 
-    AsyncDeque<glm::ivec3> ChunkLoadQueue;
+    concurrency::concurrent_priority_queue<CHUNK_ID> ChunkLoadQueue;
     std::thread WorldStatsThread;
     AsyncHashMap<long long int, std::string> PlayerList;
     AsyncHashMap<long long int, ClientWorld*> PlayerAddress;
@@ -75,9 +77,10 @@ private:
     void AddChunkToGenQueue(int x, int y, int z);
     void WorldGenerator();
 
-    int TickingDistance = 32;
+    int TickingDistance = 64;
+    int QUEUED_TASKS_RATE = 2500;
 
-    AsyncHashMap<CHUNK_ID, Chunk> ChunkMapStore;
+    AsyncHashMap<CHUNK_ID, Chunk> ChunkMapStore; //simulated file system 
     std::unordered_set<CHUNK_ID> ChunkProcessing;
     std::mutex mut;
     concurrency::concurrent_priority_queue<CHUNK_ID> ChunkGenQueue;

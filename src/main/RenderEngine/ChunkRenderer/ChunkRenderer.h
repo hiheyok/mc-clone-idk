@@ -279,17 +279,20 @@ public:
 	void DumpQueuedDataToGPU() {
 
 		int i = 0;
+		int ii = 0;
 		ChunkVerticesData chunk;
 		bool stop = false;
+		auto t0 = std::chrono::high_resolution_clock::now();
 		while (!MeshDataQueue.empty()) {
 			
 			if (stop)
 				break;
 			for (const auto& chunk_ : MeshDataQueue) {
 				i++;
-				if (i > 250) {
+				if (i > 500) {
 					stop = true;
 				}
+				
 				if (stop)
 					break;
 				mut.lock();
@@ -302,6 +305,12 @@ public:
 				}
 				else {
 					_AddChunk(chunk);
+				}
+				if (((std::chrono::high_resolution_clock::now() - t0).count() / 1000000000) > 1 / 60) {
+					ii++;
+					if (ii > 10) {
+						stop = true;
+					}
 				}
 			}
 		
@@ -380,7 +389,7 @@ public:
 
 	//Settings
 
-	int RenderDistance = 32;
+	int RenderDistance = 64;
 
 private:
 

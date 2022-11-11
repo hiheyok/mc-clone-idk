@@ -6,24 +6,42 @@
 #define new DEBUG_NEW
 #endif
 #include <unordered_map>
+#include "../../Utils/LogUtils.h"
 #include <string>
+#include "../World/Level/Block/Block.h"
+#include "../World/Level/Dimension/Dimension.h"
+
+typedef int ID;
 
 //container for all of the content in the game
-
+template <class T>
 class Registry { 
 	
 public:
+	std::string NAMESPACE = "minecpp";
+	std::string NAMESPACE_SEPARATER = ":";
+	ID Register(T obj, std::string name) {
+		Container[nextID] = T;
+		NameContainer[nextID] = NAMESPACE + NAMESPACE_SEPARATER + name;
+		nextID++;
+		return nextID - 1;
+	}
 
-	void CreateRegistry();
-	void GetID();
-	void Add(long long RegID, std::string info);
+	T& getObject(ID id) {
+		return Container[id];
+	}
 
-	std::unordered_map<unsigned long, std::string> EntityID;
+	std::string& getName(ID id) {
+		return NameContainer[id];
+	}
 
 private:
 
-	std::unordered_map<unsigned long, std::unordered_map<long long, long long>> Container;
-	std::unordered_map<unsigned long, std::string> StringMap;
+	std::unordered_map<ID, T> Container;
+	std::unordered_map < ID, std::string > NameContainer;
 	
-	long long int ObjCount = 0;
+	ID nextID = NULL;
 };
+
+Registry<Block*> BlockRegistry;
+Registry<Dimension*> DimensionRegistry;

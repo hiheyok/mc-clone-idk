@@ -248,8 +248,9 @@ void ClientWorld::MesherWorker() {
 
 				Mesher.chunk = &ChunkCache[ChunkID];
 				if (!Mesher.chunk->isEmpty()) {
+					auto t0 = std::chrono::high_resolution_clock::now();
 					Mesher.SmartGreedyMeshing();
-
+					
 					ChunkVerticesData MeshData;
 					MeshData.x = Mesher.chunk->pos.x;
 					MeshData.y = Mesher.chunk->pos.y;
@@ -257,7 +258,7 @@ void ClientWorld::MesherWorker() {
 					MeshData.SolidVertices = Mesher.vertices;
 					MeshData.TransparentVertices = Mesher.transparentVertices;
 					Mesher.delete_();
-					auto t0 = std::chrono::high_resolution_clock::now();
+					
 					TerrrainRenderer->AddChunkQueue(MeshData);
 					CPU_TIME += (std::chrono::high_resolution_clock::now() - t0).count();
 				}
@@ -300,7 +301,7 @@ void ClientWorld::ClientWorldMainLoop() {
 		double time1 = ((std::chrono::high_resolution_clock::now() - time0).count() / 1000000000.0);
 		if (time1 < (1.0 / (double)TPS))
 			timerSleepNotPrecise(((1.0 / (double)TPS) - time1)*1000);
-		getLogger()->LogDebug("Client", std::to_string(CPU_TIME / 1000000) + " ms");
+	//	getLogger()->LogDebug("Client", std::to_string(CPU_TIME / 1000000) + " ms");
 	}
 }
 
