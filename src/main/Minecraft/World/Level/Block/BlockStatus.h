@@ -8,7 +8,7 @@
 #define new DEBUG_NEW
 #endif
 
-typedef int BlockID;
+typedef unsigned short int BlockID;
 
 class BlockStatus : public BlockBehavior {
 public:

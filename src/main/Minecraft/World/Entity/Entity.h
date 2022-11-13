@@ -11,7 +11,6 @@ public:
 	
 	Entity() {
 		Build();
-		PosY = 50;
 	}
 
 	virtual void Build() {

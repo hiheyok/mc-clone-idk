@@ -15,13 +15,13 @@
 #include "BlockStatus.h"
 #include "../../../Core/Registry.h"
 
-const ID AIR = BlockRegistry.Register(new AirBlock(), "air");
-const ID DIRT = BlockRegistry.Register(new DirtBlock(), "dirt");
-const ID GRASS_BLOCK = BlockRegistry.Register(new GrassBlock(), "grass_block");
-const ID COBBLESTONE = BlockRegistry.Register(new Block(), "cobblestone");
-const ID STONE = BlockRegistry.Register(new Block(), "stone");
-const ID SAND = BlockRegistry.Register(new GravityBlock(), "sand");
-const ID WATER = BlockRegistry.Register(new FluidBlock(), "water");
-const ID OAK_LOG = BlockRegistry.Register(new Block(), "oak_log");
-const ID OAK_LEAF = BlockRegistry.Register(new LeafBlock(), "oak_leaf");
+const BlockID AIR = BlockRegistry.Register(new AirBlock(), "air");
+const BlockID DIRT = BlockRegistry.Register(new DirtBlock(), "dirt");
+const BlockID GRASS_BLOCK = BlockRegistry.Register(new GrassBlock(), "grass_block");
+const BlockID COBBLESTONE = BlockRegistry.Register(new Block(), "cobblestone");
+const BlockID STONE = BlockRegistry.Register(new Block(), "stone");
+const BlockID SAND = BlockRegistry.Register(new GravityBlock(), "sand");
+const BlockID WATER = BlockRegistry.Register(new FluidBlock(), "water");
+const BlockID OAK_LOG = BlockRegistry.Register(new Block(), "oak_log");
+const BlockID OAK_LEAF = BlockRegistry.Register(new LeafBlock(), "oak_leaf");
 

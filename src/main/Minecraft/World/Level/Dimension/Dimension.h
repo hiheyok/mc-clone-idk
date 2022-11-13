@@ -1,8 +1,9 @@
 #pragma once
 #include "DimensionProperties.h"
-#include "DimensionNode.h"
+#include "DimensionNodeMGR.h"
 #include "../Chunk/ChunkMap.h"
 class Dimension : public DimensionProperties {
+public:
 	Dimension() {
 		Build();
 	}
@@ -10,14 +11,10 @@ class Dimension : public DimensionProperties {
 
 	}
 	void Start() {
+		Terrain = new DimensionNodeContainer(this);
+	}
 
-	}
-	void NewNode() {
-		DNodes[nextID] = new DimensionNode(this, &DNodes, &ChunkDNodeLocation);
-		nextID++;
-	}
 private:
-	std::unordered_map<ID, DimensionNode*> DNodes;
-	std::unordered_map<CHUNK_ID, ID> ChunkDNodeLocation;
+	DimensionNodeContainer* Terrain;
 	ID nextID = NULL;
 };

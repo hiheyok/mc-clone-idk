@@ -10,6 +10,7 @@
 #include <string>
 #include "../World/Level/Block/Block.h"
 #include "../World/Level/Dimension/Dimension.h"
+#include "../World/Entity/Entity.h"
 
 typedef int ID;
 
@@ -45,3 +46,4 @@ private:
 
 Registry<Block*> BlockRegistry;
 Registry<Dimension*> DimensionRegistry;
+Registry<Entity*> EntityRegistry;

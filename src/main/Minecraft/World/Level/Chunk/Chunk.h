@@ -15,8 +15,9 @@ constexpr auto CHUNK_SIZE_3 = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
 #include "../Block/Blocks.h"
 #include "../../../Core/Registry.h"
 #include "../../../../Utils/Math/ChunkID/ChunkID.h"
+#include "ChunkProperties.h"
 
-class Chunk {
+class Chunk : public ChunkProperties {
 public:
 	Chunk(int x, int y, int z) {
 		ChunkID = getChunkID(x,y,z);
@@ -81,8 +82,7 @@ public:
 	CHUNK_ID ChunkID = NULL;
 private:
 
-	BlockID data[4096]{};
-	bool empty = true;
+	BlockID data[4096]{AIR};
 	Chunk* neighbors[6]{ nullptr ,nullptr ,nullptr ,nullptr ,nullptr ,nullptr };
 
 };

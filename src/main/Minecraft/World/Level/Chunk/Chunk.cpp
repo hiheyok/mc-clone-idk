@@ -6,6 +6,10 @@
 #define new DEBUG_NEW
 #endif
 
+void Chunk::addBlock(int x, int y, int z, BlockID type) {
+	data[(x * 256) + (z * 16) + y] = type;
+}
+
 BlockID Chunk::getBlock(int x, int y, int z) {
 
 	if (x >= CHUNK_SIZE || y >= CHUNK_SIZE || z >= CHUNK_SIZE || x < 0 || y < 0 || z < 0) {
