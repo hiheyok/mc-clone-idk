@@ -2,7 +2,7 @@
 #include "Chunk.h"
 #include <unordered_map>
 class ChunkMap {
-	
+public:
 	BlockID getBlock(CHUNK_ID ChunkID, int x, int y, int z) {
 		return checkChunk(ChunkID) ? ChunkStorage[ChunkID].getBlock(x, y, z) : AIR;
 	}
@@ -12,6 +12,10 @@ class ChunkMap {
 	}
 
 	Chunk& operator[](CHUNK_ID ChunkID) {
+		return ChunkStorage[ChunkID];
+	}
+
+	Chunk& getChunk(CHUNK_ID ChunkID) {
 		return ChunkStorage[ChunkID];
 	}
 private:

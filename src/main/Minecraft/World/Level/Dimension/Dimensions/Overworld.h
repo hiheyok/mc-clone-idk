@@ -6,4 +6,8 @@ public:
 	void Build() {
 
 	}
+
+	void Tick() {
+
+	}
 };

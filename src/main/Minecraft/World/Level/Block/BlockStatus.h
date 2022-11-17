@@ -8,7 +8,8 @@
 #define new DEBUG_NEW
 #endif
 
-typedef unsigned short int BlockID;
+typedef unsigned char BlockID;
+//char = 255 block types max ; 1 byte
 
 class BlockStatus : public BlockBehavior {
 public:

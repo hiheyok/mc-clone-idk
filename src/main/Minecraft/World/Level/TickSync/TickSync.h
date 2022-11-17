@@ -3,29 +3,38 @@
 
 class TickSync {
 public:
-	void Start() {
-
-	}
-
 	void SetTPS(unsigned int TPS_) {
 		TPS = TPS_;
 	}
 
 	void Tick() {
-		TickStart = std::chrono::high_resolution_clock::now();
+		TickStartingTime = std::chrono::high_resolution_clock::now();
 		TicksCount++;
 	}
 
 	void ThreadStarting() {
-		ThreadsTicking++;
+		ThreadsRunning++;
 	}
 
 	void ThreadStopping() {
+		ThreadsRunning--;
+	}
+
+	void ThreadTicking() {
+		ThreadsTicking++;
+	}
+
+	void ThreadStopTicking() {
 		ThreadsTicking--;
 	}
 
-	void CheckIfTickEnds() {
+	bool CheckIfTickTimeExceededMinTickTime() {
+		double MSPT = (double)(TickStartingTime - std::chrono::high_resolution_clock::now()).count() / 1000000.0;
+		return MSPT >= 1000.0 / TPS ? (ThreadsTicking == 0) : false;
+	}
 
+	bool CheckIfAllThreadsFinished() {
+		return ThreadsTicking == 0;
 	}
 
 	unsigned int TicksCount = 0;
@@ -33,6 +42,7 @@ public:
 private:
 	unsigned int TPS = 20;
 	unsigned int ThreadsTicking = 0;
-	std::chrono::steady_clock::time_point TickStart;
+	unsigned int ThreadsRunning = 0;
+	std::chrono::steady_clock::time_point TickStartingTime;
 
 };
