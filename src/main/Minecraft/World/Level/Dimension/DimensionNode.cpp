@@ -8,7 +8,6 @@ void DimensionNode::Run() {
 		Sync.ThreadTicking();
 		Tick();
 		Sync.ThreadStopTicking();
-
 		//Sync
 		
 		if (Sync.TicksCount == TicksCount) {

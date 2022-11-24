@@ -1,1 +1,0 @@
-inline static unsigned int FastABS(int NUM) { return NUM < 0 ? -NUM : NUM; }

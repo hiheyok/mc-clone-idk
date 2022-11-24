@@ -13,4 +13,7 @@ public:
 	bool tickable;
 	bool transparency;
 
+	bool isSolid;
+	bool isFluid;
+
 };

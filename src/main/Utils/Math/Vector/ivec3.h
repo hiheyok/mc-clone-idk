@@ -27,9 +27,9 @@ struct ivec3 {
 		long long unsigned int sx = (((1u << 1) - 1u) & (x >> 31));
 		long long unsigned int sy = (((1u << 1) - 1u) & (y >> 31));
 		long long unsigned int sz = (((1u << 1) - 1u) & (z >> 31));
-		long long unsigned int ax = (long long unsigned int)FastABS(x);
-		long long unsigned int ay = (long long unsigned int)FastABS(y);
-		long long unsigned int az = (long long unsigned int)FastABS(z);
+		long long unsigned int ax = (long long unsigned int)abs(x);
+		long long unsigned int ay = (long long unsigned int)abs(y);
+		long long unsigned int az = (long long unsigned int)abs(z);
 
 		return 0LLU | ax << 0 | ay << 16 | az << 32 | sx << 61 | sy << 62 | sz << 63;
 	}

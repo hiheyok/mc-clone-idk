@@ -1,15 +1,11 @@
-#include <glm/vec3.hpp>
-#include <list>
-#include <iostream>
 #include <vector>
-#include <gl/glew.h>
-#include <GLFW/glfw3.h>
 #include <iterator>
 #include <chrono>
 #include "../../../Minecraft/World/Level/Chunk/Chunk.h"
+#include "../../../Minecraft/Core/Registry.h"
+
 #include "TexMap.h"
 #include "Mesher.h"
-#define _CRTDBG_MAP_ALLOC
 #define px 0x00
 #define py 0x01
 #define pz 0x02
@@ -28,8 +24,6 @@ const int USE_SIZE = CHUNK_SIZE + 1;
 const int USE_SIZE_2 = USE_SIZE * USE_SIZE;
 
 using namespace std;
-
-using namespace glm;
 
 bool enableBlockShading_ = true;
 
@@ -69,66 +63,58 @@ void ChunkMesh::delete_() {
 	transparentVertices.clear();
 }
 
-void ChunkMesh::SmartGreedyMeshing() {
+void ChunkMesh::GreedyMeshing() {
 
-	if (chunk->isEmpty())
+}
+
+void ChunkMesh::SmartGreedyMeshing() {
+	//Check if it is empty
+	if (chunk->Empty)
 		return;
 
-	SMesh = new SpecialChunkMesh;
+	SMesh = new BakedChunkData;
 
 	//Gen Data
 
 	for (int x = 0; x < CHUNK_SIZE; x++) {
 		for (int z = 0; z < CHUNK_SIZE; z++) {
 			for (int y = 0; y < CHUNK_SIZE; y++) {
-				if (!chunk->checkblock(x, y, z).transparent()) {
+				BlockID blockid = chunk->getBlock(x, y, z);
 
-					if (chunk->checkblock(x - 1, y, z).transparent()) {
-						SaddSidenx(x, y, z, ivec3(x, y, z), chunk->checkblock(x, y, z).id);
-					}
-					if (chunk->checkblock(x + 1, y, z).transparent()) {
-						SaddSidepx(x, y, z, ivec3(x, y, z), chunk->checkblock(x, y, z).id);
-					}
-					if (chunk->checkblock(x, y - 1, z).transparent()) {
-						SaddSideny(x, y, z, ivec3(x, y, z), chunk->checkblock(x, y, z).id);
-					}
-					if (chunk->checkblock(x, y + 1, z).transparent()) {
-						SaddSidepy(x, y, z, ivec3(x, y, z), chunk->checkblock(x, y, z).id);
-					}
-					if (chunk->checkblock(x, y, z - 1).transparent()) {
-						SaddSidenz(x, y, z, ivec3(x, y, z), chunk->checkblock(x, y, z).id);
-					}
-					if (chunk->checkblock(x, y, z + 1).transparent()) {
-						SaddSidepz(x, y, z, ivec3(x, y, z), chunk->checkblock(x, y, z).id);
-					}
+				if (BlockRegistry[blockid]->isSolid && (!BlockRegistry[blockid]->transparency)) {
+					if (BlockRegistry[chunk->getBlock(x - 1, y, z)]->transparency)
+						SaddSidenx(x, y, z, blockid);
+					if (BlockRegistry[chunk->getBlock(x + 1, y, z)]->transparency)
+						SaddSidepx(x, y, z, blockid);
+					if (BlockRegistry[chunk->getBlock(x, y - 1, z)]->transparency)
+						SaddSideny(x, y, z, blockid);
+					if (BlockRegistry[chunk->getBlock(x, y + 1, z)]->transparency)
+						SaddSidepy(x, y, z, blockid);
+					if (BlockRegistry[chunk->getBlock(x, y, z - 1)]->transparency)
+						SaddSidenz(x, y, z, blockid);
+					if (BlockRegistry[chunk->getBlock(x, y, z + 1)]->transparency)
+						SaddSidepz(x, y, z, blockid);
 				}
 
-				if (chunk->checkblock(x, y, z).id == OAK_LEAF) {
-
-					if (chunk->checkblock(x - 1, y, z).transparent()) {
-						SaddSidenx(x, y, z, ivec3(x, y, z), chunk->checkblock(x, y, z).id);
-					}
-					if (chunk->checkblock(x + 1, y, z).transparent()) {
-						SaddSidepx(x, y, z, ivec3(x, y, z), chunk->checkblock(x, y, z).id);
-					}
-					if (chunk->checkblock(x, y - 1, z).transparent()) {
-						SaddSideny(x, y, z, ivec3(x, y, z), chunk->checkblock(x, y, z).id);
-					}
-					if (chunk->checkblock(x, y + 1, z).transparent()) {
-						SaddSidepy(x, y, z, ivec3(x, y, z), chunk->checkblock(x, y, z).id);
-					}
-					if (chunk->checkblock(x, y, z - 1).transparent()) {
-						SaddSidenz(x, y, z, ivec3(x, y, z), chunk->checkblock(x, y, z).id);
-					}
-					if (chunk->checkblock(x, y, z + 1).transparent()) {
-						SaddSidepz(x, y, z, ivec3(x, y, z), chunk->checkblock(x, y, z).id);
-					}
+				if (BlockRegistry[blockid]->isSolid && BlockRegistry[blockid]->transparency) {
+					if (chunk->getBlock(x - 1, y, z) == AIR)
+						SaddSidenx(x, y, z, blockid);
+					if (chunk->getBlock(x + 1, y, z) == AIR)
+						SaddSidepx(x, y, z, blockid);
+					if (chunk->getBlock(x, y - 1, z) == AIR)
+						SaddSideny(x, y, z, blockid);
+					if (chunk->getBlock(x, y + 1, z) == AIR)
+						SaddSidepy(x, y, z, blockid);
+					if (chunk->getBlock(x, y, z - 1) == AIR)
+						SaddSidenz(x, y, z, blockid);
+					if (chunk->getBlock(x, y, z + 1) == AIR)
+						SaddSidepz(x, y, z, blockid);
 
 				}
 
-				if (chunk->checkblock(x, y, z).id == WATER) {
-					if (chunk->checkblock(x, y + 1, z).id == AIR) {
-						SaddSidepy(x, y, z, ivec3(x, y, z), chunk->checkblock(x, y, z).id);
+				if (BlockRegistry[blockid]->isFluid) {
+					if (BlockRegistry[chunk->getBlock(x, y + 1, z)]->transparency) {
+						SaddSidepy(x, y, z, blockid);
 					}
 				}
 			}
@@ -155,7 +141,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 				VDATA[pz] = SMesh->extract(x, y, z).Vdata[pz];
 				VDATA[nz] = SMesh->extract(x, y, z).Vdata[nz];
 
-				bool transparent = SMesh->extract(x, y, z).data.transparent();
+				bool transparent = BlockRegistry[SMesh->extract(x, y, z).data]->transparency;
 
 				block_uv BLOCK;
 				BLOCK.setBlockUVS(SMesh->extract(x, y, z).data.id);
@@ -170,7 +156,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 					y1 = y;
 					z1 = z;
 					while (x1 < CHUNK_SIZE) {
-						if ((!checkUseY(x1, y, z)) && (VDATA[py] == SMesh->extract(x1, y, z).Vdata[py]) && (SMesh->extract(x1, y + 1, z).data.transparent())) {
+						if ((!checkUseY(x1, y, z)) && (VDATA[py] == SMesh->extract(x1, y, z).Vdata[py]) && (SMesh->extract(x1, y + 1, z).data->transparency)) {
 							useY[x1 * USE_SIZE_2 + (y)*USE_SIZE + z] = true;
 							x1++;
 						}
@@ -181,7 +167,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 						bool break_ = false;
 						int dx = x0;
 						while (dx < x1) {
-							if ((!checkUseY(dx, y, z1)) && (VDATA[py] == SMesh->extract(dx, y, z1).Vdata[py]) && (SMesh->extract(dx, y + 1, z1).data.transparent())) {
+							if ((!checkUseY(dx, y, z1)) && (VDATA[py] == SMesh->extract(dx, y, z1).Vdata[py]) && (SMesh->extract(dx, y + 1, z1).data->transparency)) {
 								// if ((!checkUseY(dx, y, z1)) && (SMesh->compare(x,y,z,dx,y+1,z1,py))) {
 								dx++;
 							}
@@ -209,7 +195,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 					y1 = y;
 					z1 = z;
 					while (y1 < CHUNK_SIZE) {
-						if ((!checkUseX(x, y1, z)) && (VDATA[px] == SMesh->extract(x, y1, z).Vdata[px]) && (chunk->checkblock(x + 1, y1, z).transparent())) {
+						if ((!checkUseX(x, y1, z)) && (VDATA[px] == SMesh->extract(x, y1, z).Vdata[px]) && (chunk->getBlock(x + 1, y1, z)->transparency)) {
 							useX[x * USE_SIZE_2 + (y1)*USE_SIZE + z] = true;
 							y1++;
 						}
@@ -220,7 +206,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 						bool break_ = false;
 						int dy = y0;
 						while (dy < y1) {
-							if ((!checkUseX(x, dy, z1)) && (VDATA[px] == SMesh->extract(x, dy, z1).Vdata[px]) && (chunk->checkblock(x + 1, dy, z1).transparent())) {
+							if ((!checkUseX(x, dy, z1)) && (VDATA[px] == SMesh->extract(x, dy, z1).Vdata[px]) && (chunk->getBlock(x + 1, dy, z1)->transparency)) {
 								dy++;
 							}
 							else {
@@ -247,7 +233,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 					y1 = y;
 					z1 = z;
 					while (y1 < CHUNK_SIZE) {
-						if ((!checkUseZ(x, y1, z)) && (VDATA[pz] == SMesh->extract(x, y1, z).Vdata[pz]) && (chunk->checkblock(x, y1, z + 1).transparent())) {
+						if ((!checkUseZ(x, y1, z)) && (VDATA[pz] == SMesh->extract(x, y1, z).Vdata[pz]) && (chunk->getBlock(x, y1, z + 1)->transparency)) {
 							useZ[x * USE_SIZE_2 + (y1)*USE_SIZE + z] = true;
 							y1++;
 						}
@@ -260,7 +246,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 						bool break_ = false;
 						int dy = y0;
 						while (dy < y1) {
-							if ((!checkUseZ(x1, dy, z)) && (VDATA[pz] == SMesh->extract(x1, dy, z).Vdata[pz]) && (chunk->checkblock(x1, dy, z + 1).transparent())) {
+							if ((!checkUseZ(x1, dy, z)) && (VDATA[pz] == SMesh->extract(x1, dy, z).Vdata[pz]) && (chunk->getBlock(x1, dy, z + 1)->transparency)) {
 								dy++;
 							}
 							else {
@@ -291,7 +277,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 					y1 = y;
 					z1 = z;
 					while (x1 < CHUNK_SIZE) {
-						if ((!checkUseYN(x1, y, z)) && (VDATA[ny] == SMesh->extract(x1, y, z).Vdata[ny]) && (SMesh->extract(x1, y - 1, z).data.transparent())) {
+						if ((!checkUseYN(x1, y, z)) && (VDATA[ny] == SMesh->extract(x1, y, z).Vdata[ny]) && (SMesh->extract(x1, y - 1, z).data->transparency)) {
 							useYN[x1 * USE_SIZE_2 + (y)*USE_SIZE + z] = true;
 							x1++;
 						}
@@ -302,7 +288,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 						bool break_ = false;
 						int dx = x0;
 						while (dx < x1) {
-							if ((!checkUseYN(dx, y, z1)) && (VDATA[ny] == SMesh->extract(dx, y, z1).Vdata[ny]) && (SMesh->extract(dx, y - 1, z1).data.transparent())) {
+							if ((!checkUseYN(dx, y, z1)) && (VDATA[ny] == SMesh->extract(dx, y, z1).Vdata[ny]) && (SMesh->extract(dx, y - 1, z1).data->transparency)) {
 								dx++;
 							}
 							else {
@@ -329,7 +315,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 					y1 = y;
 					z1 = z;
 					while (y1 < CHUNK_SIZE) {
-						if ((!checkUseXN(x, y1, z)) && (VDATA[nx] == SMesh->extract(x, y1, z).Vdata[nx]) && (chunk->checkblock(x - 1, y1, z).transparent())) {
+						if ((!checkUseXN(x, y1, z)) && (VDATA[nx] == SMesh->extract(x, y1, z).Vdata[nx]) && (chunk->getBlock(x - 1, y1, z)->transparency)) {
 							useXN[x * USE_SIZE_2 + (y1)*USE_SIZE + z] = true;
 							y1++;
 						}
@@ -340,7 +326,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 						bool break_ = false;
 						int dy = y0;
 						while (dy < y1) {
-							if ((!checkUseXN(x, dy, z1)) && (VDATA[nx] == SMesh->extract(x, dy, z1).Vdata[nx]) && (chunk->checkblock(x - 1, dy, z1).transparent())) {
+							if ((!checkUseXN(x, dy, z1)) && (VDATA[nx] == SMesh->extract(x, dy, z1).Vdata[nx]) && (chunk->getBlock(x - 1, dy, z1)->transparency)) {
 								dy++;
 							}
 							else {
@@ -367,7 +353,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 					y1 = y;
 					z1 = z;
 					while (y1 < CHUNK_SIZE) {
-						if ((!checkUseZN(x, y1, z)) && (VDATA[nz] == SMesh->extract(x, y1, z).Vdata[nz]) && (chunk->checkblock(x, y1, z - 1).transparent())) {
+						if ((!checkUseZN(x, y1, z)) && (VDATA[nz] == SMesh->extract(x, y1, z).Vdata[nz]) && (chunk->getBlock(x, y1, z - 1)->transparency)) {
 							useZN[x * USE_SIZE_2 + (y1)*USE_SIZE + z] = true;
 							y1++;
 						}
@@ -380,7 +366,7 @@ void ChunkMesh::SmartGreedyMeshing() {
 						bool break_ = false;
 						int dy = y0;
 						while (dy < y1) {
-							if ((!checkUseZN(x1, dy, z)) && (VDATA[nz] == SMesh->extract(x1, dy, z).Vdata[nz]) && (chunk->checkblock(x1, dy, z - 1).transparent())) {
+							if ((!checkUseZN(x1, dy, z)) && (VDATA[nz] == SMesh->extract(x1, dy, z).Vdata[nz]) && (chunk->getBlock(x1, dy, z - 1)->transparency)) {
 								dy++;
 							}
 							else {
@@ -415,10 +401,10 @@ void ChunkMesh::SmartGreedyMeshing() {
 	delete SMesh;
 }
 
-BlockVerticesData SpecialChunkMesh::extract(int x, int y, int z) {
+BlockVerticesData BakedChunkData::extract(int x, int y, int z) {
 	if (x >= CHUNK_SIZE || y >= CHUNK_SIZE || z >= CHUNK_SIZE || x < 0 || y < 0 || z < 0) {
 		BlockVerticesData data;
-		data.data.id = AIR;
+		data.data = AIR;
 		return data;
 	}
 	else {
@@ -426,26 +412,26 @@ BlockVerticesData SpecialChunkMesh::extract(int x, int y, int z) {
 	}
 }
 
-void SpecialChunkMesh::add(int x, int y, int z, char B_ID, unsigned int L0_, unsigned int L1_, unsigned int L2_, unsigned int L3_, char side) {
+void BakedChunkData::add(int x, int y, int z, char B_ID, unsigned int L0_, unsigned int L1_, unsigned int L2_, unsigned int L3_, char side) {
 	if (x >= CHUNK_SIZE || y >= CHUNK_SIZE || z >= CHUNK_SIZE || x < 0 || y < 0 || z < 0) {
 
 	}
 	else {
 		data[(x * CHUNK_SIZE * CHUNK_SIZE) + (z * CHUNK_SIZE) + y].Vdata[side] = 0 | (B_ID) | (L0_ << 8) | (L1_ << 12) | (L2_ << 16) | (L3_ << 20);
-		data[(x * CHUNK_SIZE * CHUNK_SIZE) + (z * CHUNK_SIZE) + y].data.id = B_ID;
+		data[(x * CHUNK_SIZE * CHUNK_SIZE) + (z * CHUNK_SIZE) + y].data = B_ID;
 	}
 
 }
-void SpecialChunkMesh::addUninitBlock(int x, int y, int z, char B_ID) {
+void BakedChunkData::addUninitBlock(int x, int y, int z, char B_ID) {
 	if (x >= CHUNK_SIZE || y >= CHUNK_SIZE || z >= CHUNK_SIZE || x < 0 || y < 0 || z < 0) {
 
 	}
 	else {
-		data[x * CHUNK_SIZE * CHUNK_SIZE + z * CHUNK_SIZE + y].data.id = B_ID;
+		data[x * CHUNK_SIZE * CHUNK_SIZE + z * CHUNK_SIZE + y].data = B_ID;
 	}
 
 }
-bool SpecialChunkMesh::compare(int x, int y, int z, int x1, int y1, int z1, char type) {
+bool BakedChunkData::compare(int x, int y, int z, int x1, int y1, int z1, char type) {
 	if (x >= CHUNK_SIZE || y >= CHUNK_SIZE || z >= CHUNK_SIZE || x < 0 || y < 0 || z < 0 || x1 >= CHUNK_SIZE || y1 >= CHUNK_SIZE || z1 >= CHUNK_SIZE || x1 < 0 || y1 < 0 || z1 < 0)
 		return false;
 	unsigned int q0 = data[x * CHUNK_SIZE * CHUNK_SIZE + z * CHUNK_SIZE + y].Vdata[type];
@@ -460,7 +446,7 @@ bool SpecialChunkMesh::compare(int x, int y, int z, int x1, int y1, int z1, char
 		return true;
 	return false;
 }
-unsigned int SpecialChunkMesh::extractVData(char type, unsigned int data) {
+unsigned int BakedChunkData::extractVData(char type, unsigned int data) {
 	if (type == ID)
 		return (((1u << 8) - 1u) & (data >> 0));
 	if (type == L0)
@@ -663,189 +649,189 @@ void ChunkMesh::SGaddSidenz(ivec3 p0, ivec3 p1, bool transparency, int sx, int s
 
 }
 
-void ChunkMesh::SaddSideny(int x, int y, int z, ivec3 local_pos, char B_ID) {
+void ChunkMesh::SaddSideny(int x, int y, int z, char B_ID) {
 	int a = lightMvalue_;
 	int b = lightMvalue_;
 	int a1 = lightMvalue_;
 	int b1 = lightMvalue_;
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] - 1, local_pos[2]).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x - 1, y - 1, z)]->transparency) {
 		a = lightCvalue_;
 		b = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] - 1, local_pos[2]).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x + 1, y - 1, z)]->transparency) {
 		a1 = lightCvalue_;
 		b1 = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0], local_pos[1] - 1, local_pos[2] + 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x, y - 1, z + 1)]->transparency) {
 		a1 = lightCvalue_;
 		b = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0], local_pos[1] - 1, local_pos[2] - 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x, y - 1, z - 1)]->transparency) {
 		b1 = lightCvalue_;
 		a = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] - 1, local_pos[2] + 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x + 1, y - 1, z + 1)]->transparency)
 		a1 = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] - 1, local_pos[2] - 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x - 1, y - 1, z - 1)]->transparency)
 		a = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] - 1, local_pos[2] - 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x + 1, y - 1, z - 1)]->transparency)
 		b1 = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] - 1, local_pos[2] + 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x - 1, y - 1, z + 1)]->transparency)
 		b = lightCvalue_;
 	SMesh->add(x, y, z, B_ID, a, b, a1, b1, ny);
 }
-void ChunkMesh::SaddSidepy(int x, int y, int z, ivec3 local_pos, char B_ID) {
+void ChunkMesh::SaddSidepy(int x, int y, int z, char B_ID) {
 	int a = lightMvalue_;
 	int b = lightMvalue_;
 	int a1 = lightMvalue_;
 	int b1 = lightMvalue_;
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] + 1, local_pos[2]).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x - 1, y + 1, z)]->transparency) {
 		a = lightCvalue_;
 		b = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] + 1, local_pos[2]).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x + 1, y + 1, z)]->transparency) {
 		a1 = lightCvalue_;
 		b1 = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0], local_pos[1] + 1, local_pos[2] + 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x, y + 1, z + 1)]->transparency) {
 		a1 = lightCvalue_;
 		b = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0], local_pos[1] + 1, local_pos[2] - 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x, y + 1, z - 1)]->transparency) {
 		b1 = lightCvalue_;
 		a = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] + 1, local_pos[2] + 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x + 1, y + 1, z + 1)]->transparency)
 		a1 = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] + 1, local_pos[2] - 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x - 1, y + 1, z - 1)]->transparency)
 		a = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] + 1, local_pos[2] - 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x + 1, y + 1, z - 1)]->transparency)
 		b1 = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] + 1, local_pos[2] + 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x - 1, y + 1, z + 1)]->transparency)
 		b = lightCvalue_;
 	SMesh->add(x, y, z, B_ID, a, b, a1, b1, py);
 }
-void ChunkMesh::SaddSidenx(int x, int y, int z, ivec3 local_pos, char B_ID) {
+void ChunkMesh::SaddSidenx(int x, int y, int z, char B_ID) {
 	int br = lightMvalue_;
 	int bl = lightMvalue_;
 	int tl = lightMvalue_;
 	int tr = lightMvalue_;
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] - 1, local_pos[2]).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x - 1, y - 1, z)]->transparency) {
 		br = lightCvalue_;
 		bl = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] + 1, local_pos[2]).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x - 1, y + 1, z)]->transparency) {
 		tr = lightCvalue_;
 		tl = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1], local_pos[2] + 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x - 1, y, z + 1)]->transparency) {
 		tr = lightCvalue_;
 		br = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1], local_pos[2] - 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x - 1, y, z - 1)]->transparency) {
 		bl = lightCvalue_;
 		tl = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] + 1, local_pos[2] + 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x - 1, y + 1, z + 1)]->transparency)
 		tr = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] + 1, local_pos[2] - 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x - 1, y + 1, z - 1)]->transparency)
 		tl = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] - 1, local_pos[2] - 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x - 1, y - 1, z - 1)]->transparency)
 		bl = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] - 1, local_pos[2] + 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x - 1, y - 1, z + 1)]->transparency)
 		br = lightCvalue_;
 	SMesh->add(x, y, z, B_ID, br, bl, tr, tl, nx);
 }
-void ChunkMesh::SaddSidepx(int x, int y, int z, ivec3 local_pos, char B_ID) {
+void ChunkMesh::SaddSidepx(int x, int y, int z, char B_ID) {
 	int br = lightMvalue_;
 	int bl = lightMvalue_;
 	int tl = lightMvalue_;
 	int tr = lightMvalue_;
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] - 1, local_pos[2]).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x + 1, y - 1, z)]->transparency) {
 		br = lightCvalue_;
 		bl = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] + 1, local_pos[2]).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x + 1, y + 1, z)]->transparency) {
 		tr = lightCvalue_;
 		tl = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1], local_pos[2] + 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x + 1, y, z + 1)]->transparency) {
 		tr = lightCvalue_;
 		br = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1], local_pos[2] - 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x + 1, y, z - 1)]->transparency) {
 		bl = lightCvalue_;
 		tl = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] + 1, local_pos[2] + 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x + 1, y + 1, z + 1)]->transparency)
 		tr = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] + 1, local_pos[2] - 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x + 1, y + 1, z - 1)]->transparency)
 		tl = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] - 1, local_pos[2] - 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x + 1, y - 1, z - 1)]->transparency)
 		bl = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] - 1, local_pos[2] + 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x + 1, y - 1, z + 1)]->transparency)
 		br = lightCvalue_;
 	SMesh->add(x, y, z, B_ID, br, bl, tr, tl, px); // (bl,br,tl,tr)
 }
-void ChunkMesh::SaddSidenz(int x, int y, int z, ivec3 local_pos, char B_ID) {
+void ChunkMesh::SaddSidenz(int x, int y, int z, char B_ID) {
 	int br = lightMvalue_;
 	int bl = lightMvalue_;
 	int tl = lightMvalue_;
 	int tr = lightMvalue_;
-	if (!chunk->checkblock(local_pos[0], local_pos[1] - 1, local_pos[2] - 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x, y - 1, z - 1)]->transparency) {
 		br = lightCvalue_;
 		bl = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0], local_pos[1] + 1, local_pos[2] - 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x, y + 1, z - 1)]->transparency) {
 		tr = lightCvalue_;
 		tl = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1], local_pos[2] - 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x + 1, y, z - 1)]->transparency) {
 		tl = lightCvalue_;
 		bl = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1], local_pos[2] - 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x - 1, y, z - 1)]->transparency) {
 		br = lightCvalue_;
 		tr = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] + 1, local_pos[2] - 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x + 1, y + 1, z - 1)]->transparency)
 		tl = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] + 1, local_pos[2] - 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x - 1, y + 1, z - 1)]->transparency)
 		tr = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] - 1, local_pos[2] - 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x - 1, y - 1, z - 1)]->transparency)
 		br = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] - 1, local_pos[2] - 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x + 1, y - 1, z - 1)]->transparency)
 		bl = lightCvalue_;
 	SMesh->add(x, y, z, B_ID, br, bl, tl, tr, nz); // (br,bf,tf,tr)
 }
-void ChunkMesh::SaddSidepz(int x, int y, int z, ivec3 local_pos, char B_ID) {
+void ChunkMesh::SaddSidepz(int x, int y, int z, char B_ID) {
 	int br = lightMvalue_;
 	int bl = lightMvalue_;
 	int tl = lightMvalue_;
 	int tr = lightMvalue_;
-	if (!chunk->checkblock(local_pos[0], local_pos[1] - 1, local_pos[2] + 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x, y - 1, z + 1)]->transparency) {
 		br = lightCvalue_;
 		bl = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0], local_pos[1] + 1, local_pos[2] + 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x, y + 1, z + 1)]->transparency) {
 		tr = lightCvalue_;
 		tl = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1], local_pos[2] + 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x + 1, y, z + 1)]->transparency) {
 		tl = lightCvalue_;
 		bl = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1], local_pos[2] + 1).transparent()) {
+	if (!BlockRegistry[chunk->getBlock(x - 1, y, z + 1)]->transparency) {
 		br = lightCvalue_;
 		tr = lightCvalue_;
 	}
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] + 1, local_pos[2] + 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x + 1, y + 1, z + 1)]->transparency)
 		tl = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] + 1, local_pos[2] + 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x - 1, y + 1, z + 1)]->transparency)
 		tr = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] - 1, local_pos[1] - 1, local_pos[2] + 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x - 1, y - 1, z + 1)]->transparency)
 		br = lightCvalue_;
-	if (!chunk->checkblock(local_pos[0] + 1, local_pos[1] - 1, local_pos[2] + 1).transparent())
+	if (!BlockRegistry[chunk->getBlock(x + 1, y - 1, z + 1)]->transparency)
 		bl = lightCvalue_;
 	SMesh->add(x, y, z, B_ID, br, bl, tl, tr, pz);
 }

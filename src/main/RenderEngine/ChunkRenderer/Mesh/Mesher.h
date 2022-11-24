@@ -16,10 +16,11 @@
 #include "../../../utils/MathHelper.h"
 #include "../../../utils/Clock.h"
 #include "../../../utils/LogUtils.h"
+#include "../../../Utils/Math/Vector/ivec3.h"
 
 #include <vector>
 #include <algorithm>
-#include <glm/vec3.hpp>
+
 #include <unordered_map>
 #include <string>
 
@@ -45,10 +46,12 @@ BIT_OFFSET		TYPE			SIZE
 20				L3				4
 */
 
+//For indexing stuff
+#define SOLID 0x00			
+#define TRANSPARENT 0x01	
 
 struct ChunkVerticesData {
-	std::vector<unsigned int> TransparentVertices;
-	std::vector<unsigned int> SolidVertices;
+	std::vector<unsigned int> Data[5]{};
 	int x = 0;
 	int y = 0;
 	int z = 0;
@@ -56,12 +59,13 @@ struct ChunkVerticesData {
 };
 
 struct BlockVerticesData {
+	BlockVerticesData(BlockID id = AIR) : data(id) {}
 	unsigned int Vdata[6]{};
-	Block data;
+	BlockID data;
 };
 
-class SpecialChunkMesh {
-public:
+struct BakedChunkData {
+
 	void addUninitBlock(int x, int y, int z, char B_ID);
 	BlockVerticesData extract(int x, int y, int z);
 	bool compare(int x, int y, int z, int x1, int y1, int z1, char type);
@@ -77,40 +81,32 @@ public:
 
 	void SmartGreedyMeshing();
 
+	void GreedyMeshing();
+
 	std::vector<unsigned int> vertices;
 	std::vector<unsigned int> transparentVertices;
 
 	void delete_();
 
-	void dumpData(const char* filename) {
-		std::ofstream file;
-		file.open(filename);
-		for (int index = 0; index < vertices.size(); index++) {
-			file << vertices[index];
-		}
-		file.close();
-	}
-
-
 private:
 
-	void SaddSidenx(int x, int y, int z, glm::ivec3 local_pos, char B_ID);
-	void SaddSidepx(int x, int y, int z, glm::ivec3 local_pos, char B_ID);
+	void SaddSidenx(int x, int y, int z, char B_ID);
+	void SaddSidepx(int x, int y, int z, char B_ID);
 
-	void SaddSideny(int x, int y, int z, glm::ivec3 local_pos, char B_ID);
-	void SaddSidepy(int x, int y, int z, glm::ivec3 local_pos, char B_ID);
+	void SaddSideny(int x, int y, int z, char B_ID);
+	void SaddSidepy(int x, int y, int z, char B_ID);
 
-	void SaddSidenz(int x, int y, int z, glm::ivec3 local_pos, char B_ID);
-	void SaddSidepz(int x, int y, int z, glm::ivec3 local_pos, char B_ID);
+	void SaddSidenz(int x, int y, int z, char B_ID);
+	void SaddSidepz(int x, int y, int z, char B_ID);
 
-	void SGaddSidenx(glm::ivec3 p0, glm::ivec3 p1, bool transparency, int sx, int sy, int a, int b, int a1, int b1);
-	void SGaddSidepx(glm::ivec3 p0, glm::ivec3 p1, bool transparency, int sx, int sy, int a, int b, int a1, int b1);
+	void SGaddSidenx(ivec3 p0, ivec3 p1, bool transparency, int sx, int sy, int a, int b, int a1, int b1);
+	void SGaddSidepx(ivec3 p0, ivec3 p1, bool transparency, int sx, int sy, int a, int b, int a1, int b1);
 
-	void SGaddSideny(glm::ivec3 p0, glm::ivec3 p1, bool transparency, int sx, int sy, int a, int b, int a1, int b1);
-	void SGaddSidepy(glm::ivec3 p0, glm::ivec3 p1, bool transparency, int sx, int sy, int a, int b, int a1, int b1);
+	void SGaddSideny(ivec3 p0, ivec3 p1, bool transparency, int sx, int sy, int a, int b, int a1, int b1);
+	void SGaddSidepy(ivec3 p0, ivec3 p1, bool transparency, int sx, int sy, int a, int b, int a1, int b1);
 
-	void SGaddSidenz(glm::ivec3 p0, glm::ivec3 p1, bool transparency, int sx, int sy, int a, int b, int a1, int b1);
-	void SGaddSidepz(glm::ivec3 p0, glm::ivec3 p1, bool transparency, int sy, int sx, int a, int b, int a1, int b1);
+	void SGaddSidenz(ivec3 p0, ivec3 p1, bool transparency, int sx, int sy, int a, int b, int a1, int b1);
+	void SGaddSidepz(ivec3 p0, ivec3 p1, bool transparency, int sy, int sx, int a, int b, int a1, int b1);
 
 	unsigned int tnx_ = 0;
 	unsigned int tpx_ = 0;
@@ -118,8 +114,6 @@ private:
 	unsigned int tpy_ = 0;
 	unsigned int tnz_ = 0;
 	unsigned int tpz_ = 0;
-
-	char BLOCK_ID = AIR;
 
 	bool checkUseX(int x, int y, int z);
 	bool checkUseY(int x, int y, int z);
@@ -136,7 +130,7 @@ private:
 	bool useYN[(16 + 1) * (16 + 1) * (16 + 1)]{};
 	bool useZN[(16 + 1) * (16 + 1) * (16 + 1)]{};
 
-	SpecialChunkMesh* SMesh = nullptr;
+	BakedChunkData* SMesh = nullptr;
 	
 };
 

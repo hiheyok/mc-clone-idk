@@ -9,6 +9,7 @@
 #include "../OpenGL/Texture/texture.h"
 #include "../../Utils/MathHelper.h"
 #include "../../Utils/MutithreadedData.h"
+#include "../../Minecraft/Core/Registry.h"
 #include <unordered_map>
 #include <deque>
 #include <queue>
@@ -319,24 +320,11 @@ public:
 
 	void ReloadAssets() {
 		std::vector<unsigned char> data;
-		std::vector<std::string> filenames =
-		{
-			"dirt.png",
-			"grass_block_side.png",
-			"grass_block_top.png",
-			"stone.png",
-			"sand.png",
-			"water_still.png",
-			"oak_log.png",
-			"oak_log_top.png",
-			"oak_leaves.png",
-			"oak_sapling.png"
-		};
 
 		int width, height, nrComponents;
 
-		for (int i = 0; i < filenames.size(); i++) {
-			std::string path = "assets/textures/array/block/" + filenames.data()[i];
+		for (const auto& filenames : BlockIMGRegistry.Container) {
+			std::string path = "assets/textures/array/block/" + filenames.second;
 			unsigned char* tdata = stbi_load(path.c_str(), &width, &height, &nrComponents, 0);
 			getLogger()->LogInfo("Chunk Renderer", "Loaded Texture: Width: " + std::to_string(width) + " Height: " + std::to_string(height) + "nrComponents: " + std::to_string(nrComponents) + " Loaded Image: " + path);
 			if (tdata) {
