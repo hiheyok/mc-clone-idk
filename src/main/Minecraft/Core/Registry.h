@@ -1,10 +1,5 @@
 #pragma once
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#ifdef _DEBUG
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
+
 #include "../World/Level/Block/Block.h"
 #include "../World/Level/Dimension/Dimension.h"
 #include "../World/Entity/Entity.h"
@@ -13,8 +8,14 @@
 #include <unordered_map>
 #include <string>
 
+constexpr auto BMESH_ID = 0x00;
+constexpr auto BMESH_L0 = 0x01;
+constexpr auto BMESH_L1 = 0x02;
+constexpr auto BMESH_L2 = 0x03;
+constexpr auto BMESH_L3 = 0x04;
 
 typedef unsigned int ID;
+
 
 //container for all of the content in the game
 template <class T>

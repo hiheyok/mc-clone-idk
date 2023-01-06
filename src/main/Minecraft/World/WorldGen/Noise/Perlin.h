@@ -1,13 +1,11 @@
 #include <immintrin.h>
 #include <vector>
-#include <glm/vec2.hpp>
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
 #ifdef _DEBUG
 #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #define new DEBUG_NEW
 #endif
-using namespace glm;
 
 class noise_2 {
 public:
@@ -57,16 +55,16 @@ public:
         }
     }
 
-    glm::vec2 GetConstVec(int v) {
+    fvec2 GetConstVec(int v) {
         int h = v & 3;
         if (h == 0)
-            return vec2(1.0, 1.0);
+            return fvec2(1.0, 1.0);
         else if (h == 1)
-            return vec2(-1.0, 1.0);
+            return fvec2(-1.0, 1.0);
         else if (h == 2)
-            return vec2(-1.0, -1.0);
+            return fvec2(-1.0, -1.0);
         else
-            return vec2(1.0, -1.0);
+            return fvec2(1.0, -1.0);
     }
 
     float DotProduct(vec2 a, vec2 b) {

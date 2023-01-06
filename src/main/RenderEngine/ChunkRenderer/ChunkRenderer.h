@@ -10,6 +10,7 @@
 #include "../../Utils/MathHelper.h"
 #include "../../Utils/MutithreadedData.h"
 #include "../../Minecraft/Core/Registry.h"
+
 #include <unordered_map>
 #include <deque>
 #include <queue>
@@ -117,7 +118,7 @@ public:
 
 	void _AddChunk(ChunkVerticesData data) {
 
-		long long int ChunkID = getChunkID(data.x, data.y, data.z);
+		unsigned long long int ChunkID = getChunkID(data.x, data.y, data.z);
 
 		size_t MeshSizeSolid = data.SolidVertices.size() * sizeof(unsigned int);
 		size_t MeshSizeTransparent = data.TransparentVertices.size() * sizeof(unsigned int);
@@ -179,9 +180,7 @@ public:
 	void GenCallDrawCommands() {
 		DrawArraysIndirectCommandListSolid.clear();
 
-		glm::ivec3 Pos = glm::ivec3(floor(camera->Position.x / 16), floor(camera->Position.y / 16), floor(camera->Position.z / 16));
-
-		SolidChunkShaderPos.clear();
+		ivec3 Pos = ivec3(floor(camera->Position.x / 16), floor(camera->Position.y / 16), floor(camera->Position.z / 16));
 
 		fr.CalculateFrustum(camera);
 

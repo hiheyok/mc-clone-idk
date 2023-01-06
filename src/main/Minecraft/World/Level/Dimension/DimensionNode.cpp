@@ -2,17 +2,17 @@
 #include "../../../../Utils/Clock.h"
 
 void DimensionNode::Run() {
-	Sync.ThreadStarting();
+	SyncThreadStarting();
 	getLogger()->LogDebug("Dimension Node", "Starting Thread ID: " + std::to_string(NodeID));
 	while (true) {
-		Sync.ThreadTicking();
+		SyncThreadTicking();
 		Tick();
-		Sync.ThreadStopTicking();
+		SyncThreadStopTicking();
 		//Sync
 		
-		if (Sync.TicksCount == TicksCount) {
-			if (Sync.CheckIfAllThreadsFinished() && Sync.CheckIfTickTimeExceededMinTickTime()) {
-				Sync.Tick();
+		if (SyncTicksCount == TicksCount) {
+			if (SyncCheckIfAllThreadsFinished() && SyncCheckIfTickTimeExceededMinTickTime()) {
+				SyncTick();
 			}
 			else {
 				timerSleep(0.005);

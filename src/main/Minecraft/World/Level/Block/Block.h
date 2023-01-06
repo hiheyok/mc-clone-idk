@@ -10,7 +10,7 @@ public:
 		Build();
 	}
 
-	virtual void Build() {
+	virtual void Build() { //default block properties
 		friction = 1.0f;
 		hasCollision = true;
 		explosiveResistance = 1.0f;

@@ -6,19 +6,19 @@
 #include "../OpenGL/Shader/Shader.h"
 #include "../OpenGL/Texture/Texture.h"
 #include "../OpenGL/Framebuffer/Framebuffer.h"
-#include <glm/vec2.hpp>
-#include <glm/glm.hpp>
+#include "../../Utils/Math/Vector/vec2.h"
+#include "../../Utils/Math/Vector/vec3.h"
+#include "../../Utils/Math/Vector/vec4.h"
 #include <chrono>
 #include <vector>
 
-using namespace glm;
 
 
 struct GUI_Data {
 	std::string name;
-	vec2 p0, p1, p2, p3 = vec2(0.0f, 0.0f);
-	vec2 t0, t1, t2, t3 = vec2(0.0f, 0.0f);
-	vec3 color;
+	fvec2 p0, p1, p2, p3 = fvec2(0.0f, 0.0f);
+	fvec2 t0, t1, t2, t3 = fvec2(0.0f, 0.0f);
+	fvec3 color;
 	bool clickable = false;
 	bool isSlider = false;
 	std::string text;
@@ -33,14 +33,14 @@ struct GUI_Data {
 };
 
 struct LETTER {
-	vec2 p0 = vec2(0.0f, 0.0f), p1 = vec2(0.0f, 0.0f), p2 = vec2(0.0f, 0.0f), p3 = vec2(0.0f,0.0f);
-	vec2 t0 = vec2(0.0f, 0.0f), t1 = vec2(0.0f, 0.0f), t2 = vec2(0.0f, 0.0f), t3 = vec2(0.0f, 0.0f);
+	fvec2 p0 = fvec2(0.0f, 0.0f), p1 = fvec2(0.0f, 0.0f), p2 = fvec2(0.0f, 0.0f), p3 = fvec2(0.0f,0.0f);
+	fvec2 t0 = fvec2(0.0f, 0.0f), t1 = fvec2(0.0f, 0.0f), t2 = fvec2(0.0f, 0.0f), t3 = fvec2(0.0f, 0.0f);
 };
 
 struct string_rendering_data {
 	std::vector<LETTER> string;
 	float letterSize = 0.f;
-	vec3 color = vec3(0.f,0.f,0.f);
+	fvec3 color = fvec3(0.f,0.f,0.f);
 	bool render = false;
 };
 
@@ -51,9 +51,9 @@ public:
 
 	void init(GLFWwindow* window_, std::vector<int>* CE);
 
-	void addGUI(std::string name, vec2 size, vec2 pos, vec3 color, vec2 tpos0, vec2 tpos1, bool clickable, int step);
-	void addGUIresizedTexture(std::string name, vec2 size, vec2 pos, vec3 color, vec2 tpos0, vec2 tpos1, vec2 textureSize, bool clickable, int step);
-	void addGUIresizedTexturewFont(std::string name, std::string str, vec2 size, vec2 pos, vec3 color, vec2 tpos0, vec2 tpos1, vec2 textureSize, bool clickable, int step);
+	void addGUI(std::string name, fvec2 size, fvec2 pos, fvec3 color, fvec2 tpos0, fvec2 tpos1, bool clickable, int step);
+	void addGUIresizedTexture(std::string name, fvec2 size, fvec2 pos, fvec3 color, fvec2 tpos0, fvec2 tpos1, fvec2 textureSize, bool clickable, int step);
+	void addGUIresizedTexturewFont(std::string name, std::string str, fvec2 size, fvec2 pos, fvec3 color, fvec2 tpos0, fvec2 tpos1, fvec2 textureSize, bool clickable, int step);
 
 	void addToRenderQueue(std::string name);
 	void deleteFromRenderQueue(std::string name);
@@ -71,18 +71,18 @@ public:
 	void configTexture(int renderStep, std::string tdir, int index);
 	void configTexture(int renderStep, TexturedFrameBuffer fbo, int index);
 
-	glm::vec4 getCharTextCoords(const char letter);
+	ivec4 getCharTextCoords(const char letter);
 
-	glm::vec4 getPixelCoords(glm::vec2 TextureSize, glm::vec2 lu, glm::vec2 rd);
-	glm::vec4 getPixelCoordsOffset(glm::vec2 TextureSize, glm::vec2 lu, glm::vec2 offset);
+	ivec4 getPixelCoords(ivec2 TextureSize, ivec2 lu, ivec2 rd);
+	ivec4 getPixelCoordsOffset(ivec2 TextureSize, ivec2 lu, ivec2 offset);
 
 	GUI_Data* getGUI(std::string name);
 
 	Shader guiShader[16]{};
 
-	glm::vec2 MouseLeftButtonPressPos;
-	glm::vec2 MouseRightButtonPressPos;
-	glm::vec2 MousePos;
+	ivec2 MouseLeftButtonPressPos;
+	ivec2 MouseRightButtonPressPos;
+	ivec2 MousePos;
 
 	std::vector<int>* CLIENT_EVENTS;
 	GLFWwindow* window;

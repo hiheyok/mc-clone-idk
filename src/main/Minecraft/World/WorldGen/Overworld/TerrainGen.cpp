@@ -1,10 +1,10 @@
 #include "TerrainGen.h"
 #include "../../../../Utils/Math/ChunkID/ChunkID.h"
-
+#include "../../../../Utils/Math/Vector/vec3.h"
 #include "../../../../Utils/FastNoiseLite.h"
 
 void GenerateTerrain(Chunk& chunk) {
-	glm::ivec3 Pos = ChunkIDToPOS(chunk.ChunkID) * 16;
+	ivec3 Pos = ChunkIDToPOS(chunk.ChunkID) * 16;
 
 	FastNoiseLite noise;
 	noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);

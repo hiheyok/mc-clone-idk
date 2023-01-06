@@ -43,10 +43,8 @@ private:
 	std::unordered_map<ID, DimensionNode*>* DNodes;
 	std::unordered_map<CHUNK_ID, ID>* ChunkDNodeLocation;
 	std::unordered_map<CHUNK_ID, Chunk*> WorkingChunks;
-	
 
-	unsigned int TicksCount = 0; //Used to sync 
-	TickSync Sync;
+	unsigned int TicksCount = 0;
 	std::thread NodeThread;
 	bool stop = false;
 };

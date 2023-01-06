@@ -1,5 +1,5 @@
 #pragma once
-#include "../Vector/ivec3.h"
+#include "../Vector/vec3.h"
 #include "../FastMath.h"
 static long long unsigned int getChunkID(int x, int y, int z) {
 	long long unsigned int sx = (((1u << 1) - 1u) & (x >> 31));

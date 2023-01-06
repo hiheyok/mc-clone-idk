@@ -67,6 +67,4 @@ private:
 	std::deque<std::thread> MeshWorkers;
 	std::thread ClientWorldThread;
 
-	template <typename NUM>
-	static int FastFloor(NUM f) { return f >= 0 ? (int)f : (int)f - 1; }
 };

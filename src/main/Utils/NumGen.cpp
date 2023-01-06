@@ -1,7 +1,4 @@
 #include <iostream>
-#include <ctime>
-#include <cstdlib>
-#define _CRTDBG_MAP_ALLOC
 #include "NumGen.h"
 
 long long unsigned int count = 0;

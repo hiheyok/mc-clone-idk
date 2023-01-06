@@ -66,16 +66,13 @@
     <ClCompile Include="src\main\Minecraft\World\Level\Block\Block.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\main\Minecraft\World\WorldContainer.cpp">
+    <ClCompile Include="src\main\archive\WorldContainer.cpp1">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\main\Minecraft\Core\Registry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\main\Minecraft\World\World.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\main\Minecraft\World\Level\WorldGen\ChunkGenerator.cpp">
+    <ClCompile Include="src\main\archive\World.cpp1">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\main\RenderEngine\ChunkRenderer\Mesh\Mesher.cpp">
@@ -90,13 +87,37 @@
     <ClCompile Include="src\main\Minecraft\World\Entity\Entity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\main\Minecraft\World\Entity\EntityType.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\main\Minecraft\Client\ClientWorld\ClientWorld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\main\RenderEngine\OpenGL\Buffers\Buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main\Minecraft\World\WorldGen\Overworld\TerrainGen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main\Minecraft\World\Level\Dimension\DimensionNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main\Utils\Math\FastMath.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main\RenderEngine\OpenGL\Texture\ImagerLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main\Minecraft\World\Level\Chunk\Tick\ChunkTicking.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main\Minecraft\World\WorldManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main\Minecraft\World\Level\Chunk\ChunkData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main\RenderEngine\ChunkRenderer\Mesh\BakedChunkMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main\RenderEngine\ChunkRenderer\ChunkBatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -170,16 +191,13 @@
     <ClInclude Include="src\main\Minecraft\World\Level\Chunk\Chunk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\main\Minecraft\World\WorldContainer.h">
+    <ClInclude Include="src\main\archive\WorldContainer.h1">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\main\Minecraft\Core\Registry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\main\Minecraft\World\World.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\main\Minecraft\World\Level\WorldGen\ChunkGenerator.h">
+    <ClInclude Include="src\main\archive\World.h1">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\main\RenderEngine\ChunkRenderer\Mesh\Mesher.h">
@@ -206,13 +224,10 @@
     <ClInclude Include="src\main\Utils\NumGen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\main\Minecraft\World\Entity\Entities\Player.h">
+    <ClInclude Include="src\main\Minecraft\World\Entity\EntityType\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\main\Minecraft\World\Entity\EntityType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\main\Minecraft\Client\WorldMGR\WorldMGR.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\main\Minecraft\Client\ClientWorld\ClientWorld.h">
@@ -227,7 +242,145 @@
     <ClInclude Include="src\main\Minecraft\World\AABB\AABB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\main\Minecraft\World\Level\WorldGen\Noise\Perlin.h">
+    <ClInclude Include="src\main\Minecraft\World\WorldGen\Noise\Perlin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Block\BlockBehavior.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Block\Properties\Properties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Block\Blocks\AirBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Block\Blocks\GrassBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Level.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\World.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Dimension\Dimension.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Block\BlockStatus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Chunk\ChunkMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\Core\Resources\ResourceKey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Block\Blocks\DirtBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Block\Blocks\GravityBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Block\Blocks\FluidBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Block\Blocks\LeafBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Utils\Math\ChunkID\ChunkID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Dimension\DimensionNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Dimension\DimensionProperties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Dimension\Dimensions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Dimension\Dimensions\Overworld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Dimension\DimensionNodeMGR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Chunk\ChunkProperties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\TickSync\TickSync.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\WorldProperties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Entity\EntityType\FallingBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\SingleplayerWorld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\WorldGen\Overworld\TerrainGen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\MutiplayerWorld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\Client\Settings\ClientSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\RenderEngine\ChunkRenderer\TerrainRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\RenderEngine\TextureLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\RenderEngine\OpenGL\Texture\ImageLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\RenderEngine\OpenGL\Texture\Types\Texture2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\RenderEngine\OpenGL\Texture\Types\TextureArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\Client\SingleplayerClient\SinglerplayerClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\Client\SingleplayerClient\SingleplayerRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Entity\EntityProperties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\Level\Chunk\ChunkData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Utils\Math\Vector\vec3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\Client\ClientStats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Utils\Math\Vector\vec2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Utils\Math\Vector\vec4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\WorldManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\WorldType\WorldType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\World\WorldType\Types\Default.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\RenderEngine\ChunkRenderer\Mesh\BakedChunkMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\RenderEngine\ChunkRenderer\ChunkBatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

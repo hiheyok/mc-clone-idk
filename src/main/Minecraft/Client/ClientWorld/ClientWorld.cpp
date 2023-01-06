@@ -31,9 +31,6 @@ void ClientWorld::UpdateChunks() {
 		Chunk chunk;
 		if (ChunkAddQueue.try_pop(chunk)) {
 
-			int x = chunk.pos.x;
-			int y = chunk.pos.y;
-			int z = chunk.pos.z;
 
 			CHUNK_ID ChunkID = getChunkID(x, y, z);
 			ChunkCache[ChunkID] = chunk; // Copy Chunk To Loaded Cache

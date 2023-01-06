@@ -1,17 +1,15 @@
 #pragma once
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#ifdef _DEBUG
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
 #include <vector>
-
 #include "../../RenderEngine/Window.h"
+#include "ClientStats.h"
 #include "../../RenderEngine/GUI/GUI.h"
 #include "../World/World.h"
-#include <unordered_map>
-class Client : Window {
+#include <unordered_set>
+
+typedef unsigned int CLIENT_EVENTS;
+
+
+class Client : Window, ClientStats {
 public:
 
 	void Initialize();
@@ -24,16 +22,8 @@ private:
 	void UpdateKeyboardInputs();
 	void ClientLoop();
 	//Stats
-	double frametime = 0;
-	int FPS = 0;
-	int FPS_LOW = 0;
-	int FPS_HIGH = 0;
+	
 	std::vector<int> ClientEvents;
-	std::unordered_map<char, bool> KeysPressed;
-
-	bool FirstPersonMode = false;
-
-	ClientWorld cworld;
-	World TestWorld;
+	std::unordered_set<char> KeysPressed;
 	IGUI GUI;
 };

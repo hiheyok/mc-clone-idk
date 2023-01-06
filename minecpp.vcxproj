@@ -172,15 +172,18 @@
     <ClCompile Include="src\main\Minecraft\Core.cpp" />
     <ClCompile Include="src\main\Minecraft\Core\Registry.cpp" />
     <ClCompile Include="src\main\Minecraft\World\Entity\Entity.cpp" />
-    <ClCompile Include="src\main\Minecraft\World\Entity\EntityType.cpp" />
+    <ClCompile Include="src\main\Minecraft\World\Level\Chunk\ChunkData.cpp" />
+    <ClCompile Include="src\main\Minecraft\World\Level\Chunk\Tick\ChunkTicking.cpp" />
     <ClCompile Include="src\main\Minecraft\World\Level\Dimension\DimensionNode.cpp" />
     <ClCompile Include="src\main\Minecraft\World\WorldGen\Overworld\TerrainGen.cpp" />
+    <ClCompile Include="src\main\Minecraft\World\WorldManager.cpp" />
+    <ClCompile Include="src\main\RenderEngine\ChunkRenderer\ChunkBatch.cpp" />
+    <ClCompile Include="src\main\RenderEngine\ChunkRenderer\Mesh\BakedChunkMesh.cpp" />
     <ClCompile Include="src\main\RenderEngine\ChunkRenderer\Mesh\Mesher.cpp" />
     <ClCompile Include="src\main\Minecraft\World\Level\Block\Block.cpp" />
     <ClCompile Include="src\main\Minecraft\World\Level\Chunk\Chunk.cpp" />
     <ClCompile Include="src\main\archive\World.cpp1" />
     <ClCompile Include="src\main\archive\WorldContainer.cpp1" />
-    <ClCompile Include="src\main\Minecraft\World\WorldGen\ChunkGenerator.cpp" />
     <ClCompile Include="src\main\RenderEngine\Camera\camera.cpp" />
     <ClCompile Include="src\main\RenderEngine\Frustum\frustum.cpp" />
     <ClCompile Include="src\main\RenderEngine\GUI\GUI.cpp" />
@@ -212,14 +215,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main\Minecraft\Client\Client.h" />
+    <ClInclude Include="src\main\Minecraft\Client\ClientStats.h" />
     <ClInclude Include="src\main\Minecraft\Client\ClientWorld\ClientWorld.h" />
     <ClInclude Include="src\main\Minecraft\Client\Renderer\PlayerFOV.h" />
     <ClInclude Include="src\main\Minecraft\Client\Settings\ClientSettings.h" />
-    <ClInclude Include="src\main\Minecraft\Client\WorldMGR\WorldMGR.h" />
+    <ClInclude Include="src\main\Minecraft\Client\SingleplayerClient\SingleplayerRenderer.h" />
+    <ClInclude Include="src\main\Minecraft\Client\SingleplayerClient\SinglerplayerClient.h" />
     <ClInclude Include="src\main\Minecraft\Core.h" />
     <ClInclude Include="src\main\Minecraft\Core\Registry.h" />
     <ClInclude Include="src\main\Minecraft\Core\Resources\ResourceKey.h" />
     <ClInclude Include="src\main\Minecraft\World\AABB\AABB.h" />
+    <ClInclude Include="src\main\Minecraft\World\Entity\EntityProperties.h" />
     <ClInclude Include="src\main\Minecraft\World\Entity\EntityType\FallingBlock.h" />
     <ClInclude Include="src\main\Minecraft\World\Entity\EntityType\Player.h" />
     <ClInclude Include="src\main\Minecraft\World\Entity\Entity.h" />
@@ -235,6 +241,7 @@
     <ClInclude Include="src\main\Minecraft\World\Level\Block\Blocks\GrassBlock.h" />
     <ClInclude Include="src\main\Minecraft\World\Level\Block\Blocks\LeafBlock.h" />
     <ClInclude Include="src\main\Minecraft\World\Level\Block\Properties\Properties.h" />
+    <ClInclude Include="src\main\Minecraft\World\Level\Chunk\ChunkData.h" />
     <ClInclude Include="src\main\Minecraft\World\Level\Chunk\ChunkMap.h" />
     <ClInclude Include="src\main\Minecraft\World\Level\Chunk\ChunkProperties.h" />
     <ClInclude Include="src\main\Minecraft\World\Level\Dimension\DimensionNode.h" />
@@ -250,12 +257,16 @@
     <ClInclude Include="src\main\Minecraft\World\World.h" />
     <ClInclude Include="src\main\Minecraft\World\WorldGen\Noise\Perlin.h" />
     <ClInclude Include="src\main\Minecraft\World\WorldGen\Overworld\TerrainGen.h" />
+    <ClInclude Include="src\main\Minecraft\World\WorldManager.h" />
     <ClInclude Include="src\main\Minecraft\World\WorldProperties.h" />
+    <ClInclude Include="src\main\Minecraft\World\WorldType\Types\Default.h" />
+    <ClInclude Include="src\main\Minecraft\World\WorldType\WorldType.h" />
+    <ClInclude Include="src\main\RenderEngine\ChunkRenderer\ChunkBatch.h" />
+    <ClInclude Include="src\main\RenderEngine\ChunkRenderer\Mesh\BakedChunkMesh.h" />
     <ClInclude Include="src\main\RenderEngine\ChunkRenderer\Mesh\Mesher.h" />
     <ClInclude Include="src\main\Minecraft\World\Level\Chunk\Chunk.h" />
     <ClInclude Include="src\main\archive\World.h1" />
     <ClInclude Include="src\main\archive\WorldContainer.h1" />
-    <ClInclude Include="src\main\Minecraft\World\WorldGen\ChunkGenerator.h" />
     <ClInclude Include="src\main\RenderEngine\Camera\camera.h" />
     <ClInclude Include="src\main\RenderEngine\ChunkRenderer\ChunkRenderer.h" />
     <ClInclude Include="src\main\RenderEngine\ChunkRenderer\Mesh\TexMap.h" />
@@ -271,7 +282,9 @@
     <ClInclude Include="src\main\RenderEngine\OpenGL\Texture\Types\Texture2D.h" />
     <ClInclude Include="src\main\RenderEngine\TextureLoader.h" />
     <ClInclude Include="src\main\Utils\Math\ChunkID\ChunkID.h" />
-    <ClInclude Include="src\main\Utils\Math\Vector\ivec3.h" />
+    <ClInclude Include="src\main\Utils\Math\Vector\vec2.h" />
+    <ClInclude Include="src\main\Utils\Math\Vector\vec3.h" />
+    <ClInclude Include="src\main\Utils\Math\Vector\vec4.h" />
     <ClInclude Include="src\main\Utils\stb_image.h" />
     <ClInclude Include="src\main\RenderEngine\OpenGL\Texture\Texture.h" />
     <ClInclude Include="src\main\RenderEngine\Window.h" />

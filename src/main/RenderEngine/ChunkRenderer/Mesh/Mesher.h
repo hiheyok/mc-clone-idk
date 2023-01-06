@@ -16,7 +16,9 @@
 #include "../../../utils/MathHelper.h"
 #include "../../../utils/Clock.h"
 #include "../../../utils/LogUtils.h"
-#include "../../../Utils/Math/Vector/ivec3.h"
+#include "../../../Utils/Math/Vector/vec3.h"
+
+#include "BakedChunkMesh.h"
 
 #include <vector>
 #include <algorithm>
@@ -50,30 +52,6 @@ BIT_OFFSET		TYPE			SIZE
 #define SOLID 0x00			
 #define TRANSPARENT 0x01	
 
-struct ChunkVerticesData {
-	std::vector<unsigned int> Data[5]{};
-	int x = 0;
-	int y = 0;
-	int z = 0;
-
-};
-
-struct BlockVerticesData {
-	BlockVerticesData(BlockID id = AIR) : data(id) {}
-	unsigned int Vdata[6]{};
-	BlockID data;
-};
-
-struct BakedChunkData {
-
-	void addUninitBlock(int x, int y, int z, char B_ID);
-	BlockVerticesData extract(int x, int y, int z);
-	bool compare(int x, int y, int z, int x1, int y1, int z1, char type);
-	unsigned int extractVData(char type, unsigned int data);
-	BlockVerticesData data[CHUNK_SIZE_3]{};
-	void add(int x, int y, int z, char B_ID, unsigned int L0_, unsigned int L1_, unsigned int L2_, unsigned int L3_, char side);
-};
-
 class ChunkMesh {
 public:
 
@@ -86,7 +64,7 @@ public:
 	std::vector<unsigned int> vertices;
 	std::vector<unsigned int> transparentVertices;
 
-	void delete_();
+	void clear();
 
 private:
 
@@ -131,7 +109,6 @@ private:
 	bool useZN[(16 + 1) * (16 + 1) * (16 + 1)]{};
 
 	BakedChunkData* SMesh = nullptr;
-	
 };
 
 

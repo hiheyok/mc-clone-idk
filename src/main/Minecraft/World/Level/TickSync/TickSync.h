@@ -1,48 +1,44 @@
 #pragma once
 #include <chrono>
+unsigned int SyncTPS = 20;
+unsigned int SyncThreadsTicking = 0;
+unsigned int SyncThreadsRunning = 0;
+unsigned int SyncTicksCount = 0;
 
-class TickSync {
-public:
-	void SetTPS(unsigned int TPS_) {
-		TPS = TPS_;
-	}
+std::chrono::steady_clock::time_point SyncTickStartingTime;
 
-	void Tick() {
-		TickStartingTime = std::chrono::high_resolution_clock::now();
-		TicksCount++;
-	}
+void SyncSetTPS(unsigned int TPS_) {
+	SyncTPS = TPS_;
+}
 
-	void ThreadStarting() {
-		ThreadsRunning++;
-	}
+void SyncTick() {
+	SyncTickStartingTime = std::chrono::high_resolution_clock::now();
+	SyncTicksCount++;
+}
 
-	void ThreadStopping() {
-		ThreadsRunning--;
-	}
+void SyncThreadStarting() {
+	SyncThreadsRunning++;
+}
 
-	void ThreadTicking() {
-		ThreadsTicking++;
-	}
+void SyncThreadStopping() {
+	SyncThreadsRunning--;
+}
 
-	void ThreadStopTicking() {
-		ThreadsTicking--;
-	}
+void SyncThreadTicking() {
+	SyncThreadsTicking++;
+}
 
-	bool CheckIfTickTimeExceededMinTickTime() {
-		double MSPT = (double)(TickStartingTime - std::chrono::high_resolution_clock::now()).count() / 1000000.0;
-		return MSPT >= 1000.0 / TPS ? (ThreadsTicking == 0) : false;
-	}
+void SyncThreadStopTicking() {
+	SyncThreadsTicking--;
+}
 
-	bool CheckIfAllThreadsFinished() {
-		return ThreadsTicking == 0;
-	}
+bool SyncCheckIfTickTimeExceededMinTickTime() {
+	double MSPT = (double)(SyncTickStartingTime - std::chrono::high_resolution_clock::now()).count() / 1000000.0;
+	return MSPT >= 1000.0 / SyncTPS ? (SyncThreadsTicking == 0) : false;
+}
 
-	unsigned int TicksCount = 0;
+bool SyncCheckIfAllThreadsFinished() {
+	return SyncThreadsTicking == 0;
+}
 
-private:
-	unsigned int TPS = 20;
-	unsigned int ThreadsTicking = 0;
-	unsigned int ThreadsRunning = 0;
-	std::chrono::steady_clock::time_point TickStartingTime;
 
-};

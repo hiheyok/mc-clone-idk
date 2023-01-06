@@ -1,7 +1,10 @@
 #pragma once
 #include "../AABB/AABB.h"
+#include "EntityProperties.h"
 
-class Entity {
+typedef unsigned long long int UUID;
+
+class Entity : public EntityProperties {
 public:
 	
 	Entity() {
@@ -17,33 +20,24 @@ public:
 	}
 
 	template <class T, class Y, class U> void SetPosition(T x, Y y, U z) {
-		PosX = (double)x;
-		PosY = (double)y;
-		PosZ = (double)z;
+		Position.x = (float)x;
+		Position.y = (float)y;
+		Position.z = (float)z;
 		AABB.SetPos(x,y,z);
 	}
 
 	template <class T, class Y, class U > void Move(T x, Y y, U z) {
-		PosX += (double)x;
-		PosY += (double)y;
-		PosZ += (double)z;
-		AABB.SetPos(PosX, PosY, PosZ);
+		Position.x += (float)x;
+		Position.y += (float)y;
+		Position.z += (float)z;
+		AABB.SetPos(Position.x, Position.y, Position.z);
 	}
-
-	double PosX, PosY, PosZ = 0.0;
-	double RotX, RotY, RotZ = 0.0;
-
-	double AccerlationX, AccerlationY, AccerlationZ = 0.0;
-	double VelocityX, VelocityY, VelocityZ = 0.0;
-
-	double Speed = 25.0;
-	double Sink = 25.0;
-	double Lift = 25.0;
-
-	bool Jump = false;
 
 	AABB_BOX AABB;
 
-	long long int EntityID = 0;
+	UUID EntityUUID = 0;
+
+	ID EntityType = NULL;
+
 };
 

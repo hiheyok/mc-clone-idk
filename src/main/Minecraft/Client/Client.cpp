@@ -15,57 +15,6 @@
 
 void Client::Initialize() {
 	Start();
-	
-	GUI.init(getWindow(), &ClientEvents);
-    GUI.update();
-
-    
-    TestWorld.Initialize();
-    TestWorld.StartGenThreads(32);
-
-    cworld.Start(getWindow());
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-    cworld.AddMeshWorker();
-
-
-
-
-    
-    DisableCursor();
-
-    TestWorld.JoinWorld("hiheyok", &cworld);
-
 	ClientLoop();
 
     
@@ -103,11 +52,6 @@ void Client::ClientLoop() {
             FPS_LOW = (int)(1 / frametime);
         if (FPS_HIGH < (1 / frametime))
             FPS_HIGH = (int(1 / frametime));
-
-        if (TestForKeyInputs(GLFW_KEY_ESCAPE)) {
-            _CrtDumpMemoryLeaks();
-            return;
-        }
         
 	}
     
@@ -165,216 +109,217 @@ void Client::UpdateKeyboardInputs() {
 
     if (TestForKeyInputs(GLFW_KEY_Q)) {
         if (SHIFT) {
-            KeysPressed['q'] = true;
+            KeysPressed.insert('q');
         }
         else {
-            KeysPressed['Q'] = true;
+            KeysPressed.insert('Q');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_W)) {
         if (SHIFT) {
-            KeysPressed['w'] = true;
+            KeysPressed.insert('w');
         }
         else {
-            KeysPressed['W'] = true;
+            KeysPressed.insert('W');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_E)) {
         if (SHIFT) {
-            KeysPressed['e'] = true;
+            KeysPressed.insert('e');
         }
         else {
-            KeysPressed['E'] = true;
+            KeysPressed.insert('E');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_R)) {
         if (SHIFT) {
-            KeysPressed['r'] = true;
+            KeysPressed.insert('r');
         }
         else {
-            KeysPressed['R'] = true;
+            KeysPressed.insert('R');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_T)) {
         if (SHIFT) {
-            KeysPressed['t'] = true;
+            KeysPressed.insert('t');
         }
         else {
-            KeysPressed['T'] = true;
+            KeysPressed.insert('T');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_Y)) {
         if (SHIFT) {
-            KeysPressed['y'] = true;
+            KeysPressed.insert('y');
         }
         else {
-            KeysPressed['Y'] = true;
+            KeysPressed.insert('Y');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_U)) {
         if (SHIFT) {
-            KeysPressed['u'] = true;
+            KeysPressed.insert('u');
         }
         else {
-            KeysPressed['U'] = true;
+            KeysPressed.insert('U');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_I)) {
         if (SHIFT) {
-            KeysPressed['i'] = true;
+            KeysPressed.insert('i');
         }
         else {
-            KeysPressed['I'] = true;
+            KeysPressed.insert('I');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_O)) {
         if (SHIFT) {
-            KeysPressed['o'] = true;
+            KeysPressed.insert('o');
         }
         else {
-            KeysPressed['O'] = true;
+            KeysPressed.insert('O');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_P)) {
         if (SHIFT) {
-            KeysPressed['p'] = true;
+            KeysPressed.insert('p');
         }
         else {
-            KeysPressed['P'] = true;
+            KeysPressed.insert('P');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_A)) {
         if (SHIFT) {
-            KeysPressed['a'] = true;
+            KeysPressed.insert('a');
         }
         else {
-            KeysPressed['A'] = true;
+            KeysPressed.insert('A');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_S)) {
         if (SHIFT) {
-            KeysPressed['s'] = true;
+            KeysPressed.insert('s');
         }
         else {
-            KeysPressed['S'] = true;
+            KeysPressed.insert('S');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_D)) {
         if (SHIFT) {
-            KeysPressed['d'] = true;
+            KeysPressed.insert('d');
         }
         else {
-            KeysPressed['D'] = true;
+            KeysPressed.insert('D');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_F)) {
         if (SHIFT) {
-            KeysPressed['f'] = true;
+            KeysPressed.insert('f');
         }
         else {
-            KeysPressed['F'] = true;
+            KeysPressed.insert('F');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_G)) {
         if (SHIFT) {
-            KeysPressed['g'] = true;
+            KeysPressed.insert('g');
         }
         else {
-            KeysPressed['G'] = true;
+            KeysPressed.insert('G');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_H)) {
         if (SHIFT) {
-            KeysPressed['h'] = true;
+            KeysPressed.insert('h');
         }
         else {
-            KeysPressed['H'] = true;
+            KeysPressed.insert('H');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_J)) {
         if (SHIFT) {
-            KeysPressed['j'] = true;
+            KeysPressed.insert('j');
         }
         else {
-            KeysPressed['J'] = true;
+            KeysPressed.insert('J');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_K)) {
         if (SHIFT) {
-            KeysPressed['k'] = true;
+            KeysPressed.insert('k');
         }
         else {
-            KeysPressed['K'] = true;
+            KeysPressed.insert('K');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_L)) {
         if (SHIFT) {
-            KeysPressed['l'] = true;
+            KeysPressed.insert('l');
         }
         else {
-            KeysPressed['L'] = true;
+            KeysPressed.insert('L');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_Z)) {
         if (SHIFT) {
-            KeysPressed['z'] = true;
+            KeysPressed.insert('z');
         }
         else {
-            KeysPressed['Z'] = true;
+            KeysPressed.insert('Z');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_X)) {
         if (SHIFT) {
-            KeysPressed['x'] = true;
+            KeysPressed.insert('x');
         }
         else {
-            KeysPressed['X'] = true;
+            KeysPressed.insert('X');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_C)) {
         if (SHIFT) {
-            KeysPressed['c'] = true;
+            KeysPressed.insert('c');
         }
         else {
-            KeysPressed['C'] = true;
+            KeysPressed.insert('C');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_V)) {
         if (SHIFT) {
-            KeysPressed['v'] = true;
+            KeysPressed.insert('v');
         }
         else {
-            KeysPressed['V'] = true;
+            KeysPressed.insert('V');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_B)) {
         if (SHIFT) {
-            KeysPressed['b'] = true;
+            KeysPressed.insert('b');
         }
         else {
-            KeysPressed['B'] = true;
+            KeysPressed.insert('B');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_N)) {
         if (SHIFT) {
-            KeysPressed['n'] = true;
+            KeysPressed.insert('n');
         }
         else {
-            KeysPressed['N'] = true;
+            KeysPressed.insert('N');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_M)) {
         if (SHIFT) {
-            KeysPressed['m'] = true;
+            KeysPressed.insert('m');
         }
         else {
-            KeysPressed['M'] = true;
+            KeysPressed.insert('M');
         }
     }
     if (TestForKeyInputs(GLFW_KEY_SPACE)) {
-        KeysPressed[' '] = true;
+        KeysPressed.insert(' ');
     }
     if (SHIFT) {
-        KeysPressed[0] = true;
+
+        KeysPressed.insert(0);
     }
 }
