@@ -4,15 +4,15 @@ unsigned int Buffer::GetID() {
 	return BufferID;
 }
 void Buffer::InsertData(GLsizeiptr Size, const void* Data, GLenum Usage) {
-	glBindBuffer(Type, BufferID);
+	Bind();
 	glBufferData(Type, Size, Data, Usage);
-	glBindBuffer(Type, 0);
+	Unbind();
 }
 
 void Buffer::InsertSubData(GLintptr Offset, GLsizeiptr Size, const void* Data) {
-	glBindBuffer(Type, BufferID);
+	Bind();
 	glBufferSubData(Type,Offset, Size, Data);
-	glBindBuffer(Type, 0);
+	Unbind();
 }
 
 void Buffer::ResetBuffer() {
@@ -51,6 +51,14 @@ void Buffer::InitializeData() {
 	Bind();
 	glBufferData(Type, MaxSize, nullptr, Usage);
 	Unbind();
+}
+
+void Buffer::BindBase(int Index) {
+	glBindBufferBase(Type, Index, BufferID);
+}
+
+void Buffer::UnbindBase(int Index) {
+	glBindBufferBase(Type, Index, 0);
 }
 
 void VertexArray::Bind() {

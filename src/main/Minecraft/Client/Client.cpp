@@ -22,17 +22,16 @@ void Client::Initialize() {
 
 void Client::ClientLoop() {
     auto time0 = std::chrono::high_resolution_clock::now();
-    long long int FrameCount = 0;
 	while (!WindowCloseCheck()) {
-        FrameCount++;
+        framecount++;
         auto time1 = std::chrono::high_resolution_clock::now();
 
         if ((std::chrono::high_resolution_clock::now() - time0).count() / 1000000000.0 > .15) {
-            FPS = (int)((double)FrameCount / ((std::chrono::high_resolution_clock::now() - time0).count() / 1000000000.0));
+            FPS = (int)((double)framecount / ((std::chrono::high_resolution_clock::now() - time0).count() / 1000000000.0));
             FPS_LOW = FPS;
             FPS_HIGH = FPS;
             time0 = std::chrono::high_resolution_clock::now();
-            FrameCount = 0;
+            framecount = 0;
         }
         
       //  getLogger()->LogDebug("Client","Size of Chunk: " + std::to_string(sizeof(Chunk)));
@@ -52,9 +51,7 @@ void Client::ClientLoop() {
             FPS_LOW = (int)(1 / frametime);
         if (FPS_HIGH < (1 / frametime))
             FPS_HIGH = (int(1 / frametime));
-        
 	}
-    
 }
 
 void Client::Update() {

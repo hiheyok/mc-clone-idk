@@ -120,6 +120,9 @@
     <ClCompile Include="src\main\RenderEngine\ChunkRenderer\ChunkBatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\main\Minecraft\Core\Initialize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\vert.glsl">
@@ -371,16 +374,22 @@
     <ClInclude Include="src\main\Minecraft\World\WorldManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\main\Minecraft\World\WorldType\WorldType.h">
+    <ClInclude Include="src\main\Minecraft\World\Level\LevelType\LevelType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\main\Minecraft\World\WorldType\Types\Default.h">
+    <ClInclude Include="src\main\Minecraft\World\Level\LevelType\Types\Default.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\main\RenderEngine\ChunkRenderer\Mesh\BakedChunkMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\main\RenderEngine\ChunkRenderer\ChunkBatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Utils\Math\Matrix\mat4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Minecraft\Core\Initialize.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

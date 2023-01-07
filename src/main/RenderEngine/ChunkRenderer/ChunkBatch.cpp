@@ -61,16 +61,20 @@ void ChunkDrawBatch::GenDrawCommands(int RenderDistance) {
 				Index++;
 			}
 		}
-
 	}
+
 	SSBO.InsertSubData(0, ChunkShaderPos.size() * sizeof(int), ChunkShaderPos.data());
 	IBO.InsertSubData(0, DrawCommands.size() * sizeof(DrawCommandIndirect), DrawCommands.data());
 }
 
-void ChunkDrawBatch::AddChunkVertices(std::vector<unsigned int> Data, int x, int y, int z) {
+bool ChunkDrawBatch::AddChunkVertices(std::vector<unsigned int> Data, int x, int y, int z) {
 	unsigned long long int ChunkID = getChunkID(x, y, z);
 	size_t DataSize = Data.size() * sizeof(unsigned int);
-	if (DataSize == 0) { return; }
+	if (DataSize == 0) { return true; }
+	if (DataSize + MemoryUsage > MaxBufferSize) { 
+		getLogger()->LogDebug("Chunk Renderer", "DrawBatch Out of Memory: " + std::to_string(MemoryUsage));
+		return false; 
+	}
 	DataBufferAddress RenderingData;
 	RenderingData.x = x;
 	RenderingData.y = y;
@@ -85,7 +89,7 @@ void ChunkDrawBatch::AddChunkVertices(std::vector<unsigned int> Data, int x, int
 		RenderListOffsetLookup[ChunkID] = 0;
 		OffsetRenderIndexLookup[0] = 0;
 		UpdateCommands = true;
-		return;
+		return true;
 	}
 	if (RenderList.back().offset + RenderList.back().size + MemoryUsage < MaxBufferSize) {
 		RenderingData.offset = RenderList.back().offset + RenderList.back().size;
@@ -96,7 +100,7 @@ void ChunkDrawBatch::AddChunkVertices(std::vector<unsigned int> Data, int x, int
 		RenderListOffsetLookup[ChunkID] = RenderingData.offset;
 		OffsetRenderIndexLookup[RenderingData.offset] = Data.size() - 1;
 		UpdateCommands = true;
-		return;
+		return true;
 	}
 	for (int i = 0; i < RenderList.size(); i++) {
 		if (RenderList[i].offset + RenderList[i].size + DataSize < RenderList[i + 1].offset) {
@@ -108,18 +112,69 @@ void ChunkDrawBatch::AddChunkVertices(std::vector<unsigned int> Data, int x, int
 			RenderListOffsetLookup[ChunkID] = RenderingData.offset;
 			OffsetRenderIndexLookup[RenderingData.offset] = i;
 			UpdateCommands = true;
-			return;
+			return true;
 		}
 	}
-	getLogger()->LogError("Chunk Renderer", "GPU Out of Memory: " + std::to_string(MemoryUsage));
+	getLogger()->LogDebug("Chunk Renderer", "DrawBatch Out of Memory: " + std::to_string(MemoryUsage));
+	return false;
 }
 
 void ChunkDrawBatch::DeleteChunkVertices(CHUNK_ID ChunkID) {
 	if (RenderListOffsetLookup.count(ChunkID)) {
-		size_t index = OffsetRenderIndexLookup[RenderListOffsetLookup[ChunkID]];
+		size_t index = GetRenderObjIndex(RenderListOffsetLookup[ChunkID]);
 		MemoryUsage -= RenderList[index].size;
 		RenderList.erase(RenderList.begin() + index);
-		OffsetRenderIndexLookup.erase(RenderListOffsetLookup[ChunkID]);
 		RenderListOffsetLookup.erase(ChunkID);
 	}
+}
+
+void ChunkDrawBatch::SetMaxSize(size_t size) {
+	MaxBufferSize = size;
+}
+
+void ChunkDrawBatch::Bind() {
+	Array.Bind();
+	IBO.Bind();
+	VBO.Bind();
+	SSBO.Bind();
+	SSBO.BindBase(2);
+}
+
+void ChunkDrawBatch::Unbind() {
+	SSBO.UnbindBase(2);
+	SSBO.Unbind();
+	IBO.Unbind();
+	VBO.Unbind();
+	Array.Unbind();
+}
+
+void ChunkDrawBatch::Draw() {
+	glMultiDrawArraysIndirect(GL_TRIANGLES, (GLvoid*)0, (GLsizei)DrawCommands.size(), 0);
+}
+
+size_t ChunkDrawBatch::GetRenderObjIndex(size_t Offset) {
+	size_t low = 0;
+	size_t high = RenderList.size() - 1;
+
+	while (true) {
+		size_t mid = (size_t)((low + high) * 0.5);
+		if (Offset == RenderList[mid].offset) {
+			return mid;
+		}
+		else if (Offset > RenderList[mid].offset) {
+			low = mid + 1;
+		}
+		else {
+			high = mid - 1;
+		}
+		if (low == high) {
+			break;
+		}
+	}
+
+	if (Offset == RenderList[high].offset) {
+		return high;
+	}
+
+	return -1;
 }

@@ -4,6 +4,7 @@
 #include "../World/Level/Dimension/Dimension.h"
 #include "../World/Entity/Entity.h"
 #include "../../RenderEngine/OpenGL/Texture/Texture.h"
+#include "../World/Level/Level.h"
 #include "../../Utils/LogUtils.h"
 #include <unordered_map>
 #include <string>
@@ -22,7 +23,7 @@ template <class T>
 class Registry {
 
 public:
-	std::string NAMESPACE = "minecpp";
+	std::string NAMESPACE = "minecraft";
 	std::string NAMESPACE_SEPARATER = ":";
 	ID Register(T obj, std::string name) {
 		Container[nextID] = T;
@@ -63,3 +64,4 @@ Registry<std::string> BlockIMGRegistry;
 Registry<Texture*> TextureRegistry;
 Registry<Dimension*> DimensionRegistry;
 Registry<Entity*> EntityRegistry;
+Registry<Level*> LevelRegistry;

@@ -253,14 +253,14 @@ public:
 		int width, height;
 
 		glfwGetWindowSize(window, &width, &height);
-		glm::mat4 model = glm::mat4(1.f);
+		mat4 model = glm::mat4(1.f);
 
 		camera->screenRes = glm::vec2(width, height);
-		glm::mat4 view = camera->GetViewMatrix();
+		mat4 view = camera->GetViewMatrix();
 
 		int x = width;
 		int y = height;
-		glm::mat4 projection = glm::perspective(glm::radians(camera->FOV), (float)x / (float)y, 0.1f, 1000000.0f);
+		mat4 projection = glm::perspective(glm::radians(camera->FOV), (float)x / (float)y, 0.1f, 1000000.0f);
 		SolidShader->use();
 
 		SolidShader->setMat4("view", view);

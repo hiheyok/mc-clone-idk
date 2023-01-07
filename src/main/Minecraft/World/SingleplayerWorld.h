@@ -22,21 +22,22 @@ public:
 	}
 
 	void UpdatePlayer(std::unordered_set<char> KeyInputs, double delta) {
+		Entity* player = GetPlayer();
 		if (KeyInputs.count('W') || KeyInputs.count('w')) {
-			player->VelocityX += Distance * cos(DEGTORAD * player->RotY);
-			player->VelocityZ += Distance * sin(DEGTORAD * player->RotY);
+			player->Velocity.x += player->Speed * cos(DEGTORAD * player->Rotation.y);
+			player->Velocity.z += player->Speed * sin(DEGTORAD * player->Rotation.y);
 		}
 		if (KeyInputs.count('S') || KeyInputs.count('s')) {
-			player->VelocityX += -Distance * cos(DEGTORAD * player->RotY);
-			player->VelocityZ += -Distance * sin(DEGTORAD * player->RotY);
+			player->Velocity.x += -player->Speed * cos(DEGTORAD * player->Rotation.y);
+			player->Velocity.z += -player->Speed * sin(DEGTORAD * player->Rotation.y);
 		}
 		if (KeyInputs.count('A') || KeyInputs.count('a')) {
-			player->VelocityX += -Distance * cos(DEGTORAD * (player->RotY + 90));
-			player->VelocityZ += -Distance * sin(DEGTORAD * (player->RotY + 90));
+			player->Velocity.x += -player->Speed * cos(DEGTORAD * (player->Rotation.y + 90));
+			player->Velocity.z += -player->Speed * sin(DEGTORAD * (player->Rotation.y + 90));
 		}
 		if (KeyInputs.count('D') || KeyInputs.count('d')) {
-			player->VelocityX += Distance * cos(DEGTORAD * (player->RotY + 90));
-			player->VelocityZ += Distance * sin(DEGTORAD * (player->RotY + 90));
+			player->Velocity.x += player->Speed * cos(DEGTORAD * (player->Rotation.y + 90));
+			player->Velocity.z += player->Speed * sin(DEGTORAD * (player->Rotation.y + 90));
 		}
 	}
 
@@ -44,5 +45,9 @@ public:
 private:
 	void MovePlayer() {
 
+	}
+
+	Entity* GetPlayer() {
+		return nullptr;
 	}
 };

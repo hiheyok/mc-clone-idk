@@ -1,9 +1,10 @@
 #pragma once
 #include "../Core/Registry.h"
+#include "SingleplayerWorld.h"
 
 class WorldManager {
 public:
-	void CreateNewWorld() {
-
+	SingleplayerWorld* CreateNewWorld() {
+		SingleplayerWorld* NewWorld = new SingleplayerWorld();
 	}
 };

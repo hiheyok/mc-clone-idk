@@ -22,6 +22,10 @@ public:
 
 	void Delete();
 
+	void BindBase(int Index);
+
+	void UnbindBase(int Index);
+
 	void Bind();
 
 	void Unbind();

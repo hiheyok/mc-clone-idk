@@ -2,6 +2,8 @@
 #include "DimensionProperties.h"
 #include "DimensionNodeMGR.h"
 #include "../Chunk/ChunkMap.h"
+
+
 class Dimension : public DimensionProperties {
 public:
 	Dimension() {

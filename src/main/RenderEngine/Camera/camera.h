@@ -17,9 +17,6 @@ enum Camera_Movement {
 #include <GLFW/glfw3.h>
 
 #include <iostream>
-#include <glm/vec2.hpp>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 
 const float YAW = -90.0f;

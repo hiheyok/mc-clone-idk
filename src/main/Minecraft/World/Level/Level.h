@@ -3,12 +3,12 @@
 #include "../../Core/Registry.h"
 class Level {
 public:
-	void SetEntityVelocity(fvec3 Velocity) {
-	
+	virtual void Build() {
 
 	}
 
-private:
-	std::unordered_map<UUID, Entity*> LevelEntityList;
+protected:
+	std::unordered_map<UUID, Entity> LevelEntityList;
+	std::unordered_map<ID, Dimension*> DimensionList;
 
 };
