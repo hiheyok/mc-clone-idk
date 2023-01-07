@@ -87,7 +87,6 @@ bool ChunkDrawBatch::AddChunkVertices(std::vector<unsigned int> Data, int x, int
 		VBO.InsertSubData(RenderingData.offset, Data.size(), &Data);
 		RenderList.insert(RenderList.begin(), RenderingData);
 		RenderListOffsetLookup[ChunkID] = 0;
-		OffsetRenderIndexLookup[0] = 0;
 		UpdateCommands = true;
 		return true;
 	}
@@ -98,7 +97,6 @@ bool ChunkDrawBatch::AddChunkVertices(std::vector<unsigned int> Data, int x, int
 		VBO.InsertSubData(RenderingData.offset, Data.size(), &Data);
 		RenderList.emplace_back(RenderingData);
 		RenderListOffsetLookup[ChunkID] = RenderingData.offset;
-		OffsetRenderIndexLookup[RenderingData.offset] = Data.size() - 1;
 		UpdateCommands = true;
 		return true;
 	}
@@ -110,7 +108,6 @@ bool ChunkDrawBatch::AddChunkVertices(std::vector<unsigned int> Data, int x, int
 			VBO.InsertSubData(RenderingData.offset, Data.size(), &Data);
 			RenderList.insert(RenderList.begin() + i + 1, RenderingData);
 			RenderListOffsetLookup[ChunkID] = RenderingData.offset;
-			OffsetRenderIndexLookup[RenderingData.offset] = i;
 			UpdateCommands = true;
 			return true;
 		}
